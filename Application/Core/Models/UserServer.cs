@@ -11,6 +11,6 @@ namespace Core.Models
         
         public DateTime DateEntered;
 
-        public List<Role> Roles;
+        public List<UserServerRole> UserServerRoles;
     }
 }

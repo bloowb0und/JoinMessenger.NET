@@ -13,6 +13,6 @@ namespace Core.Models
 
         public List<Chat> Chats;
 
-        public List<Role> Roles;
+        public List<ServerRole> ServerRoles;
     }
 }

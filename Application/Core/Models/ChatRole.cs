@@ -8,6 +8,6 @@ namespace Core.Models
         
         public Chat Chat;
         
-        public List<Permission> Permisssions;
+        public List<ChatRolePermission> ChatRolePermissions;
     }
 }

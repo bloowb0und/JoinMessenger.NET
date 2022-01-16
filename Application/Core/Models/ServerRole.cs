@@ -8,6 +8,6 @@ namespace Core.Models
         
         public Role Role;
 
-        public List<Permission> Permissions;
+        public List<ServerRolePermission> ServerRolePermissions;
     }
 }

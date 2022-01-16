@@ -15,6 +15,6 @@ namespace Core.Models
 
         public List<Message> Messages;
 
-        public List<Role> Roles;
+        public List<ChatRole> ChatRoles;
     }
 }
