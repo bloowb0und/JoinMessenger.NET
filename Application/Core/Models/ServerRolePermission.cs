@@ -2,10 +2,10 @@ namespace Core.Models
 {
     public class ServerRolePermission : BaseEntity
     {
-        public ServerRole ServerRole;
+        public ServerRole ServerRole { get; set; }
         
-        public Permission Permission;
+        public Permission Permission { get; set; }
         
-        public bool Status;
+        public bool Status { get; set; }
     }
 }

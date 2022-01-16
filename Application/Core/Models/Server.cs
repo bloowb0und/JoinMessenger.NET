@@ -5,14 +5,14 @@ namespace Core.Models
 {
     public class Server : BaseEntity
     {
-        public string Name;
+        public string Name { get; set; }
         
-        public DateTime DateCreated;
+        public DateTime DateCreated { get; set; }
 
-        public List<User> Users;
+        public List<User> Users { get; set; }
 
-        public List<Chat> Chats;
+        public List<Chat> Chats { get; set; }
 
-        public List<Role> Roles;
+        public List<ServerRole> ServerRoles { get; set; }
     }
 }

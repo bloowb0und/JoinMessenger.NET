@@ -1,20 +1,19 @@
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Core.Models
 {
     public class Chat : BaseEntity
     {
-        public string Name;
+        public string Name { get; set; }
         
-        public ChatType Type;
+        public ChatType Type { get; set; }
         
-        public Server Server;
+        public Server Server { get; set; }
 
-        public List<User> Users;
+        public List<User> Users { get; set; }
 
-        public List<Message> Messages;
+        public List<Message> Messages { get; set; }
 
-        public List<Role> Roles;
+        public List<ChatRole> ChatRoles { get; set; }
     }
 }

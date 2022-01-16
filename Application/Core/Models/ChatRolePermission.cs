@@ -2,10 +2,10 @@ namespace Core.Models
 {
     public class ChatRolePermission : BaseEntity
     {
-        public ChatRole ChatRole;
+        public ChatRole ChatRole { get; set; }
      
-        public Permission Permission;
+        public Permission Permission { get; set; }
         
-        public bool Status;
+        public bool Status { get; set; }
     }
 }

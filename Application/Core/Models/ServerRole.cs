@@ -4,10 +4,10 @@ namespace Core.Models
 {
     public class ServerRole : BaseEntity
     {
-        public Server Server;
+        public Server Server { get; set; }
         
-        public Role Role;
+        public Role Role { get; set; }
 
-        public List<Permission> Permissions;
+        public List<ServerRolePermission> ServerRolePermissions { get; set; }
     }
 }

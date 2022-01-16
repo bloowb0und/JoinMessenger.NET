@@ -2,16 +2,17 @@ using System.Collections.Generic;
 
 namespace Core.Models
 {
+    
     public class User : BaseEntity
-    {
-        public string Name;
+    { 
+        public string Name { get; set; }
         
-        public string Email;
-        
-        public string Login;
-        
-        public string Password;
+        public string Email { get; set; }
 
-        public List<Server> Servers;
+        public string Login { get; set; }
+        
+        public string Password { get; set; }
+
+        public List<Server> Servers { get; set; }
     }
 }

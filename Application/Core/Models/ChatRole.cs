@@ -4,10 +4,10 @@ namespace Core.Models
 {
     public class ChatRole : BaseEntity
     {
-        public Role Role;
+        public Role Role { get; set; }
         
-        public Chat Chat;
+        public Chat Chat { get; set; }
         
-        public List<Permission> Permisssions;
+        public List<ChatRolePermission> ChatRolePermissions { get; set; }
     }
 }

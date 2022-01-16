@@ -5,12 +5,12 @@ namespace Core.Models
 {
     public class UserServer : BaseEntity
     {
-        public User User;
+        public User User { get; set; }
         
-        public Server Server;
+        public Server Server { get; set; }
         
-        public DateTime DateEntered;
+        public DateTime DateEntered { get; set; }
 
-        public List<Role> Roles;
+        public List<UserServerRole> UserServerRoles { get; set; }
     }
 }

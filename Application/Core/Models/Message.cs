@@ -4,10 +4,14 @@ namespace Core.Models
 {
     public class Message : BaseEntity
     {
-        public Server Server;
-        public Chat Chat;
-        public User User;
-        public string Value;
-        public DateTime DateCreated;
+        public User User { get; set; }
+
+        public Server Server { get; set; }
+        
+        public Chat Chat { get; set; }
+
+        public string Value { get; set; }
+        
+        public DateTime DateCreated { get; set; }
     }
 }

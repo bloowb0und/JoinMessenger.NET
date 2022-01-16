@@ -4,10 +4,10 @@ namespace Core.Models
 {
     public class UserServerRole : BaseEntity
     {
-        public UserServer UserServer;
+        public UserServer UserServer { get; set; }
         
-        public Role Role;
+        public Role Role { get; set; }
         
-        public DateTime DateApplied;
+        public DateTime DateApplied { get; set; }
     }
 }
