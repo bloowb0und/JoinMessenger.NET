@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,6 +5,7 @@ using System.Threading.Tasks;
 using Core.Models;
 using DAL.Abstractions.Interfaces;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace DAL
 {
@@ -17,37 +16,95 @@ namespace DAL
         {
         }
 
+        public async Task DeleteFromFileAsync<T>(T obj, string fileName)
+        {
+            if (!File.Exists(fileName))
+            {
+                await File.WriteAllTextAsync(fileName, 
+                    JsonConvert.SerializeObject(new Dictionary<string, IList<BaseEntity>>()));
+                throw new InvalidDataException($"Object {obj.ToString()} doesn't exist.");
+            }
+            var json = await File.ReadAllTextAsync(fileName);
+            JObject jObject = JObject.Parse(json);
+
+            if (!jObject.ContainsKey(typeof(T).ToString()) 
+                || !jObject[typeof(T).ToString()].Children().Contains(JObject.FromObject(obj)))
+            {
+                throw new InvalidDataException($"Object {obj.ToString()} doesn't exist.");
+            }
+
+            jObject[typeof(T).ToString()] = jObject[typeof(T).ToString()].Children()
+                .Where(obj => obj.Equals(JObject.FromObject(obj))) as JToken;
+            json = jObject.ToString();
+            
+            await File.WriteAllTextAsync(fileName,json);
+        }
+        
         public async Task SaveToFileAsync<T>(T obj, string fileName)
         {
-            var json = await File.ReadAllTextAsync(fileName);
-            var dictionary = JsonConvert.DeserializeObject<Dictionary<Type, IList>>(json);
-            var genericType = typeof(T).GetGenericArguments()[0];
-
-            if (!dictionary.TryAdd(genericType, (IList)obj))
+            if (!File.Exists(fileName))
             {
-                dictionary.Remove(genericType);
-                dictionary.Add(genericType, (IList)obj);
+                await File.WriteAllTextAsync(fileName, 
+                    JsonConvert.SerializeObject(new Dictionary<string, IList<BaseEntity>>()));
             }
             
-            json = JsonConvert.SerializeObject(dictionary, Formatting.Indented);
+            var json = await File.ReadAllTextAsync(fileName);
+            JObject jObject = JObject.Parse(json);
+
+            if (jObject.ContainsKey(typeof(T).ToString()))
+            {
+                JToken ie = jObject[typeof(T).ToString()] ?? JToken.FromObject(new List<T>());
+                JToken newObj = JToken.FromObject(obj);
+                jObject[typeof(T).ToString()].Replace(JToken.FromObject(ie.Append(newObj)));
+            }
+            else
+            {
+                List<T> list = new List<T>();
+                list.Add(obj);
+                jObject.Add(typeof(T).ToString(), JToken.FromObject(list));
+            }
+            
+            json = jObject.ToString();
             
             await File.WriteAllTextAsync(fileName,json);
         }
 
-        public async Task<T> LoadFromFileAsync<T>(string fileName) where T : new()
+        public async Task<IEnumerable<T>> LoadFromFileAsync<T>(string fileName)
         {
+            if (!File.Exists(fileName))
+            {
+                await File.WriteAllTextAsync(fileName, 
+                    JsonConvert.SerializeObject(new Dictionary<string, IList<BaseEntity>>()));
+                return new List<T>();
+            }
+            
             var json = await File.ReadAllTextAsync(fileName);
             
             if (string.IsNullOrEmpty(json) || string.IsNullOrWhiteSpace(json))
             {
-                json = JsonConvert.SerializeObject(new Dictionary<Type, IList<BaseEntity>>());
+                json = JsonConvert.SerializeObject(new Dictionary<string, IList<BaseEntity>>());
             }
             
-            var result = JsonConvert.DeserializeObject<Dictionary<Type, T>>(json) 
-                         ?? new Dictionary<Type, T>();
-            
-            return result.ToList().FirstOrDefault(pair => pair.Key == typeof(T).GetGenericArguments()[0]).Value
-                ?? new T(); 
+            JObject jObject = JObject.Parse(json);
+
+            IList<JToken> results;
+            if(jObject.ContainsKey(typeof(T).ToString()))
+            {
+                results = jObject[typeof(T).ToString()].Children().ToList();
+            }
+            else
+            {
+                return new List<T>();
+            }
+
+            IList<T> searchResults = new List<T>();
+            foreach (JToken r in results)
+            {
+                T searchResult = r.ToObject<T>();
+                searchResults.Add(searchResult);
+            }
+
+            return searchResults;
         }
     }
 }

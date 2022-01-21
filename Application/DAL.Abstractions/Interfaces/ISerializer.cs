@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace DAL.Abstractions.Interfaces
@@ -6,6 +7,6 @@ namespace DAL.Abstractions.Interfaces
     {
         Task SaveToFileAsync<T>(T obj, string fileName);
         
-        Task<T> LoadFromFileAsync<T>(string fileName) where T : new();
+        Task<IEnumerable<T>> LoadFromFileAsync<T>(string fileName);
     }
 }
