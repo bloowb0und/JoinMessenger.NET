@@ -93,11 +93,6 @@ namespace DAL.Contexts
                 _root = (JArray)root;
             }
 
-            public virtual IEnumerable GetAll()
-            {
-                throw new NotSupportedException();
-            }
-            
             public virtual async Task SaveChangesAsync()
             {
                 throw new NotSupportedException();
@@ -148,12 +143,7 @@ namespace DAL.Contexts
                 
                 this._collectionToAdd.Add(entity);
             }
-            
-            public override IEnumerable GetAll()
-            {
-                return _root.ToObject<IEnumerable<T>>();
-            }
-            
+
             public override async Task SaveChangesAsync()
             {
                 foreach (var entity in this._collectionToAdd)

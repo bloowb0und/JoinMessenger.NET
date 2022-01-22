@@ -20,7 +20,7 @@ namespace DAL.Repository
 
         public IEnumerable<T> GetAll()
         {
-            return _messengerContext.GetSet<T>().GetAll().Cast<T>();
+            return _messengerContext.GetSet<T>();
         }
 
         public IEnumerable<T> FindByCondition(Expression<Func<T, bool>> expression)
