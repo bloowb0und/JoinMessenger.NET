@@ -8,4 +8,8 @@
       <ProjectReference Include="..\Core\Core.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="Interfaces\ISerializer.cs" />
+    </ItemGroup>
+
 </Project>

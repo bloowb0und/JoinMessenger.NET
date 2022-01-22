@@ -1,32 +1,167 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Core;
 using Core.Models;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
 
 namespace DAL.Contexts
 {
     public class MessengerContext
     {
-
-        public class DbSet<T> : IEnumerable<T> where T : BaseEntity
+        private readonly AppSettings _appSettings;
+        private JObject _jObject;
+        private readonly Dictionary<Type, DbSet> _dbSetCollection = new Dictionary<Type, DbSet>();
+        public MessengerContext(IOptions<AppSettings> appSettings)
         {
-            private readonly string _pathToFile;
-            
-            private readonly MyJsonSerializer _jsonSerializer;
-            
-            public DbSet(string pathToFile)
+            _appSettings = appSettings?.Value ?? throw new ArgumentNullException(nameof(appSettings));
+        }
+
+        public DbSet<T> GetSet<T>() where T : BaseEntity
+        {
+            this.Initialize().ConfigureAwait(false).GetAwaiter().GetResult();
+
+            if (_dbSetCollection.ContainsKey(typeof(T)))
             {
-                _pathToFile = pathToFile;
-                _jsonSerializer = new MyJsonSerializer();
+                return (DbSet<T>) this._dbSetCollection[typeof(T)];
             }
 
-            private class CustomEnumerator : IEnumerator<T>, IEnumerator
+            if (_jObject.ContainsKey(typeof(T).Name))
             {
-                private string _pathToFile;
+                var dbSet = new DbSet<T>(this._jObject[typeof(T).Name]);
+                _dbSetCollection.Add(typeof(T), dbSet);
+
+                return dbSet;
+            }
+            else
+            {
+                var jArray = new JArray();
+                _jObject.Add(typeof(T).Name, jArray);
+
+                var dbSet = new DbSet<T>(jArray);
+                _dbSetCollection.Add(typeof(T), dbSet);
+
+                return dbSet;
+            }
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            foreach (var pair in _dbSetCollection)
+            {
+                await pair.Value.SaveChangesAsync();
+            }
+
+            if (File.Exists(_appSettings.TempDirectory))
+            {
+                await File.WriteAllTextAsync(_appSettings.TempDirectory, _jObject.ToString());
+            }
+        }
+
+        private bool Initialized = false;
+        private async Task Initialize()
+        {
+            if (Initialized)
+            {
+                return;
+            }
+
+            if (File.Exists(_appSettings.TempDirectory))
+            {
+                string json = await File.ReadAllTextAsync(_appSettings.TempDirectory);
+                _jObject = JObject.Parse(json);
+            }
+            else
+            {
+                _jObject = new JObject();
+                await File.WriteAllTextAsync(_appSettings.TempDirectory, _jObject.ToString());
+            }
+            
+            Initialized = true;
+        }
+
+        public class DbSet
+        {
+            protected readonly JArray _root;
+
+            public DbSet(JToken root)
+            {
+                _root = (JArray)root;
+            }
+
+            public virtual IEnumerable GetAll()
+            {
+                throw new NotSupportedException();
+            }
+            
+            public virtual async Task SaveChangesAsync()
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        public class DbSet<T> : DbSet, IEnumerable<T> where T : BaseEntity 
+        {
+            private readonly List<T> _collectionToAdd = new List<T>();
+            private readonly List<T> _collectionToRemove = new List<T>();
+            
+            public DbSet(JToken root) : base (root)
+            {
                 
-                private IEnumerable<T> _list;
+            }
+
+            public void Update(T entity)
+            {
+                JToken token = _root.FirstOrDefault(t => t.ToObject<T>().Id == entity.Id);
+                
+                if (token == null)
+                {
+                    throw new ArgumentException($"Object {entity} doesn't exist");
+                }
+
+                _collectionToRemove.Add(token.ToObject<T>());
+                _collectionToAdd.Add(entity);            
+            }
+            
+            public void Delete(T entity)
+            {
+                _collectionToRemove.Add(entity);
+            }
+            
+            public void Add(T entity)
+            {
+                this._collectionToAdd.Add(entity);
+            }
+            
+            public override IEnumerable GetAll()
+            {
+                return _root.ToObject<IEnumerable<T>>();
+            }
+            
+            public override async Task SaveChangesAsync()
+            {
+                foreach (var el in this._collectionToAdd)
+                {
+                    this._root.Add(JToken.FromObject(el));
+                }
+                
+                this._collectionToAdd.Clear();
+                
+                foreach (var el in this._collectionToRemove)
+                {
+                    this._root.Remove(JToken.FromObject(el));
+                }
+                
+                this._collectionToRemove.Clear();
+            }
+            
+            private class CustomEnumerator : IEnumerator<T>
+            {
+                private IEnumerable<T> _localList;
                 
                 private int _index;
                 
@@ -38,7 +173,7 @@ namespace DAL.Contexts
                 {
                     get
                     {
-                        if (_index == 0 || _index == _list.Count() + 1)
+                        if (_index == 0 || _index == _localList.Count() + 1)
                         {
                             throw new InvalidOperationException("Enumerator reached end of IEnumerable.");
                         }
@@ -46,17 +181,17 @@ namespace DAL.Contexts
                         return Current;
                     }
                 }
-                public CustomEnumerator(string pathToFile)
+
+                public CustomEnumerator(DbSet<T> dbSet)
                 {
-                    _pathToFile = pathToFile;
-                    _list = new MyJsonSerializer().LoadFromFileAsync<T>(_pathToFile).Result;
+                    _localList = dbSet;
                     _index = 0;
                     _current = default;
                 }
 
                 public bool MoveNext()
                 {
-                    IEnumerable<T> localList = _list.ToList();
+                    IEnumerable<T> localList = _localList.ToList();
 
                     if (_index < localList.Count())
                     {
@@ -81,34 +216,14 @@ namespace DAL.Contexts
                 }
             }
 
-            IEnumerator<T> IEnumerable<T>.GetEnumerator()
+            public IEnumerator<T> GetEnumerator()
             {
-                return new CustomEnumerator(_pathToFile);
+                return new CustomEnumerator(this);
             }
 
-            public IEnumerator GetEnumerator()
+            IEnumerator IEnumerable.GetEnumerator()
             {
-                return new CustomEnumerator(_pathToFile);
-            }
-
-            public async Task AddAsync(T entity)
-            {
-                if (this.Any(obj => obj.Id == entity.Id))
-                {
-                    throw new ArgumentException($"Element with same id as {entity} exists.");
-                }
-                
-                await _jsonSerializer.SaveToFileAsync(entity, _pathToFile);
-            }
-
-            public async Task DeleteAsync(T entity)
-            {
-                if (!this.Contains(entity))
-                {
-                    throw new ArgumentException($"Object {entity} doesn't exists.");
-                }
-                
-                await _jsonSerializer.DeleteFromFileAsync(entity, _pathToFile);
+                return GetEnumerator();
             }
         }
     }

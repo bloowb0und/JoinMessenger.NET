@@ -8,14 +8,15 @@ namespace DAL.Abstractions.Interfaces
 {
     public interface IGenericRepository<T> where T : BaseEntity
     {
-        Task<IEnumerable<T>> GetAllAsync();
+        IEnumerable<T> GetAll();
         
-        Task<IEnumerable<T>> FindByConditionAsync(Expression<Func<T, bool>> expression);
-        
+        IEnumerable<T> FindByCondition(Expression<Func<T, bool>> expression);
+
         Task CreateAsync(T entity);
         
         Task UpdateAsync(T entity);
         
         Task DeleteAsync(T entity);
+
     }
 }

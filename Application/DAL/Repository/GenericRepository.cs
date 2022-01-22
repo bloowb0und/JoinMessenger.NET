@@ -3,50 +3,48 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Core;
 using Core.Models;
 using DAL.Abstractions.Interfaces;
 using DAL.Contexts;
-using Microsoft.Extensions.Options;
 
 namespace DAL.Repository
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
     {
-        private readonly AppSettings _appSettings;
-        private readonly MessengerContext.DbSet<T> _dbSet;
+        private readonly MessengerContext _messengerContext;
         
-        public GenericRepository(IOptions<AppSettings> appSettings)
+        public GenericRepository(MessengerContext messengerContext)
         {
-            _appSettings = appSettings?.Value ?? throw new ArgumentNullException(nameof(appSettings));
-            _dbSet = new MessengerContext.DbSet<T>(_appSettings.TempDirectory);
+            _messengerContext = messengerContext;
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public IEnumerable<T> GetAll()
         {
-            return await Task.Run(() => _dbSet);
+            return _messengerContext.GetSet<T>().GetAll().Cast<T>();
         }
 
-        public async Task<IEnumerable<T>> FindByConditionAsync(Expression<Func<T, bool>> expression)
+        public IEnumerable<T> FindByCondition(Expression<Func<T, bool>> expression)
         {
-            var m = await GetAllAsync();
+            var m = GetAll();
             return m.Where(expression.Compile());
         }
 
         public async Task CreateAsync(T entity)
         {
-            await _dbSet.AddAsync(entity);
+            _messengerContext.GetSet<T>().Add(entity);
+            await _messengerContext.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(T entity)
         {
-            await DeleteAsync(entity);
-            await CreateAsync(entity);
+            _messengerContext.GetSet<T>().Update(entity);
+            await _messengerContext.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(T entity)
         {
-            await _dbSet.DeleteAsync(entity);
+            _messengerContext.GetSet<T>().Delete(entity);
+            await _messengerContext.SaveChangesAsync();
         }
     }
 }
