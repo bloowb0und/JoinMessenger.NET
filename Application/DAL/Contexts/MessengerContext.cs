@@ -14,8 +14,11 @@ namespace DAL.Contexts
     public class MessengerContext
     {
         private readonly AppSettings _appSettings;
+        
         private JObject _jObject;
+        
         private readonly Dictionary<Type, DbSet> _dbSetCollection = new Dictionary<Type, DbSet>();
+        
         public MessengerContext(IOptions<AppSettings> appSettings)
         {
             _appSettings = appSettings?.Value ?? throw new ArgumentNullException(nameof(appSettings));
@@ -63,6 +66,7 @@ namespace DAL.Contexts
         }
 
         private bool Initialized = false;
+        
         private async Task Initialize()
         {
             if (Initialized)
@@ -102,6 +106,7 @@ namespace DAL.Contexts
         public class DbSet<T> : DbSet, IEnumerable<T> where T : BaseEntity 
         {
             private readonly List<T> _collectionToAdd = new List<T>();
+            
             private readonly List<JToken> _collectionToRemove = new List<JToken>();
             
             public DbSet(JToken root) : base (root)
