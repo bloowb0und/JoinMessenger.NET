@@ -107,7 +107,7 @@ namespace DAL.Contexts
         public class DbSet<T> : DbSet, IEnumerable<T> where T : BaseEntity 
         {
             private readonly List<T> _collectionToAdd = new List<T>();
-            private readonly List<T> _collectionToRemove = new List<T>();
+            private readonly List<JToken> _collectionToRemove = new List<JToken>();
             
             public DbSet(JToken root) : base (root)
             {
@@ -123,17 +123,29 @@ namespace DAL.Contexts
                     throw new ArgumentException($"Object {entity} doesn't exist");
                 }
 
-                _collectionToRemove.Add(token.ToObject<T>());
+                _collectionToRemove.Add(token);
                 _collectionToAdd.Add(entity);            
             }
             
             public void Delete(T entity)
             {
-                _collectionToRemove.Add(entity);
+                JToken token = _root.FirstOrDefault(t => t.ToObject<T>().Id == entity.Id);
+                
+                if (token == null)
+                {
+                    throw new ArgumentException($"Object {entity} doesn't exist");
+                }
+
+                _collectionToRemove.Add(token);
             }
             
             public void Add(T entity)
             {
+                if (_root.Any(t => t.ToObject<T>().Id == entity.Id))
+                {
+                    throw new ArgumentException($"Object with same id as {entity} already exists");
+                }
+                
                 this._collectionToAdd.Add(entity);
             }
             
@@ -144,16 +156,16 @@ namespace DAL.Contexts
             
             public override async Task SaveChangesAsync()
             {
-                foreach (var el in this._collectionToAdd)
+                foreach (var entity in this._collectionToAdd)
                 {
-                    this._root.Add(JToken.FromObject(el));
+                    this._root.Add(JToken.FromObject(entity));
                 }
                 
                 this._collectionToAdd.Clear();
                 
-                foreach (var el in this._collectionToRemove)
+                foreach (var token in this._collectionToRemove)
                 {
-                    this._root.Remove(JToken.FromObject(el));
+                    this._root.Remove(token);
                 }
                 
                 this._collectionToRemove.Clear();
