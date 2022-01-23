@@ -191,7 +191,7 @@ namespace DAL.Contexts
 
                 public CustomEnumerator(DbSet<T> dbSet)
                 {
-                    _localList = dbSet;
+                    _localList = dbSet._root.ToObject<IEnumerable<T>>();
                     _index = 0;
                     _current = default;
                 }
