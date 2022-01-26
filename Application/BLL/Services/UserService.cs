@@ -20,8 +20,7 @@ public class UserService : IUserService
         if (string.IsNullOrWhiteSpace(user.Name) || string.IsNullOrWhiteSpace(user.Email) ||
             string.IsNullOrWhiteSpace(user.Login) || string.IsNullOrWhiteSpace(user.Password)) // check if any values are null or empty
         {
-            Console.WriteLine("One or more values are null or empty.");
-            throw new ArgumentException();
+            throw new ArgumentException("One or more values are null or empty.");
         }
 
         try
@@ -30,8 +29,7 @@ public class UserService : IUserService
         }
         catch (FormatException e)
         {
-            Console.WriteLine("Invalid email format " + e.Message);
-            throw;
+            throw new FormatException("Invalid email format ");
         }
 
         // Password must contain numbers, lowercase or uppercase letters, include special symbols, at least 8 characters, at most 24 characters.
@@ -40,22 +38,40 @@ public class UserService : IUserService
 
         if (!passwordRegex.IsMatch(user.Password)) // check if password is strong
         {
-            Console.WriteLine("Password is not strong enough.");
-            Console.WriteLine("It must contain numbers, lowercase or uppercase letters, include special symbols, at least 8 characters, at most 24 characters.");
-            throw new FormatException();
+            throw new FormatException("Password is not strong enough.");
         }
 
         if (!Equals(_userRepository.FindByCondition(u => u.Email == user.Email), Enumerable.Empty<User>())) // check if email is unique
         {
-            Console.WriteLine("Email must be unique.");
-            throw new ArgumentException();
+            throw new ArgumentException("Email must be unique.");
         }
         if (!Equals(_userRepository.FindByCondition(u => u.Login == user.Login), Enumerable.Empty<User>())) // check if login is unique
         {
-            Console.WriteLine("Login must be unique.");
-            throw new ArgumentException();
+            throw new ArgumentException("Login must be unique.");
         }
 
         _userRepository.CreateAsync(user);
+    }
+
+    public User SignIn(string login, string password)
+    {
+        if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(password)) // check if any values are null or empty
+        {
+            throw new ArgumentException("One or more values are null or empty.");
+        }
+
+        var foundUser = _userRepository.FindByCondition(u => u.Login == login).FirstOrDefault();
+
+        if (foundUser == null)
+        {
+            throw new ArgumentException("User with a given login was not found.");
+        }
+
+        if (foundUser.Password != password)
+        {
+            throw new ArgumentException("Wrong password.");
+        }
+
+        return foundUser;
     }
 }
