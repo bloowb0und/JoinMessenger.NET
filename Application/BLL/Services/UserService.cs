@@ -61,19 +61,33 @@ namespace BLL.Services
             _userRepository.CreateAsync(user);
         }
 
-        public User SignIn(string login, string password)
+        public User SignIn(string username, string password)
         {
-            if (string.IsNullOrWhiteSpace(login) ||
+            User foundUser;
+            var isLogin = false;
+            
+            if (string.IsNullOrWhiteSpace(username) ||
                 string.IsNullOrWhiteSpace(password)) // check if any values are null or empty
             {
                 throw new ArgumentException("One or more values are null or empty.");
             }
-
-            var foundUser = _userRepository.FindByCondition(u => u.Login == login).FirstOrDefault();
-
-            if (foundUser == null)
+            
+            try
             {
-                throw new ArgumentException("User with a given login was not found.");
+                var checkedEmail = new MailAddress(username).Address; // check if email string is in a email format
+            }
+            catch (FormatException e)
+            {
+                isLogin = true;
+            }
+
+            if (isLogin)
+            {
+                foundUser = _userRepository.FindByCondition(u => u.Login == username).FirstOrDefault() ?? throw new ArgumentException("User with a given data was not found.");;
+            }
+            else
+            {
+                foundUser = _userRepository.FindByCondition(u => u.Email == username).FirstOrDefault() ?? throw new ArgumentException("User with a given data was not found.");
             }
 
             if (foundUser.Password != password)
