@@ -114,5 +114,52 @@ namespace BLL.Services
 
             _emailNotificationService.SendForgotPassword(foundUser);
         }
+
+        public void ChangeUserData(User user, int dataIdx, string oldValue, string newValue)
+        {
+            var currentUser = _userRepository.FindByCondition(u => u.Id == user.Id).FirstOrDefault() ??
+                              throw new ArgumentException("No user found.");
+
+            if (string.IsNullOrWhiteSpace(oldValue) || string.IsNullOrWhiteSpace(newValue))
+            {
+                throw new ArgumentException("One or more values are null or empty.");
+            }
+
+            switch (dataIdx)
+            {
+                default:
+                    throw new ArgumentException("Wrong data index entered.");
+
+                case 0: // password idx
+                    if (currentUser.Password != oldValue)
+                    {
+                        throw new ArgumentException("Wrong old password entered.");
+                    }
+
+                    currentUser.Password = newValue;
+                    break;
+
+                case 1: // login idx
+                    if (currentUser.Login != oldValue)
+                    {
+                        throw new ArgumentException("Wrong old login entered.");
+                    }
+
+                    currentUser.Login = newValue;
+                    break;
+
+                case 2: // name idx
+                    if (currentUser.Name != oldValue)
+                    {
+                        throw new ArgumentException("Wrong old name entered.");
+                    }
+
+                    currentUser.Name = newValue;
+                    break;
+            }
+
+            _userRepository.DeleteAsync(user);
+            _userRepository.CreateAsync(currentUser);
+        }
     }
 }
