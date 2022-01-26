@@ -17,10 +17,8 @@ public class UserService : IUserService
 
     public void Register(User user)
     {
-        var createdUser = new User();
-
         if (string.IsNullOrWhiteSpace(user.Name) || string.IsNullOrWhiteSpace(user.Email) ||
-            string.IsNullOrWhiteSpace(user.Login) || string.IsNullOrWhiteSpace(user.Password))
+            string.IsNullOrWhiteSpace(user.Login) || string.IsNullOrWhiteSpace(user.Password)) // check if any values are null or empty
         {
             Console.WriteLine("One or more values are null or empty.");
             throw new ArgumentException();
@@ -28,7 +26,7 @@ public class UserService : IUserService
 
         try
         {
-            var checkedEmail = new MailAddress(user.Email).Address; // check if email is formatted
+            var checkedEmail = new MailAddress(user.Email).Address; // check if email string is in a email format
         }
         catch (FormatException e)
         {
@@ -36,7 +34,7 @@ public class UserService : IUserService
             throw;
         }
 
-        // Must contain numbers, lowercase or uppercase letters, include special symbols, at least 8 characters, at most 24 characters.
+        // Password must contain numbers, lowercase or uppercase letters, include special symbols, at least 8 characters, at most 24 characters.
         var passwordRegex = new Regex(@"(?=.*[0-9])(?=.*[a-zA-Z])(?=([\x21-\x7e]+)[^a-zA-Z0-9]).{8,24}",
             RegexOptions.Multiline | RegexOptions.IgnorePatternWhitespace);
 
@@ -54,10 +52,10 @@ public class UserService : IUserService
         }
         if (!Equals(_userRepository.FindByCondition(u => u.Login == user.Login), Enumerable.Empty<User>())) // check if login is unique
         {
-            Console.WriteLine("Email must be unique.");
+            Console.WriteLine("Login must be unique.");
             throw new ArgumentException();
         }
 
-        _userRepository.CreateAsync(createdUser);
+        _userRepository.CreateAsync(user);
     }
 }
