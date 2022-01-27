@@ -15,4 +15,10 @@
       <Folder Include="Services" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Core\Core.csproj" />
+      <ProjectReference Include="..\DAL.Abstractions\DAL.Abstractions.csproj" />
+      <ProjectReference Include="..\DAL\DAL.csproj" />
+    </ItemGroup>
+
 </Project>
