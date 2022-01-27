@@ -144,9 +144,6 @@ namespace BLL.Services
 
             switch (userDataType)
             {
-                default:
-                    return false;
-
                 case UserDataTypes.Password: // password idx
                     if (currentUser.Password != oldValue)
                     {
@@ -173,6 +170,9 @@ namespace BLL.Services
 
                     currentUser.Name = newValue;
                     break;
+                
+                default:
+                    return false;
             }
 
             _userRepository.DeleteAsync(user);
