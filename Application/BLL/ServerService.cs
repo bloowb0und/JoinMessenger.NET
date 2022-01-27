@@ -78,6 +78,55 @@ namespace BLL
             return true;
         }
 
+        public bool AddChat(Server server, Chat chat)
+        {
+            if (server is null || chat is null)
+            {
+
+                throw new ArgumentNullException($"{nameof(server)} or {nameof(chat)} was/were null");
+            }
+
+            if (Equals(_serverRepository.FindByCondition(s => s == server), Enumerable.Empty<Server>()))
+            {
+                throw new ArgumentException($"Server {nameof(server)} doesn't exist");
+            }
+
+            if (Equals(_chatRepository.FindByCondition(c => c == chat), Enumerable.Empty<Chat>()))
+            {
+                throw new ArgumentException($"Chat {nameof(chat)} doesn't exist");
+            }
+
+            if (Equals(_serverRepository.FindByCondition(s => s.Chats.Contains(chat)), Enumerable.Empty<Server>()))
+            {
+                throw new ArgumentException($"{nameof(server)} already belongs to this or another server");
+            }
+
+            server.Chats.Add(chat);
+            chat.Server = server;
+            _serverRepository.UpdateAsync(server);
+            return true;
+        }
+
+        public bool DeleteChat(Server server, Chat chat)
+        {
+            if (server is null || chat is null)
+            {
+                throw new ArgumentNullException($"{nameof(server)} or {nameof(chat)} was/were null");
+            }
+
+            // checking if you have particular roles to delete the chat ...
+
+            if (server.Chats.FirstOrDefault(c => c == chat) is null)
+            {
+                throw new ArgumentException($"{nameof(chat)} is not in the ${nameof(server)}");
+            }
+
+            // deleting the chat
+            chat.Server = null;
+            server.Chats.Remove(chat);
+            return true;
+        }
+
         
     }
 }
