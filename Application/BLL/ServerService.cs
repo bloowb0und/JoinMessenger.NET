@@ -127,6 +127,49 @@ namespace BLL
             return true;
         }
 
-        
+        public bool AddUser(Server server, User user)
+        {
+            if (user is null || server is null)
+            {
+                throw new ArgumentNullException($"{nameof(server)} or {nameof(user)} was/were null");
+            }
+
+            if (server.Users.FirstOrDefault(u => u == user) is not null)
+            {
+                throw new ArgumentException($"{nameof(user)} is already in the ${nameof(server)}");
+            }
+
+            server.Users.Add(user);
+
+            // adding all chats that are in this server to the user's list of chats
+
+            user.Servers.Add(server);
+
+            _serverRepository.UpdateAsync(server);
+
+            return true;
+        }
+
+        public bool DeleteUser(Server server, User user)
+        {
+            if (user is null || server is null)
+            {
+                throw new ArgumentNullException($"{nameof(server)} or {nameof(user)} was/were null");
+            }
+
+            if (server.Users.FirstOrDefault(u => u == user) is null)
+            {
+                throw new ArgumentException($"There is no {nameof(user)} in the ${nameof(server)}");
+            }
+
+            // checking if you have particular roles to delete users from the server
+
+            user.Servers.Remove(server);
+            server.Users.Remove(user);
+
+            _serverRepository.UpdateAsync(server);
+
+            return true;
+        }
     }
 }
