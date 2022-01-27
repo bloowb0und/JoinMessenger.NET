@@ -28,6 +28,12 @@ namespace DAL.Repository
             var m = GetAll();
             return m.Where(expression.Compile());
         }
+        
+        public bool Any(Expression<Func<T, bool>> expression)
+        {
+            var m = GetAll();
+            return m.Any(expression.Compile());
+        }
 
         public async Task CreateAsync(T entity)
         {

@@ -3,6 +3,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Core;
 using BLL;
+using BLL.Abstractions.Interfaces;
+using BLL.Services;
+using DAL.Abstractions.Interfaces;
+using DAL.Contexts;
+using DAL.Repository;
 
 namespace PresentationLayer
 {
@@ -26,6 +31,14 @@ namespace PresentationLayer
             
             services.Configure<AppSettings>(configuration.GetSection("AppSettings"));
             
+            // BLL Services
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IEmailNotificationService, EmailNotificationService>();
+            
+            // DAL Services
+            services.AddSingleton<MessengerContext>();
+            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
             services.AddScoped<App>();
             DependencyRegistrar.ConfigureServices(services);
         }

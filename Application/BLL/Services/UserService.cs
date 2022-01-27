@@ -10,22 +10,28 @@ namespace BLL.Services
 {
     public class UserService : IUserService
     {
-        private readonly IGenericRepository<User> _userRepository;
+        private readonly IGenericRepository<User?> _userRepository;
         private readonly IEmailNotificationService _emailNotificationService;
 
-        public UserService(IGenericRepository<User> userRepository, IEmailNotificationService emailNotificationService)
+        public UserService(IGenericRepository<User?> userRepository, IEmailNotificationService emailNotificationService)
         {
             _userRepository = userRepository;
             _emailNotificationService = emailNotificationService;
         }
 
-        public void Register(User user)
+        public bool Register(User? user)
         {
-            if (string.IsNullOrWhiteSpace(user.Name) || string.IsNullOrWhiteSpace(user.Email) ||
-                string.IsNullOrWhiteSpace(user.Login) ||
-                string.IsNullOrWhiteSpace(user.Password)) // check if any values are null or empty
+            if (user == null)
             {
-                throw new ArgumentException("One or more values are null or empty.");
+                return false;
+            }
+            
+            if (string.IsNullOrWhiteSpace(user.Name) 
+                || string.IsNullOrWhiteSpace(user.Email) 
+                || string.IsNullOrWhiteSpace(user.Login) 
+                || string.IsNullOrWhiteSpace(user.Password)) // check if any values are null or empty
+            {
+                return false;
             }
 
             try
@@ -34,7 +40,7 @@ namespace BLL.Services
             }
             catch (FormatException e)
             {
-                throw new FormatException("Invalid email format " + e);
+                return false;
             }
 
             // Password must contain numbers, lowercase or uppercase letters, include special symbols, at least 8 characters, at most 24 characters.
@@ -43,33 +49,32 @@ namespace BLL.Services
 
             if (!passwordRegex.IsMatch(user.Password)) // check if password is strong
             {
-                throw new FormatException("Password is not strong enough.");
+                return false;
             }
 
-            if (!Equals(_userRepository.FindByCondition(u => u.Email == user.Email),
-                    Enumerable.Empty<User>())) // check if email is unique
+            if (_userRepository.Any(u => u.Email == user.Email)) // check if email is unique
             {
-                throw new ArgumentException("Email must be unique.");
+                return false;
             }
 
-            if (!Equals(_userRepository.FindByCondition(u => u.Login == user.Login),
-                    Enumerable.Empty<User>())) // check if login is unique
+            if (_userRepository.Any(u => u.Login == user.Login)) // check if login is unique
             {
-                throw new ArgumentException("Login must be unique.");
+                return false;
             }
 
             _userRepository.CreateAsync(user);
+            
+            return true;
         }
 
-        public User SignIn(string username, string password)
+        public User? SignIn(string username, string password)
         {
-            User foundUser;
             var isLogin = false;
             
-            if (string.IsNullOrWhiteSpace(username) ||
-                string.IsNullOrWhiteSpace(password)) // check if any values are null or empty
+            if (string.IsNullOrWhiteSpace(username) 
+                || string.IsNullOrWhiteSpace(password)) // check if any values are null or empty
             {
-                throw new ArgumentException("One or more values are null or empty.");
+                return null;
             }
             
             try
@@ -81,77 +86,89 @@ namespace BLL.Services
                 isLogin = true;
             }
 
+            User? foundUser = null;
             if (isLogin)
             {
-                foundUser = _userRepository.FindByCondition(u => u.Login == username).FirstOrDefault() ?? throw new ArgumentException("User with a given data was not found.");;
+                foundUser = _userRepository.FindByCondition(u => u.Login == username).FirstOrDefault();
             }
             else
             {
-                foundUser = _userRepository.FindByCondition(u => u.Email == username).FirstOrDefault() ?? throw new ArgumentException("User with a given data was not found.");
+                foundUser = _userRepository.FindByCondition(u => u.Email == username).FirstOrDefault();
+            }
+
+            if (foundUser == null)
+            {
+                return null;
             }
 
             if (foundUser.Password != password)
             {
-                throw new ArgumentException("Wrong password.");
+                return null;
             }
 
             return foundUser;
         }
 
-        public void PasswordRecovery(string email)
+        public bool PasswordRecovery(string email)
         {
             if (string.IsNullOrWhiteSpace(email))
             {
-                throw new ArgumentException("Email string can't be empty.");
+                return false;
             }
 
             var foundUser = _userRepository.FindByCondition(u => u.Email == email).FirstOrDefault();
 
             if (foundUser == null)
             {
-                throw new ArgumentException("User with a given email was not found.");
+                return false;
             }
 
             _emailNotificationService.SendForgotPassword(foundUser);
+            
+            return true;
         }
 
-        public void ChangeUserData(User user, int dataIdx, string oldValue, string newValue)
+        public bool ChangeUserData(User? user, UserDataTypes userDataType, string oldValue, string newValue)
         {
-            var currentUser = _userRepository.FindByCondition(u => u.Id == user.Id).FirstOrDefault() ??
-                              throw new ArgumentException("No user found.");
+            var currentUser = _userRepository.FindByCondition(u => u.Id == user.Id).FirstOrDefault();
+
+            if (currentUser == null)
+            {
+                return false;
+            }
 
             if (string.IsNullOrWhiteSpace(oldValue) || string.IsNullOrWhiteSpace(newValue))
             {
-                throw new ArgumentException("One or more values are null or empty.");
+                return false;
             }
 
-            switch (dataIdx)
+            switch (userDataType)
             {
                 default:
-                    throw new ArgumentException("Wrong data index entered.");
+                    return false;
 
-                case 0: // password idx
+                case UserDataTypes.Password: // password idx
                     if (currentUser.Password != oldValue)
                     {
-                        throw new ArgumentException("Wrong old password entered.");
+                        return false;
                     }
 
                     currentUser.Password = newValue;
                     break;
 
-                case 1: // login idx
+                case UserDataTypes.Login: // login idx
                     if (currentUser.Login != oldValue)
                     {
-                        throw new ArgumentException("Wrong old login entered.");
+                        return false;
                     }
 
                     currentUser.Login = newValue;
                     break;
 
-                case 2: // name idx
+                case UserDataTypes.Name: // name idx
                     if (currentUser.Name != oldValue)
                     {
-                        throw new ArgumentException("Wrong old name entered.");
+                        return false;
                     }
 
                     currentUser.Name = newValue;
@@ -160,6 +177,8 @@ namespace BLL.Services
 
             _userRepository.DeleteAsync(user);
             _userRepository.CreateAsync(currentUser);
+            
+            return true;
         }
     }
 }

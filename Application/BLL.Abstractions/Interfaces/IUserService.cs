@@ -4,17 +4,17 @@ namespace BLL.Abstractions.Interfaces
 {
     public interface IUserService
     {
-        public void Register(User user);
-        public User SignIn(string username, string password);
-        public void PasswordRecovery(string email);
+        public bool Register(User? user);
+        public User? SignIn(string username, string password);
+        public bool PasswordRecovery(string email);
         
         /// <summary>
         /// Method ChangeUserData allows user to change their data, except for email
         /// </summary>
         /// <param name="user">Current user</param>
-        /// <param name="dataIdx">0 - password | 1 - login | 2 - name</param>
+        /// <param name="userDataType">Which value to change - Password, login or name</param>
         /// <param name="oldValue">Old value for selected data</param>
         /// <param name="newValue">New value for selected data</param>
-        public void ChangeUserData(User user, int dataIdx, string oldValue, string newValue);
+        public bool ChangeUserData(User user, UserDataTypes userDataType, string oldValue, string newValue);
     }
 }
