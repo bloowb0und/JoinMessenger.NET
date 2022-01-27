@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BLL
 {
-    public class ServerService 
+    public class ServerService : IServerService
     {
         private readonly IGenericRepository<Server> _serverRepository;
         private readonly IGenericRepository<Chat> _chatRepository;
