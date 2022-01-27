@@ -48,5 +48,36 @@ namespace BLL
             return true;
         }
 
+        public bool DeleteServer(Server server)
+        {
+            if (server is null)
+            {
+                throw new ArgumentNullException(nameof(server));
+            }
+
+            if (Equals(_serverRepository.FindByCondition(s => s.Id == server.Id), Enumerable.Empty<Server>()))
+            {
+                throw new ArgumentException("There is no such server");
+            }
+
+            // checking if you have particular roles to delete the server ...
+
+            // deleting all chats from the server
+            foreach (var chat in server.Chats)
+            {
+                _chatRepository.DeleteAsync(chat);
+            }
+
+            // deleting all users from the server
+            foreach (var user in server.Users)
+            {
+                user.Servers.Remove(server);
+            }
+
+            _serverRepository.DeleteAsync(server);
+            return true;
+        }
+
+        
     }
 }
