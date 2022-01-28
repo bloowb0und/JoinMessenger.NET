@@ -1,4 +1,5 @@
 ﻿
+using BLL.Abstractions;
 using Core.Models;
 using DAL.Abstractions.Interfaces;
 using DAL.Repository;
@@ -26,7 +27,7 @@ namespace BLL
         {
             if (name is null)
             {
-                throw new ArgumentNullException(nameof(name));
+                return false;
             }
 
             var server = new Server();
@@ -35,7 +36,7 @@ namespace BLL
             // checking if this server already exists
             if (!Equals(_serverRepository.FindByCondition(s => s.Name == server.Name), Enumerable.Empty<Server>()))
             {
-                throw new ArgumentException($"Server with this name ({name}) already exists");
+                return false;
             }
 
             server.DateCreated = DateTime.Now;
@@ -55,9 +56,10 @@ namespace BLL
                 throw new ArgumentNullException(nameof(server));
             }
 
+            // checking if such server exists
             if (Equals(_serverRepository.FindByCondition(s => s.Id == server.Id), Enumerable.Empty<Server>()))
             {
-                throw new ArgumentException("There is no such server");
+                return false;
             }
 
             // checking if you have particular roles to delete the server ...
@@ -82,28 +84,32 @@ namespace BLL
         {
             if (server is null || chat is null)
             {
-
-                throw new ArgumentNullException($"{nameof(server)} or {nameof(chat)} was/were null");
+                return false;
             }
 
+            // checking if this server exists
             if (Equals(_serverRepository.FindByCondition(s => s == server), Enumerable.Empty<Server>()))
             {
-                throw new ArgumentException($"Server {nameof(server)} doesn't exist");
+                return false;
             }
 
+            // checking if this chat exists
             if (Equals(_chatRepository.FindByCondition(c => c == chat), Enumerable.Empty<Chat>()))
             {
-                throw new ArgumentException($"Chat {nameof(chat)} doesn't exist");
+                return false;
             }
 
+            // checking if this chat already belongs to this or another server
             if (Equals(_serverRepository.FindByCondition(s => s.Chats.Contains(chat)), Enumerable.Empty<Server>()))
             {
-                throw new ArgumentException($"{nameof(server)} already belongs to this or another server");
+                return false;
             }
 
             server.Chats.Add(chat);
             chat.Server = server;
+
             _serverRepository.UpdateAsync(server);
+
             return true;
         }
 
@@ -111,19 +117,23 @@ namespace BLL
         {
             if (server is null || chat is null)
             {
-                throw new ArgumentNullException($"{nameof(server)} or {nameof(chat)} was/were null");
+                return false;
             }
 
             // checking if you have particular roles to delete the chat ...
 
+            // checking if this chat is in this server
             if (server.Chats.FirstOrDefault(c => c == chat) is null)
             {
-                throw new ArgumentException($"{nameof(chat)} is not in the ${nameof(server)}");
+                return false;
             }
 
             // deleting the chat
             chat.Server = null;
             server.Chats.Remove(chat);
+
+            _serverRepository.UpdateAsync(server);
+
             return true;
         }
 
@@ -131,17 +141,18 @@ namespace BLL
         {
             if (user is null || server is null)
             {
-                throw new ArgumentNullException($"{nameof(server)} or {nameof(user)} was/were null");
+                return false;
             }
 
+            // checking if this user is alreadly in this server
             if (server.Users.FirstOrDefault(u => u == user) is not null)
             {
-                throw new ArgumentException($"{nameof(user)} is already in the ${nameof(server)}");
+                return false;
             }
 
             server.Users.Add(user);
 
-            // adding all chats that are in this server to the user's list of chats
+            // adding this user to all chats that are in this server ...
 
             user.Servers.Add(server);
 
@@ -154,15 +165,16 @@ namespace BLL
         {
             if (user is null || server is null)
             {
-                throw new ArgumentNullException($"{nameof(server)} or {nameof(user)} was/were null");
+                return false;
             }
-
+            
+            // checking if this user is in this server
             if (server.Users.FirstOrDefault(u => u == user) is null)
             {
-                throw new ArgumentException($"There is no {nameof(user)} in the ${nameof(server)}");
+                return false;
             }
 
-            // checking if you have particular roles to delete users from the server
+            // checking if you have particular roles to delete users from the server ... 
 
             user.Servers.Remove(server);
             server.Users.Remove(user);
