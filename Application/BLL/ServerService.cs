@@ -28,7 +28,7 @@ namespace BLL
 
         public bool CreateServer(string name)
         {
-            if (name is null)
+            if (name == null)
             {
                 return false;
             }
@@ -54,7 +54,7 @@ namespace BLL
 
         public bool DeleteServer(Server server)
         {
-            if (server is null)
+            if (server == null)
             {
                 throw new ArgumentNullException(nameof(server));
             }
@@ -85,7 +85,7 @@ namespace BLL
 
         public bool AddChat(Server server, Chat chat)
         {
-            if (server is null || chat is null)
+            if (server == null || chat == null)
             {
                 return false;
             }
@@ -118,7 +118,7 @@ namespace BLL
 
         public bool DeleteChat(Server server, Chat chat)
         {
-            if (server is null || chat is null)
+            if (server == null || chat == null)
             {
                 return false;
             }
@@ -126,7 +126,7 @@ namespace BLL
             // checking if you have particular roles to delete the chat ...
 
             // checking if this chat is in this server
-            if (server.Chats.FirstOrDefault(c => c == chat) is null)
+            if (server.Chats.FirstOrDefault(c => c == chat) == null)
             {
                 return false;
             }
@@ -142,13 +142,13 @@ namespace BLL
 
         public bool AddUser(Server server, User user)
         {
-            if (user is null || server is null)
+            if (user == null || server == null)
             {
                 return false;
             }
 
             // checking if this user is alreadly in this server
-            if (server.Users.FirstOrDefault(u => u == user) is not null)
+            if (server.Users.FirstOrDefault(u => u == user) != null)
             {
                 return false;
             }
@@ -166,14 +166,14 @@ namespace BLL
 
         public bool AddUsers(Server server,IEnumerable<User> users)
         {
-            if (server is null)
+            if (server == null)
             {
                 return false;
             }
 
             foreach(var user in users)
             {
-                if (user is not null && server.Users.FirstOrDefault(u => u.Id == user.Id) is null)
+                if (user != null && server.Users.FirstOrDefault(u => u.Id == user.Id) == null)
                 {
                     server.Users.Add(user);
                     user.Servers.Add(server);
@@ -188,13 +188,13 @@ namespace BLL
 
         public bool DeleteUser(Server server, User user)
         {
-            if (user is null || server is null)
+            if (user == null || server == null)
             {
                 return false;
             }
             
             // checking if this user is in this server
-            if (server.Users.FirstOrDefault(u => u == user) is null)
+            if (server.Users.FirstOrDefault(u => u == user) == null)
             {
                 return false;
             }
@@ -211,14 +211,14 @@ namespace BLL
 
         public bool DeleteUsers(Server server, IEnumerable<User> users)
         {
-            if (server is null)
+            if (server == null)
             {
                 return false;
             }
 
             foreach (var user in users)
             {
-                if (user is not null && server.Users.FirstOrDefault(u => u.Id == user.Id) is not null)
+                if (user != null && server.Users.FirstOrDefault(u => u.Id == user.Id) != null)
                 {
                     server.Users.Remove(user);
                     user.Servers.Remove(server);

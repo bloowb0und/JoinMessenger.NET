@@ -25,13 +25,13 @@ namespace BLL
 
         public async Task InviteByEmailAsync(Server server, User user)
         {
-            if (server is null || user is null)
+            if (server == null || user == null)
             {
                 return;
             }
 
             // checking if this user is already in the server
-            if (server.Users.FirstOrDefault(u => u.Id == user.Id) is not null)
+            if (server.Users.FirstOrDefault(u => u.Id == user.Id) != null)
             {
                 return;
             }
