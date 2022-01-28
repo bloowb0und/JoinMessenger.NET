@@ -26,7 +26,10 @@ namespace PresentationLayer
             
             services.Configure<AppSettings>(configuration.GetSection("AppSettings"));
 
+
+
             services.AddScoped<App>();
+
 
             DependencyRegistrar.ConfigureServices(services);
         }
