@@ -1,4 +1,5 @@
 ﻿using BLL.Abstractions;
+using BLL.Abstractions.Interfaces;
 using Core.Models;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BLL
+namespace BLL.Services
 {
     public class ServerInvitationService : IServerInvitationService
     {

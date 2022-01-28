@@ -1,5 +1,6 @@
 ﻿
 using BLL.Abstractions;
+using BLL.Abstractions.Interfaces;
 using Core.Models;
 using DAL.Abstractions.Interfaces;
 using DAL.Repository;
@@ -9,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BLL
+namespace BLL.Services
 {
     public class ServerService : IServerService
     {

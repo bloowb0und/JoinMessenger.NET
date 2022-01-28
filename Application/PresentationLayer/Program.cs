@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Core;
 using BLL;
 
+
 namespace PresentationLayer
 {
     class Program
@@ -24,8 +25,11 @@ namespace PresentationLayer
                 .Build();
             
             services.Configure<AppSettings>(configuration.GetSection("AppSettings"));
-            
+
+
+
             services.AddScoped<App>();
+
 
             DependencyRegistrar.ConfigureServices(services);
         }
