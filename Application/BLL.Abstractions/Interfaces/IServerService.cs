@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BLL.Abstractions
+namespace BLL.Abstractions.Interfaces
 {
     public interface IServerService
     {

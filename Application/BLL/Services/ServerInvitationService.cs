@@ -1,4 +1,5 @@
 ﻿using BLL.Abstractions;
+using BLL.Abstractions.Interfaces;
 using Core.Models;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BLL
+namespace BLL.Services
 {
     public class ServerInvitationService : IServerInvitationService
     {
@@ -25,13 +26,13 @@ namespace BLL
 
         public async Task InviteByEmailAsync(Server server, User user)
         {
-            if (server is null || user is null)
+            if (server == null || user == null)
             {
                 return;
             }
 
             // checking if this user is already in the server
-            if (server.Users.FirstOrDefault(u => u.Id == user.Id) is not null)
+            if (server.Users.FirstOrDefault(u => u.Id == user.Id) != null)
             {
                 return;
             }
