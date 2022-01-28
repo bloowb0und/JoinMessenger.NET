@@ -21,5 +21,6 @@ namespace BLL.Abstractions
 
         public bool DeleteUser(Server server, User user);
 
+        public Task SendInvitation(Server server, User user);
     }
 }

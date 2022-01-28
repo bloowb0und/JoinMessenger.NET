@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Core;
 using BLL;
+using BLL.Abstractions;
 
 namespace PresentationLayer
 {
@@ -26,6 +27,11 @@ namespace PresentationLayer
             services.Configure<AppSettings>(configuration.GetSection("AppSettings"));
             
             services.AddScoped<App>();
+
+
+            services.AddScoped<IServerService, ServerService>();
+            services.AddScoped<IServerInvitationService, ServerInvitationService>();
+
             DependencyRegistrar.ConfigureServices(services);
         }
     }

@@ -15,12 +15,15 @@ namespace BLL
     {
         private readonly IGenericRepository<Server> _serverRepository;
         private readonly IGenericRepository<Chat> _chatRepository;
+        private readonly ServerInvitationService _serverInvitationService;
 
         public ServerService(IGenericRepository<Server> serverReposirory,
-            IGenericRepository<Chat> chatRepository)
+            IGenericRepository<Chat> chatRepository,
+            ServerInvitationService serverInvitationService)
         {
             _serverRepository = serverReposirory;
             _chatRepository = chatRepository;
+            _serverInvitationService = serverInvitationService;
         }
 
         public bool CreateServer(string name)
@@ -33,7 +36,7 @@ namespace BLL
             var server = new Server();
             server.Name = name;
 
-            // checking if this server already exists
+            // checking if server with this name already exists
             if (!Equals(_serverRepository.FindByCondition(s => s.Name == server.Name), Enumerable.Empty<Server>()))
             {
                 return false;
@@ -129,7 +132,7 @@ namespace BLL
             }
 
             // deleting the chat
-            chat.Server = null;
+            _chatRepository.DeleteAsync(chat); // if we delete a chat from the server than we delete it everywhere
             server.Chats.Remove(chat);
 
             _serverRepository.UpdateAsync(server);
@@ -161,6 +164,28 @@ namespace BLL
             return true;
         }
 
+        public bool AddUsers(Server server,IEnumerable<User> users)
+        {
+            if (server is null)
+            {
+                return false;
+            }
+
+            foreach(var user in users)
+            {
+                if (user is not null && server.Users.FirstOrDefault(u => u.Id == user.Id) is null)
+                {
+                    server.Users.Add(user);
+                    user.Servers.Add(server);
+                    // adding all chats that are in this server in this user's chats
+                }
+            }
+
+            _serverRepository.UpdateAsync(server);
+
+            return true;
+        }
+
         public bool DeleteUser(Server server, User user)
         {
             if (user is null || server is null)
@@ -182,6 +207,35 @@ namespace BLL
             _serverRepository.UpdateAsync(server);
 
             return true;
+        }
+
+        public bool DeleteUsers(Server server, IEnumerable<User> users)
+        {
+            if (server is null)
+            {
+                return false;
+            }
+
+            foreach (var user in users)
+            {
+                if (user is not null && server.Users.FirstOrDefault(u => u.Id == user.Id) is not null)
+                {
+                    server.Users.Remove(user);
+                    user.Servers.Remove(server);
+                    // deleting all chats that are in this server in this user's chats
+                }
+            }
+
+            _serverRepository.UpdateAsync(server);
+
+            return true;
+        }
+
+        public async Task SendInvitation(Server server, User user)
+        {
+            await _serverInvitationService.InviteByEmailAsync(server, user);
+
+            await _serverRepository.UpdateAsync(server);
         }
     }
 }
