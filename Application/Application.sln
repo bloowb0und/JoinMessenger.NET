@@ -1,16 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BLL", "BLL\BLL.csproj", "{7CA4410D-69C4-4B2A-9DA7-4A96861A9000}"
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31729.503
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BLL", "BLL\BLL.csproj", "{7CA4410D-69C4-4B2A-9DA7-4A96861A9000}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{C58C0E2B-1A49-4C9B-9A74-E20A31598A7B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{C58C0E2B-1A49-4C9B-9A74-E20A31598A7B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "DAL\DAL.csproj", "{B6A02440-FE79-4F32-B4D8-BC7E21E1420D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DAL", "DAL\DAL.csproj", "{B6A02440-FE79-4F32-B4D8-BC7E21E1420D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL.Abstractions", "DAL.Abstractions\DAL.Abstractions.csproj", "{685DFC8B-ACAE-4ED2-BC0D-B90E62E9A612}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DAL.Abstractions", "DAL.Abstractions\DAL.Abstractions.csproj", "{685DFC8B-ACAE-4ED2-BC0D-B90E62E9A612}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BLL.Abstractions", "BLL.Abstractions\BLL.Abstractions.csproj", "{A2069941-D61C-4A6C-A1E3-223776668D31}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BLL.Abstractions", "BLL.Abstractions\BLL.Abstractions.csproj", "{A2069941-D61C-4A6C-A1E3-223776668D31}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresentationLayer", "PresentationLayer\PresentationLayer.csproj", "{95C1740C-A4B2-4D5C-91ED-99A1BDED198A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresentationLayer", "PresentationLayer\PresentationLayer.csproj", "{95C1740C-A4B2-4D5C-91ED-99A1BDED198A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,5 +45,11 @@ Global
 		{95C1740C-A4B2-4D5C-91ED-99A1BDED198A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95C1740C-A4B2-4D5C-91ED-99A1BDED198A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95C1740C-A4B2-4D5C-91ED-99A1BDED198A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {05E3C0F1-D69F-4A82-B75F-8D249C2F65BF}
 	EndGlobalSection
 EndGlobal

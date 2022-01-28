@@ -11,6 +11,8 @@ namespace DAL.Abstractions.Interfaces
         IEnumerable<T> GetAll();
         
         IEnumerable<T> FindByCondition(Expression<Func<T, bool>> expression);
+        
+        bool Any(Expression<Func<T, bool>> expression);
 
         Task CreateAsync(T entity);
         
