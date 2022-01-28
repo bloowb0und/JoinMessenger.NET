@@ -9,8 +9,6 @@ namespace Core.Models
         
         public DateTime DateCreated { get; set; }
 
-        public List<User> Users { get; set; }
-
         public List<Chat> Chats { get; set; }
 
         public List<ServerRole> ServerRoles { get; set; }

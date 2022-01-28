@@ -1,10 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <ImplicitUsings>enable</ImplicitUsings>
+        <ImplicitUsings>disable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <LangVersion>10</LangVersion>
-        <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
+        <LangVersion>8</LangVersion>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
@@ -12,7 +12,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Services" />
+      <ProjectReference Include="..\BLL.Abstractions\BLL.Abstractions.csproj" />
+      <ProjectReference Include="..\Core\Core.csproj" />
+      <ProjectReference Include="..\DAL.Abstractions\DAL.Abstractions.csproj" />
+      <ProjectReference Include="..\DAL\DAL.csproj" />
     </ItemGroup>
 
 </Project>

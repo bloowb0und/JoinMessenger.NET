@@ -9,8 +9,6 @@ namespace DAL
     {
         public static void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<MessengerContext>();
-            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
         }
     }
 }
