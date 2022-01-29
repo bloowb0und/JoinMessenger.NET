@@ -13,13 +13,13 @@ namespace BLL.Abstractions.Interfaces
 
         public bool DeleteServer(Server server);
 
-        public bool AddChat(Server server, Chat chat);
-
-        public bool DeleteChat(Server server, Chat chat);
-
         public bool AddUser(Server server, User user);
 
+        public bool AddUsers(Server server, IEnumerable<User> user);
+
         public bool DeleteUser(Server server, User user);
+
+        public bool DeleteUsers(Server server, IEnumerable<User> user);
 
         public Task SendInvitation(Server server, User user);
     }

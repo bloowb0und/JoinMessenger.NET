@@ -16,15 +16,15 @@ namespace BLL.Services
     {
         private readonly IGenericRepository<Server> _serverRepository;
         private readonly IGenericRepository<Chat> _chatRepository;
-        private readonly ServerInvitationService _serverInvitationService;
+        private readonly EmailNotificationService _emailNotificationService;
 
         public ServerService(IGenericRepository<Server> serverReposirory,
             IGenericRepository<Chat> chatRepository,
-            ServerInvitationService serverInvitationService)
+            EmailNotificationService emailNotificationService)
         {
             _serverRepository = serverReposirory;
             _chatRepository = chatRepository;
-            _serverInvitationService = serverInvitationService;
+            _emailNotificationService = emailNotificationService;
         }
 
         public bool CreateServer(string name)
@@ -38,7 +38,7 @@ namespace BLL.Services
             server.Name = name;
 
             // checking if server with this name already exists
-            if (!Equals(_serverRepository.FindByCondition(s => s.Name == server.Name), Enumerable.Empty<Server>()))
+            if (_serverRepository.Any(s => s.Name == server.Name))
             {
                 return false;
             }
@@ -57,11 +57,11 @@ namespace BLL.Services
         {
             if (server == null)
             {
-                throw new ArgumentNullException(nameof(server));
+                return false;
             }
 
             // checking if such server exists
-            if (Equals(_serverRepository.FindByCondition(s => s.Id == server.Id), Enumerable.Empty<Server>()))
+            if (!_serverRepository.Any(s => s.Id == server.Id))
             {
                 return false;
             }
@@ -84,63 +84,6 @@ namespace BLL.Services
             return true;
         }
 
-        public bool AddChat(Server server, Chat chat)
-        {
-            if (server == null || chat == null)
-            {
-                return false;
-            }
-
-            // checking if this server exists
-            if (Equals(_serverRepository.FindByCondition(s => s == server), Enumerable.Empty<Server>()))
-            {
-                return false;
-            }
-
-            // checking if this chat exists
-            if (Equals(_chatRepository.FindByCondition(c => c == chat), Enumerable.Empty<Chat>()))
-            {
-                return false;
-            }
-
-            // checking if this chat already belongs to this or another server
-            if (Equals(_serverRepository.FindByCondition(s => s.Chats.Contains(chat)), Enumerable.Empty<Server>()))
-            {
-                return false;
-            }
-
-            server.Chats.Add(chat);
-            chat.Server = server;
-
-            _serverRepository.UpdateAsync(server);
-
-            return true;
-        }
-
-        public bool DeleteChat(Server server, Chat chat)
-        {
-            if (server == null || chat == null)
-            {
-                return false;
-            }
-
-            // checking if you have particular roles to delete the chat ...
-
-            // checking if this chat is in this server
-            if (server.Chats.FirstOrDefault(c => c == chat) == null)
-            {
-                return false;
-            }
-
-            // deleting the chat
-            _chatRepository.DeleteAsync(chat); // if we delete a chat from the server than we delete it everywhere
-            server.Chats.Remove(chat);
-
-            _serverRepository.UpdateAsync(server);
-
-            return true;
-        }
-
         public bool AddUser(Server server, User user)
         {
             if (user == null || server == null)
@@ -150,8 +93,7 @@ namespace BLL.Services
 
             // checking if this user is alreadly in this server
             if (server.Users.FirstOrDefault(u => u == user) != null)
-            {
-                return false;
+            {                return false;
             }
 
             server.Users.Add(user);
@@ -234,7 +176,7 @@ namespace BLL.Services
 
         public async Task SendInvitation(Server server, User user)
         {
-            await _serverInvitationService.InviteByEmailAsync(server, user);
+            await _emailNotificationService.InviteByEmailAsync(server, user);
 
             await _serverRepository.UpdateAsync(server);
         }
