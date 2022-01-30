@@ -134,11 +134,9 @@ namespace BLL.Services
             return true;
         }
 
-        public bool ChangeUserData(User? user, UserDataTypes userDataType, string oldValue, string newValue)
+        public bool ChangeUserData(User user, UserDataTypes userDataType, string oldValue, string newValue)
         {
-            var currentUser = _userRepository.FindByCondition(u => u.Id == user.Id).FirstOrDefault();
-
-            if (currentUser == null)
+            if (_userRepository.FindByCondition(u => u.Id == user.Id).FirstOrDefault() == null)
             {
                 return false;
             }
@@ -151,38 +149,37 @@ namespace BLL.Services
             switch (userDataType)
             {
                 case UserDataTypes.Password: // password idx
-                    if (currentUser.Password != oldValue)
+                    if (user.Password != oldValue)
                     {
                         return false;
                     }
 
-                    currentUser.Password = newValue;
+                    user.Password = newValue;
                     break;
 
                 case UserDataTypes.Login: // login idx
-                    if (currentUser.Login != oldValue)
+                    if (user.Login != oldValue)
                     {
                         return false;
                     }
 
-                    currentUser.Login = newValue;
+                    user.Login = newValue;
                     break;
 
                 case UserDataTypes.Name: // name idx
-                    if (currentUser.Name != oldValue)
+                    if (user.Name != oldValue)
                     {
                         return false;
                     }
 
-                    currentUser.Name = newValue;
+                    user.Name = newValue;
                     break;
                 
                 default:
                     return false;
             }
 
-            _userRepository.DeleteAsync(user);
-            _userRepository.CreateAsync(currentUser);
+            _userRepository.UpdateAsync(user);
             
             return true;
         }
