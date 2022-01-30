@@ -7,7 +7,7 @@ namespace BLL.Abstractions.Interfaces
     {
         public Task<bool> Register(User? user);
         public User? SignIn(string username, string password);
-        public bool PasswordRecovery(string email);
+        public Task<bool> PasswordRecovery(string email);
         
         /// <summary>
         /// Method ChangeUserData allows user to change their data, except for email

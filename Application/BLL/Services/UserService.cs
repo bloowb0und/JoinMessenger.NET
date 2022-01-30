@@ -115,7 +115,7 @@ namespace BLL.Services
             return foundUser;
         }
 
-        public bool PasswordRecovery(string email)
+        public async Task<bool> PasswordRecovery(string email)
         {
             if (string.IsNullOrWhiteSpace(email))
             {
@@ -129,7 +129,10 @@ namespace BLL.Services
                 return false;
             }
 
-            _emailNotificationService.SendForgotPassword(foundUser);
+            if (!await _emailNotificationService.SendForgotPassword(foundUser))
+            {
+                return false;
+            }
             
             return true;
         }
