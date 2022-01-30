@@ -13,15 +13,15 @@ namespace DAL.Contexts
 {
     public class MessengerContext
     {
-        private readonly AppSettings _appSettings;
-        
+        private readonly string _connectionString;
+
         private JObject _jObject;
         
         private readonly Dictionary<Type, DbSet> _dbSetCollection = new Dictionary<Type, DbSet>();
         
-        public MessengerContext(IOptions<AppSettings> appSettings)
+        public MessengerContext(string appSettings)
         {
-            _appSettings = appSettings?.Value ?? throw new ArgumentNullException(nameof(appSettings));
+            _connectionString = appSettings;
         }
 
         public DbSet<T> GetSet<T>() where T : BaseEntity
@@ -59,9 +59,9 @@ namespace DAL.Contexts
                 await pair.Value.SaveChangesAsync();
             }
 
-            if (File.Exists(_appSettings.TempDirectory))
+            if (File.Exists(_connectionString))
             {
-                await File.WriteAllTextAsync(_appSettings.TempDirectory, _jObject.ToString());
+                await File.WriteAllTextAsync(_connectionString, _jObject.ToString());
             }
         }
 
@@ -74,15 +74,15 @@ namespace DAL.Contexts
                 return;
             }
 
-            if (File.Exists(_appSettings.TempDirectory))
+            if (File.Exists(_connectionString))
             {
-                string json = await File.ReadAllTextAsync(_appSettings.TempDirectory);
+                string json = await File.ReadAllTextAsync(_connectionString);
                 _jObject = JObject.Parse(json);
             }
             else
             {
                 _jObject = new JObject();
-                await File.WriteAllTextAsync(_appSettings.TempDirectory, _jObject.ToString());
+                await File.WriteAllTextAsync(_connectionString, _jObject.ToString());
             }
             
             Initialized = true;
@@ -141,6 +141,12 @@ namespace DAL.Contexts
             
             public void Add(T entity)
             {
+                // var lastId = _root.LastOrDefault().ToObject<T>().Id;
+                if (_root.LastOrDefault() != null)
+                {
+                    entity.Id =_root.LastOrDefault().ToObject<T>().Id + 1;
+                }
+
                 if (_root.Any(t => t.ToObject<T>().Id == entity.Id))
                 {
                     throw new ArgumentException($"Object with same id as {entity} already exists");
