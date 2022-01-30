@@ -20,7 +20,7 @@ namespace BLL.Services
             };
         }
 
-        public async Task SendForgotPassword(User user)
+        public async Task<bool> SendForgotPassword(User user)
         {
             var smptClient = new SmtpClient()
             {
@@ -41,6 +41,8 @@ namespace BLL.Services
                 mailMessage.IsBodyHtml = true;
 
                 await smptClient.SendMailAsync(mailMessage);
+
+                return true;
             }
         }
     }
