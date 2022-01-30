@@ -7,7 +7,6 @@ using Core.Models;
 
 namespace BLL.Services
 {
-
     public class EmailNotificationService : IEmailNotificationService, IServerInvitationService
     {
         private readonly NetworkCredential _networkCredential;
