@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31729.503
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BLL", "BLL\BLL.csproj", "{7CA4410D-69C4-4B2A-9DA7-4A96861A9000}"
 EndProject
@@ -14,6 +14,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BLL.Abstractions", "BLL.Abstractions\BLL.Abstractions.csproj", "{A2069941-D61C-4A6C-A1E3-223776668D31}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresentationLayer", "PresentationLayer\PresentationLayer.csproj", "{95C1740C-A4B2-4D5C-91ED-99A1BDED198A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NextGenWPF", "NextGenWPF\NextGenWPF.csproj", "{1F60C862-87A6-4C14-A32D-A0E04E656D6B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{95C1740C-A4B2-4D5C-91ED-99A1BDED198A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95C1740C-A4B2-4D5C-91ED-99A1BDED198A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95C1740C-A4B2-4D5C-91ED-99A1BDED198A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F60C862-87A6-4C14-A32D-A0E04E656D6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F60C862-87A6-4C14-A32D-A0E04E656D6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F60C862-87A6-4C14-A32D-A0E04E656D6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F60C862-87A6-4C14-A32D-A0E04E656D6B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
