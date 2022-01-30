@@ -7,14 +7,16 @@ namespace NextGenWPF.Services.NetworkConnection
 {
     public class NetworkRequest
     {
-        public Uri URI;
+        const string URL = "https://localhost:5001/api";
+        public Uri URI = new Uri(URL);
         public HttpMethod method;
-        public Dictionary<string, string> headers;
+        public Dictionary<string, string> headers = new Dictionary<string, string>();
         public string body;
         public string mediaType;
         public NetworkRequest(Uri uri, HttpMethod method, string mediatype)
         {
-            this.URI = uri;
+            var s = URL + uri.OriginalString;
+            this.URI = new Uri(s);
             this.method = method;
             this.mediaType = mediatype;
         }

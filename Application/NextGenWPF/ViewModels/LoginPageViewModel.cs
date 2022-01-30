@@ -19,12 +19,14 @@ namespace NextGenWPF.ViewModels
         {
             _autorization = autorization;
             LoginCommand = new RelayCommand(this.Login);
+            RecoverCommand = new RelayCommand(this.RecoverPassword);
             _navigationService = navigationService;
         }
         public RelayCommand MoveToStartPage { get; }
 
         public RelayCommand MoveToRegistrationPage { get; }
         public RelayCommand LoginCommand { get; }
+        public RelayCommand RecoverCommand { get; }
 
         private string username;
         public string Username
@@ -47,7 +49,7 @@ namespace NextGenWPF.ViewModels
             }
         }
 
-        private void Login()
+        private async void Login()
         {
             if (string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(username))
             {
@@ -58,7 +60,7 @@ namespace NextGenWPF.ViewModels
                 Password = password,
                 Login = username
             };
-            var result = _autorization.Autorization(user).Result;
+            var result = await _autorization.Autorization(user);
             if (result)
             {
                 MessageBox.Show("Come home, sweety)", "Login");
@@ -84,7 +86,10 @@ namespace NextGenWPF.ViewModels
                 }
             }
         }
-
+        private async void RecoverPassword()
+        {
+            await _autorization.Recover(this.Username);
+        }
 
     }
 

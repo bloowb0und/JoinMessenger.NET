@@ -12,7 +12,7 @@
         <Image HorizontalAlignment="Center" Height="224" VerticalAlignment="Center" Width="173" Source="D:\Project\NextGen\NextGenWPF\Images\bgcolor.jpg" Stretch="Fill"/>
         <StackPanel Orientation="Vertical"
                 HorizontalAlignment="Center"
-                VerticalAlignment="Center" Width="106" Height="113">
+                VerticalAlignment="Center" Width="106" Height="148">
             <Label Content="Login" Width="106" Height="24" FontFamily="Dosis ExtraLight" Foreground="#FF39385D"/>
             <TextBox Text="{Binding Username, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             <Label Content="Password" Height="24" FontFamily="Dosis ExtraLight" Foreground="#FF39385D"/>
@@ -34,6 +34,29 @@
                 <Button.Template>
                     <ControlTemplate TargetType="{x:Type Button}">
                         <Border Width="100" Height="25" CornerRadius="12" Background="{TemplateBinding Background}"
+                            Margin="-40,0,-41,0">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+            <Button Command="{Binding RecoverCommand}" Content="Forgot password?"
+                Height="28" Cursor="Hand" Foreground="#FF6BB9B6" FontSize="8">
+                <Button.Style>
+                    <Style TargetType="{x:Type Button}">
+                        <Setter Property="TextElement.FontFamily" Value="Dosis ExtraLight" />
+                        <Setter Property="Background" Value="#39385D" />
+                        <Setter Property="Cursor" Value="Hand" />
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#3A3952" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                <Button.Template>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Width="100" Height="10" CornerRadius="5" Background="{TemplateBinding Background}"
                             Margin="-40,0,-41,0">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>

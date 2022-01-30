@@ -15,7 +15,7 @@ namespace NextGenWPF.Services.Navigations
         public NetworkService()
         {
             this.client = new HttpClient();
-            this.client.BaseAddress =new Uri("localhost:5000");
+            this.client.BaseAddress =new Uri("https://localhost:5001/api");
         }
         public Task<NetworkResponse> SendRequestAsync(NetworkRequest request)
         {

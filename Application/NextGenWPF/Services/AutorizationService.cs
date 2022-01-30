@@ -24,9 +24,20 @@ namespace NextGenWPF.Services
             return false;
         }
 
-        public bool Registration(User user)
+         public async Task<bool> Registration(User user)
+         {
+             var req = new NetworkService();
+             var result = await req.SendRequestAsync(new RegistrationRequest(user.Login, user.Email, user.Password,"Sweety"));
+             if (result.ResponseCode == 200)
+             {
+                return true;
+             }
+             return false;
+         }
+        public async Task Recover(string mail)
         {
-            throw new NotImplementedException();
+            var req = new NetworkService();
+            await req.SendRequestAsync(new RecoverRequest(mail));
         }
     }
 }

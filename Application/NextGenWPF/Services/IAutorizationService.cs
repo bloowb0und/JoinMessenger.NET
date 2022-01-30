@@ -6,5 +6,6 @@ namespace NextGenWPF.Services
     public interface IAutorizationService
     {
         public  Task<bool> Autorization(User user);
+        public Task Recover(string email);
     }
 }

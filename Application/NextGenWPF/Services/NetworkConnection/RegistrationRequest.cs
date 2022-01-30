@@ -8,13 +8,14 @@ namespace NextGenWPF.Services.NetworkConnection
 {
     public class RegistrationRequest : JsonRequest
     {
-        public RegistrationRequest(string username, string email, string password) : base(@"auth/register", HttpMethod.Post)
+        public RegistrationRequest(string username, string email, string password, string name) : base(@"/auth/register", HttpMethod.Post)
         {
             this.body = JsonConvert.SerializeObject(new LoginBody()
             {
                 Email = email,
                 Password = password,
                 Username = username,
+                Name = name,
             });
         }
         private class LoginBody
@@ -23,8 +24,10 @@ namespace NextGenWPF.Services.NetworkConnection
             public string Email { get; set; }
             [JsonProperty("password")]
             public string Password { get; set; }
-            [JsonProperty("username")]
+            [JsonProperty("login")]
             public string Username { get; set; }
+            [JsonProperty("name")]
+            public string Name { get; set; }
 
         }
     }

@@ -74,7 +74,7 @@ namespace NextGenWPF.ViewModels
                 Login = username,
                 Email = email
             };
-            var result = _registration.Registration(user);
+            var result = _registration.Registration(user).Result;
             if (result)
             {
                 MessageBox.Show("Welcome home, sweety)", "Registrate");
