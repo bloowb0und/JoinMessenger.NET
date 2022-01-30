@@ -11,7 +11,11 @@ namespace Core.Models
         public Chat Chat { get; set; }
 
         public string Value { get; set; }
+
+        public Message ReplyMessage { get; set; }
         
         public DateTime DateCreated { get; set; }
+        
+        public DateTime? DateLastEdited { get; set; }
     }
 }
