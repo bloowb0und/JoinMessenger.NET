@@ -1,3 +1,4 @@
+using System.Linq;
 using BLL.Abstractions.Interfaces;
 using Core.Models;
 using DAL.Abstractions.Interfaces;
@@ -34,6 +35,16 @@ namespace BLL.Services
             _chatRepository.CreateAsync(chat);
             
             return true;
+        }
+
+        public Chat? GetChatById(int id)
+        {
+            if (!_chatRepository.Any(c => c.Id == id))
+            {
+                return null;
+            }
+
+            return _chatRepository.FindByCondition(c => c.Id == id).First();
         }
 
         public bool DeleteChat(Chat chat)
