@@ -61,11 +61,11 @@ namespace BLL.Services
             }
 
             using (var mailMessage = new MailMessage(
-                      new MailAddress(this._networkCredential.UserName, "Bonjour"),
+                      new MailAddress(this._networkCredential.UserName, "Sandra from Join"),
                       new MailAddress(user.Email, user.Name)))
             {
-                mailMessage.Subject = "Join server invitation";
-                mailMessage.Body = "Hello\n" +
+                mailMessage.Subject = "You were invited to server on Join";
+                mailMessage.Body = $"Hello, {user.Name}\n" +
                     $"You have been invited to a Join Server called {server.Name}\n" +
                     "Click the link below to join\n" +
                     "Regards\n";

@@ -137,7 +137,7 @@ namespace BLL.Services
             return true;
         }
 
-        public bool ChangeUserData(User user, UserDataTypes userDataType, string oldValue, string newValue)
+        public async Task<bool> ChangeUserData(User user, UserDataTypes userDataType, string oldValue, string newValue)
         {
             if (_userRepository.FindByCondition(u => u.Id == user.Id).FirstOrDefault() == null)
             {
@@ -182,7 +182,7 @@ namespace BLL.Services
                     return false;
             }
 
-            _userRepository.UpdateAsync(user);
+            await _userRepository.UpdateAsync(user);
             
             return true;
         }

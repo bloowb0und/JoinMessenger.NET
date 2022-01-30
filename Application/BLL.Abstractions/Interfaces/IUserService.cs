@@ -16,6 +16,6 @@ namespace BLL.Abstractions.Interfaces
         /// <param name="userDataType">Which value to change - Password, login or name</param>
         /// <param name="oldValue">Old value for selected data</param>
         /// <param name="newValue">New value for selected data</param>
-        bool ChangeUserData(User user, UserDataTypes userDataType, string oldValue, string newValue);
+        Task<bool>  ChangeUserData(User user, UserDataTypes userDataType, string oldValue, string newValue);
     }
 }

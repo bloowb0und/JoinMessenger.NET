@@ -7,7 +7,7 @@ namespace BLL.Abstractions.Interfaces
     {
         Task<bool> CreateMessage(Message message);
         Message? GetMessageById(int id);
-        Task<bool> EditMessage(Message message, string newValue);
+        Task<bool> EditMessage(User user, Message message, string newValue);
         Task<bool> DeleteMessage(User user, Message message);
     }
 }

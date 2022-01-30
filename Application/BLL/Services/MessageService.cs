@@ -46,7 +46,7 @@ namespace BLL.Services
             return _messageRepository.FindByCondition(m => m.Id == id).First();
         }
 
-        public async Task<bool> EditMessage(Message message, string newValue)
+        public async Task<bool> EditMessage(User user, Message message, string newValue)
         {
             if (message.User == null 
                 || message.Server == null 
@@ -58,6 +58,12 @@ namespace BLL.Services
             }
 
             if (_messageRepository.Any(m => m == message))
+            {
+                return false;
+            }
+            
+            // check if user sent this message
+            if (message.User != user)
             {
                 return false;
             }

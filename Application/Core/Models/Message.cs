@@ -12,7 +12,7 @@ namespace Core.Models
 
         public string Value { get; set; }
 
-        public Message ReplyMessage { get; set; }
+        public Message RepliedMessage { get; set; }
         
         public DateTime DateCreated { get; set; }
         
