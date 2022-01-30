@@ -21,7 +21,12 @@ namespace BLL.Services
                 return false;
             }
             
-            if (!_chatRepository.Any(c => c == chat))
+            if (_chatRepository.Any(c => c == chat))
+            {
+                return false;
+            }
+
+            if (_chatRepository.Any(c => c.Server == chat.Server && c.Name == chat.Name))
             {
                 return false;
             }
@@ -56,7 +61,12 @@ namespace BLL.Services
                 return false;
             }
 
-            if (!_chatRepository.Any(c => c == chat))
+            if (_chatRepository.Any(c => c == chat))
+            {
+                return false;
+            }
+            
+            if (_chatRepository.Any(c => c.Server == chat.Server && c.Name == newChatName))
             {
                 return false;
             }
