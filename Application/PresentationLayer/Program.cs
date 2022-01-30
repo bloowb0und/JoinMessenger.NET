@@ -9,6 +9,7 @@ using DAL.Abstractions.Interfaces;
 using DAL.Contexts;
 using DAL.Repository;
 
+
 namespace PresentationLayer
 {
     class Program
@@ -30,16 +31,20 @@ namespace PresentationLayer
                 .Build();
             
             services.Configure<AppSettings>(configuration.GetSection("AppSettings"));
-            
+
             // BLL Services
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IEmailNotificationService, EmailNotificationService>();
-            
+            services.AddScoped<IServerService, ServerService>();
+            services.AddScoped<IServerInvitationService, EmailNotificationService>();
+
             // DAL Services
             services.AddSingleton<MessengerContext>();
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
             services.AddScoped<App>();
+
+
             DependencyRegistrar.ConfigureServices(services);
         }
     }
