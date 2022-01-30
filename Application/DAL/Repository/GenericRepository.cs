@@ -29,6 +29,12 @@ namespace DAL.Repository
             return m.Where(expression.Compile());
         }
         
+        public bool Any()
+        {
+            var m = GetAll();
+            return m.Any();
+        }
+        
         public bool Any(Expression<Func<T, bool>> expression)
         {
             var m = GetAll();

@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using Core.Models;
 using DAL.Abstractions.Interfaces;
@@ -19,7 +20,7 @@ namespace BLL.Services
             _emailNotificationService = emailNotificationService;
         }
 
-        public bool Register(User? user)
+        public async Task<bool> Register(User? user)
         {
             if (user == null)
             {
@@ -62,7 +63,7 @@ namespace BLL.Services
                 return false;
             }
 
-            _userRepository.CreateAsync(user);
+            await _userRepository.CreateAsync(user);
             
             return true;
         }
@@ -84,6 +85,11 @@ namespace BLL.Services
             catch (FormatException e)
             {
                 isLogin = true;
+            }
+
+            if (!_userRepository.Any())
+            {
+                return null;
             }
 
             User? foundUser = null;

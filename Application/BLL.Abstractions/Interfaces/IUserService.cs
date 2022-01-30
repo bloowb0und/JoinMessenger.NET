@@ -1,10 +1,11 @@
+using System.Threading.Tasks;
 using Core.Models;
 
 namespace BLL.Abstractions.Interfaces
 {
     public interface IUserService
     {
-        public bool Register(User? user);
+        public Task<bool> Register(User? user);
         public User? SignIn(string username, string password);
         public bool PasswordRecovery(string email);
         
