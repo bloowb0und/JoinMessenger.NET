@@ -5,9 +5,9 @@ namespace BLL.Abstractions.Interfaces
 {
     public interface IUserService
     {
-        public Task<bool> Register(User? user);
-        public User? SignIn(string username, string password);
-        public Task<bool> PasswordRecovery(string email);
+        Task<bool> Register(User? user);
+        User? SignIn(string username, string password); 
+        Task<bool> PasswordRecovery(string email);
         
         /// <summary>
         /// Method ChangeUserData allows user to change their data, except for email
@@ -16,6 +16,6 @@ namespace BLL.Abstractions.Interfaces
         /// <param name="userDataType">Which value to change - Password, login or name</param>
         /// <param name="oldValue">Old value for selected data</param>
         /// <param name="newValue">New value for selected data</param>
-        public bool ChangeUserData(User user, UserDataTypes userDataType, string oldValue, string newValue);
+        bool ChangeUserData(User user, UserDataTypes userDataType, string oldValue, string newValue);
     }
 }
