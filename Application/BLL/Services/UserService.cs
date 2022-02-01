@@ -115,7 +115,7 @@ namespace BLL.Services
             return foundUser;
         }
 
-        public bool PasswordRecovery(string email)
+        public async Task<bool> PasswordRecovery(string email)
         {
             if (string.IsNullOrWhiteSpace(email))
             {
@@ -129,12 +129,15 @@ namespace BLL.Services
                 return false;
             }
 
-            _emailNotificationService.SendForgotPassword(foundUser);
+            if (!await _emailNotificationService.SendForgotPassword(foundUser))
+            {
+                return false;
+            }
             
             return true;
         }
 
-        public bool ChangeUserData(User user, UserDataTypes userDataType, string oldValue, string newValue)
+        public async Task<bool> ChangeUserData(User user, UserDataTypes userDataType, string oldValue, string newValue)
         {
             if (_userRepository.FindByCondition(u => u.Id == user.Id).FirstOrDefault() == null)
             {
@@ -179,7 +182,7 @@ namespace BLL.Services
                     return false;
             }
 
-            _userRepository.UpdateAsync(user);
+            await _userRepository.UpdateAsync(user);
             
             return true;
         }

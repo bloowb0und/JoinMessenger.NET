@@ -61,7 +61,7 @@ namespace WebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (!_userService.PasswordRecovery(email.Email))
+            if (!await _userService.PasswordRecovery(email.Email))
             {
                 ModelState.AddModelError("email", "Email not found");
                 

@@ -19,7 +19,7 @@ namespace BLL.Services
                 UserName = "joinMessenger@outlook.com",
                 Password = "qweRty123321"
             };
-
+            
             _smtpClient = new SmtpClient()
             {
                 Host = "smtp-mail.outlook.com",
@@ -30,7 +30,7 @@ namespace BLL.Services
             };
         }
 
-        public async Task SendForgotPassword(User user)
+        public async Task<bool> SendForgotPassword(User user)
         {
             using (var mailMessage = new MailMessage(
                        new MailAddress(this._networkCredential.UserName, "Sandra from Join"), 
@@ -42,6 +42,8 @@ namespace BLL.Services
                 mailMessage.IsBodyHtml = true;
 
                 await _smtpClient.SendMailAsync(mailMessage);
+
+                return true;
             }
         }
 
@@ -59,11 +61,11 @@ namespace BLL.Services
             }
 
             using (var mailMessage = new MailMessage(
-                      new MailAddress(this._networkCredential.UserName, "Bonjour"),
+                      new MailAddress(this._networkCredential.UserName, "Sandra from Join"),
                       new MailAddress(user.Email, user.Name)))
             {
-                mailMessage.Subject = "Join server invitation";
-                mailMessage.Body = "Hello\n" +
+                mailMessage.Subject = "You were invited to server on Join";
+                mailMessage.Body = $"Hello, {user.Name}\n" +
                     $"You have been invited to a Join Server called {server.Name}\n" +
                     "Click the link below to join\n" +
                     "Regards\n";
