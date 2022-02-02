@@ -115,6 +115,21 @@ namespace DAL.Database
                 .HasOne(srp => srp.Permission)
                 .WithMany(p => p.ServerRolePermissions)
                 .HasForeignKey(f => f.PermissionId);
+
+            // Many to Many (UserServer & Role)
+            builder.Entity<UserServerRole>()
+                .HasKey(usr => new { usr.UserServerID, usr.RoleId });
+
+            builder.Entity<UserServerRole>()
+                .HasOne(usr => usr.UserServer)
+                .WithMany(us => us.UserServerRoles)
+                .HasForeignKey(f => f.UserServerID)
+                .HasPrincipalKey(k => k.Id);
+
+            builder.Entity<UserServerRole>()
+                .HasOne(usr => usr.Role)
+                .WithMany(r => r.UserServerRoles)
+                .HasForeignKey(f => f.RoleId);
         }
     }
 

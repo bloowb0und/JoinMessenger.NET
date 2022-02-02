@@ -10,5 +10,7 @@ namespace Core.Models
 
         public List<ChatRole> ChatRoles { get; set; }
         public List<ServerRole> ServerRoles { get; set; }
+
+        public List<UserServerRole> UserServerRoles { get; set; }
     }
 }

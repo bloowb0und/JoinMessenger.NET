@@ -13,6 +13,6 @@ namespace Core.Models
         
         public DateTime DateEntered { get; set; }
 
-        //public ICollection<UserServerRole> UserServerRoles { get; set; }
+        public List<UserServerRole> UserServerRoles { get; set; }
     }
 }
