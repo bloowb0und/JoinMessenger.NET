@@ -6,11 +6,13 @@ using BLL.Abstractions.Interfaces;
 using BLL.Services;
 using DAL.Abstractions.Interfaces;
 using DAL.Contexts;
+using DAL.Database;
 using DAL.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -32,6 +34,11 @@ namespace WebApi
         {
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IEmailNotificationService, EmailNotificationService>();
+
+            services.AddDbContext<AppDbContext>(options =>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+            });
             
             services.AddSingleton<MessengerContext>(provider => new MessengerContext(Configuration.GetConnectionString("PathToFile")));
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));

@@ -4,7 +4,7 @@ namespace Core.Models
 {
     public class UserServerRole : BaseEntity
     {
-        public UserServer UserServer { get; set; }
+        public UserServer ServerUser { get; set; }
         
         public Role Role { get; set; }
         

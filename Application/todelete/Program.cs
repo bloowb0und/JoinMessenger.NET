@@ -1,17 +1,12 @@
-﻿using System.IO;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
-using Core;
-using BLL;
-using BLL.Abstractions.Interfaces;
-using BLL.Services;
-using DAL.Abstractions.Interfaces;
-using DAL.Contexts;
-using DAL.Repository;
-using DAL.Database;
-using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace PresentationLayer
+namespace todelete
 {
     class Program
     {
@@ -30,7 +25,7 @@ namespace PresentationLayer
                 .AddJsonFile("appsettings.json", false)
                 .AddEnvironmentVariables()
                 .Build();
-            
+
             services.Configure<AppSettings>(configuration.GetSection("AppSettings"));
 
             // BLL Services

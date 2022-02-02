@@ -3,6 +3,7 @@ using BLL.Abstractions;
 using BLL.Abstractions.Interfaces;
 using Core.Models;
 using DAL.Abstractions.Interfaces;
+using DAL.Database;
 using DAL.Repository;
 using System;
 using System.Collections.Generic;
@@ -14,16 +15,13 @@ namespace BLL.Services
 {
     public class ServerService : IServerService
     {
-        private readonly IGenericRepository<Server> _serverRepository;
-        private readonly IGenericRepository<Chat> _chatRepository;
         private readonly EmailNotificationService _emailNotificationService;
+        private readonly AppDbContext _context;
 
-        public ServerService(IGenericRepository<Server> serverReposirory,
-            IGenericRepository<Chat> chatRepository,
+        public ServerService(AppDbContext context,
             EmailNotificationService emailNotificationService)
         {
-            _serverRepository = serverReposirory;
-            _chatRepository = chatRepository;
+            _context = context;
             _emailNotificationService = emailNotificationService;
         }
 
@@ -38,18 +36,19 @@ namespace BLL.Services
             server.Name = name;
 
             // checking if server with this name already exists
-            if (_serverRepository.Any(s => s.Name == server.Name))
+            if (_context.Servers.Any(s => s.Name == server.Name))
             {
                 return false;
             }
 
             server.DateCreated = DateTime.Now;
             server.Chats = new List<Chat>();
-            server.Users = new List<User>();
+            
             // adding roles
 
             // creating a server
-            _serverRepository.CreateAsync(server);
+            _context.Servers.Add(server);
+            _context.SaveChanges();
             return true;
         }
 
@@ -61,7 +60,7 @@ namespace BLL.Services
             }
 
             // checking if such server exists
-            if (!_serverRepository.Any(s => s.Id == server.Id))
+            if (!_context.Servers.Any(s => s.Id == server.Id))
             {
                 return false;
             }
@@ -71,16 +70,11 @@ namespace BLL.Services
             // deleting all chats from the server
             foreach (var chat in server.Chats)
             {
-                _chatRepository.DeleteAsync(chat);
+                _context.Chats.Remove(chat);
             }
 
-            // deleting all users from the server
-            foreach (var user in server.Users)
-            {
-                user.Servers.Remove(server);
-            }
-
-            _serverRepository.DeleteAsync(server);
+            _context.Servers.Remove(server);
+            _context.SaveChanges();
             return true;
         }
 
@@ -93,7 +87,8 @@ namespace BLL.Services
 
             // checking if this user is alreadly in this server
             if (server.Users.FirstOrDefault(u => u == user) != null)
-            {                return false;
+            { 
+                return false;
             }
 
             server.Users.Add(user);
@@ -102,7 +97,8 @@ namespace BLL.Services
 
             user.Servers.Add(server);
 
-            _serverRepository.UpdateAsync(server);
+            _context.Servers.Update(server);
+            _context.SaveChanges();
 
             return true;
         }
@@ -124,7 +120,8 @@ namespace BLL.Services
                 }
             }
 
-            _serverRepository.UpdateAsync(server);
+            _context.Servers.Update(server);
+            _context.SaveChanges();
 
             return true;
         }
@@ -147,7 +144,8 @@ namespace BLL.Services
             user.Servers.Remove(server);
             server.Users.Remove(user);
 
-            _serverRepository.UpdateAsync(server);
+            _context.Servers.Update(server);
+            _context.SaveChanges();
 
             return true;
         }
@@ -169,7 +167,8 @@ namespace BLL.Services
                 }
             }
 
-            _serverRepository.UpdateAsync(server);
+            _context.Servers.Update(server);
+            _context.SaveChanges();
 
             return true;
         }
@@ -178,7 +177,7 @@ namespace BLL.Services
         {
             await _emailNotificationService.InviteByEmailAsync(server, user);
 
-            await _serverRepository.UpdateAsync(server);
+            _context.Servers.Update(server);
         }
     }
 }
