@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
@@ -8,7 +9,7 @@ using Microsoft.Extensions.Options;
 
 namespace BLL.Services
 {
-    public class EmailNotificationService : IEmailNotificationService, IServerInvitationService
+    public class EmailNotificationService : IEmailNotificationService
     {
         private readonly NetworkCredential _networkCredential;
         private readonly SmtpClient _smtpClient;
@@ -34,7 +35,7 @@ namespace BLL.Services
             };
         }
 
-        public async Task<bool> SendForgotPassword(User user)
+        public async Task<bool> SendForgotPasswordAsync(User user)
         {
             using (var mailMessage = new MailMessage(
                        new MailAddress(this._networkCredential.UserName, "Sandra from Join"), 
@@ -53,11 +54,6 @@ namespace BLL.Services
 
         public async Task InviteByEmailAsync(Server server, User user)
         {
-            if (server == null || user == null)
-            {
-                return;
-            }
-
             // checking if this user is already in the server
             if (server.Users.FirstOrDefault(u => u.Id == user.Id) != null)
             {

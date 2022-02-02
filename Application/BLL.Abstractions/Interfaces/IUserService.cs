@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Core.Models;
 
@@ -5,9 +6,9 @@ namespace BLL.Abstractions.Interfaces
 {
     public interface IUserService
     {
-        Task<bool> Register(User? user);
-        User? SignIn(string username, string password); 
-        Task<bool> PasswordRecovery(string email);
+        Task<bool> RegisterAsync(User user);
+        User SignIn(string username, string password);
+        Task<bool> PasswordRecoveryAsync(string email);
         
         /// <summary>
         /// Method ChangeUserData allows user to change their data, except for email
@@ -16,6 +17,6 @@ namespace BLL.Abstractions.Interfaces
         /// <param name="userDataType">Which value to change - Password, login or name</param>
         /// <param name="oldValue">Old value for selected data</param>
         /// <param name="newValue">New value for selected data</param>
-        Task<bool>  ChangeUserData(User user, UserDataTypes userDataType, string oldValue, string newValue);
+        Task<bool>  ChangeUserDataAsync(User user, UserDataTypes userDataType, string oldValue, string newValue);
     }
 }

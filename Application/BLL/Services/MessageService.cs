@@ -1,4 +1,6 @@
 using System;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
@@ -16,16 +18,8 @@ namespace BLL.Services
             _messageRepository = messageRepository;
         }
 
-        public async Task<bool> CreateMessage(Message message)
+        public async Task<bool> CreateMessageAsync(Message message)
         {
-            if (message.User == null 
-                || message.Server == null 
-                || message.Chat == null
-                || string.IsNullOrWhiteSpace(message.Value))
-            {
-                return false;
-            }
-
             if (_messageRepository.Any(m => m == message))
             {
                 return false;
@@ -36,27 +30,13 @@ namespace BLL.Services
             return true;
         }
 
-        public Message? GetMessageById(int id)
+        public Message GetMessageById(int id)
         {
-            if (!_messageRepository.Any(m => m.Id == id))
-            {
-                return null;
-            }
-
-            return _messageRepository.FindByCondition(m => m.Id == id).First();
+            return _messageRepository.FindByCondition(m => m.Id == id).SingleOrDefault();
         }
 
-        public async Task<bool> EditMessage(User user, Message message, string newValue)
+        public async Task<bool> EditMessageAsync([NotNull] User user, [NotNull] Message message, [NotNull] string newValue)
         {
-            if (message.User == null 
-                || message.Server == null 
-                || message.Chat == null 
-                || string.IsNullOrWhiteSpace(message.Value)
-                || string.IsNullOrWhiteSpace(newValue))
-            {
-                return false;
-            }
-
             if (_messageRepository.Any(m => m == message))
             {
                 return false;
@@ -75,7 +55,7 @@ namespace BLL.Services
             return true;
         }
 
-        public async Task<bool> DeleteMessage(User user, Message message)
+        public async Task<bool> DeleteMessageAsync([NotNull] User user, [NotNull] Message message)
         {
             if (message.User == null 
                 || message.Server == null 

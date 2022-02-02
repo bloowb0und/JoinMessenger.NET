@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using Core.Models;
 using DAL.Abstractions.Interfaces;
@@ -14,14 +15,8 @@ namespace BLL.Services
             _chatRepository = chatRepository;
         }
 
-        public bool CreateChat(Chat chat)
+        public async Task<bool> CreateChatAsync(Chat chat)
         {
-            if (string.IsNullOrWhiteSpace(chat.Name)
-                || chat.Server == null)
-            {
-                return false;
-            }
-            
             if (_chatRepository.Any(c => c == chat))
             {
                 return false;
@@ -32,12 +27,12 @@ namespace BLL.Services
                 return false;
             }
 
-            _chatRepository.CreateAsync(chat);
+            await _chatRepository.CreateAsync(chat);
             
             return true;
         }
 
-        public Chat? GetChatById(int id)
+        public Chat GetChatById(int id)
         {
             if (!_chatRepository.Any(c => c.Id == id))
             {
@@ -47,31 +42,20 @@ namespace BLL.Services
             return _chatRepository.FindByCondition(c => c.Id == id).First();
         }
 
-        public bool DeleteChat(Chat chat)
+        public async Task<bool> DeleteChatAsync(Chat chat)
         {
-            if (string.IsNullOrWhiteSpace(chat.Name)
-                || chat.Server == null)
-            {
-                return false;
-            }
-            
             if (!_chatRepository.Any(c => c == chat))
             {
                 return false;
             }
 
-            _chatRepository.DeleteAsync(chat);
+            await _chatRepository.DeleteAsync(chat);
             
             return true;
         }
 
-        public bool EditChatName(Chat chat, string newChatName)
+        public async Task<bool> EditChatNameAsync(Chat chat, string newChatName)
         {
-            if (string.IsNullOrWhiteSpace(newChatName))
-            {
-                return false;
-            }
-
             if (_chatRepository.Any(c => c == chat))
             {
                 return false;
@@ -83,7 +67,7 @@ namespace BLL.Services
             }
             
             chat.Name = newChatName;
-            _chatRepository.UpdateAsync(chat);
+            await _chatRepository.UpdateAsync(chat);
             
             return true;
         }
