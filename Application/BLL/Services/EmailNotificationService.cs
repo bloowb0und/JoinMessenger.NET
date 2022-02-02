@@ -4,26 +4,30 @@ using System.Net.Mail;
 using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using Core.Models;
+using Microsoft.Extensions.Options;
 
 namespace BLL.Services
 {
     public class EmailNotificationService : IEmailNotificationService, IServerInvitationService
     {
         private readonly NetworkCredential _networkCredential;
-        private SmtpClient _smtpClient;
+        private readonly SmtpClient _smtpClient;
+        private readonly IOptions<EmailCredentialsModel> _appSettings;
 
-        public EmailNotificationService()
+        public EmailNotificationService(IOptions<EmailCredentialsModel> appSettings)
         {
+            _appSettings = appSettings;
+            
             _networkCredential = new NetworkCredential()
             {
-                UserName = "joinMessenger@outlook.com",
-                Password = "qweRty123321"
+                UserName = _appSettings.Value.EmailCredentialsUsername,
+                Password = _appSettings.Value.EmailCredentialsPassword
             };
             
             _smtpClient = new SmtpClient()
             {
-                Host = "smtp-mail.outlook.com",
-                Port = 25,
+                Host = _appSettings.Value.SmtpHost,
+                Port = _appSettings.Value.SmtpPort,
                 EnableSsl = true,
                 UseDefaultCredentials = false,
                 Credentials = this._networkCredential,

@@ -5,6 +5,7 @@ namespace BLL.Abstractions.Interfaces
 {
     public interface IEmailNotificationService
     {
-        public Task<bool> SendForgotPassword(User user);
+        Task<bool> SendForgotPassword(User user);
+        Task InviteByEmailAsync(Server server, User user);
     }
 }
