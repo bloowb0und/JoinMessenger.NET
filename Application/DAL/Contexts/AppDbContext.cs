@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DAL.Database
+namespace DAL.Contexts
 {
     public class AppDbContext : DbContext
     {

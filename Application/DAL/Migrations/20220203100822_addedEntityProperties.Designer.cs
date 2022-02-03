@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220202114421_addedServerRole")]
-    partial class addedServerRole
+    [Migration("20220203100822_addedEntityProperties")]
+    partial class addedEntityProperties
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -30,7 +30,7 @@ namespace DAL.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<int>("ServerId")
                         .HasColumnType("int");
@@ -65,6 +65,63 @@ namespace DAL.Migrations
                     b.ToTable("ChatRole");
                 });
 
+            modelBuilder.Entity("Core.Models.ChatRolePermission", b =>
+                {
+                    b.Property<int>("ChatRoleId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PermissionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.HasKey("ChatRoleId", "PermissionId");
+
+                    b.HasIndex("PermissionId");
+
+                    b.ToTable("ChatRolePermission");
+                });
+
+            modelBuilder.Entity("Core.Models.Message", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<int>("ChatId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2(0)");
+
+                    b.Property<DateTime?>("DateLastEdited")
+                        .HasColumnType("datetime2(0)");
+
+                    b.Property<int>("ServerId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChatId");
+
+                    b.HasIndex("ServerId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Messages");
+                });
+
             modelBuilder.Entity("Core.Models.Permission", b =>
                 {
                     b.Property<int>("Id")
@@ -73,10 +130,11 @@ namespace DAL.Migrations
                         .UseIdentityColumn();
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(30)");
 
                     b.HasKey("Id");
 
@@ -91,7 +149,8 @@ namespace DAL.Migrations
                         .UseIdentityColumn();
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("RoleType")
                         .IsRequired()
@@ -111,11 +170,11 @@ namespace DAL.Migrations
                         .UseIdentityColumn();
 
                     b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2(0)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(30)");
 
                     b.HasKey("Id");
 
@@ -140,6 +199,27 @@ namespace DAL.Migrations
                     b.ToTable("ServerRole");
                 });
 
+            modelBuilder.Entity("Core.Models.ServerRolePermission", b =>
+                {
+                    b.Property<int>("ServerRoleId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PermissionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.HasKey("ServerRoleId", "PermissionId");
+
+                    b.HasIndex("PermissionId");
+
+                    b.ToTable("ServerRolePermission");
+                });
+
             modelBuilder.Entity("Core.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -149,19 +229,19 @@ namespace DAL.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(30)");
 
                     b.Property<string>("Login")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(30)");
 
                     b.HasKey("Id");
 
@@ -178,7 +258,7 @@ namespace DAL.Migrations
 
                     b.Property<DateTime>("DateEntered")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
+                        .HasColumnType("datetime2(0)")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<int>("Id")
@@ -189,6 +269,27 @@ namespace DAL.Migrations
                     b.HasIndex("ServerId");
 
                     b.ToTable("UserServer");
+                });
+
+            modelBuilder.Entity("Core.Models.UserServerRole", b =>
+                {
+                    b.Property<int>("UserServerID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateApplied")
+                        .HasColumnType("datetime2(0)");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserServerID", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("UserServerRole");
                 });
 
             modelBuilder.Entity("Core.Models.Chat", b =>
@@ -221,6 +322,53 @@ namespace DAL.Migrations
                     b.Navigation("Role");
                 });
 
+            modelBuilder.Entity("Core.Models.ChatRolePermission", b =>
+                {
+                    b.HasOne("Core.Models.ChatRole", "ChatRole")
+                        .WithMany("ChatRolePermissions")
+                        .HasForeignKey("ChatRoleId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Core.Models.Permission", "Permission")
+                        .WithMany("ChatRolePermissions")
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ChatRole");
+
+                    b.Navigation("Permission");
+                });
+
+            modelBuilder.Entity("Core.Models.Message", b =>
+                {
+                    b.HasOne("Core.Models.Chat", "Chat")
+                        .WithMany("Messages")
+                        .HasForeignKey("ChatId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Core.Models.Server", "Server")
+                        .WithMany("Messages")
+                        .HasForeignKey("ServerId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Core.Models.User", "User")
+                        .WithMany("Messages")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Chat");
+
+                    b.Navigation("Server");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Core.Models.ServerRole", b =>
                 {
                     b.HasOne("Core.Models.Role", "Role")
@@ -238,6 +386,26 @@ namespace DAL.Migrations
                     b.Navigation("Role");
 
                     b.Navigation("Server");
+                });
+
+            modelBuilder.Entity("Core.Models.ServerRolePermission", b =>
+                {
+                    b.HasOne("Core.Models.Permission", "Permission")
+                        .WithMany("ServerRolePermissions")
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Core.Models.ServerRole", "ServerRole")
+                        .WithMany("ServerRolePermissions")
+                        .HasForeignKey("ServerRoleId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Permission");
+
+                    b.Navigation("ServerRole");
                 });
 
             modelBuilder.Entity("Core.Models.UserServer", b =>
@@ -259,9 +427,43 @@ namespace DAL.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Core.Models.UserServerRole", b =>
+                {
+                    b.HasOne("Core.Models.Role", "Role")
+                        .WithMany("UserServerRoles")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Core.Models.UserServer", "UserServer")
+                        .WithMany("UserServerRoles")
+                        .HasForeignKey("UserServerID")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+
+                    b.Navigation("UserServer");
+                });
+
             modelBuilder.Entity("Core.Models.Chat", b =>
                 {
                     b.Navigation("ChatRoles");
+
+                    b.Navigation("Messages");
+                });
+
+            modelBuilder.Entity("Core.Models.ChatRole", b =>
+                {
+                    b.Navigation("ChatRolePermissions");
+                });
+
+            modelBuilder.Entity("Core.Models.Permission", b =>
+                {
+                    b.Navigation("ChatRolePermissions");
+
+                    b.Navigation("ServerRolePermissions");
                 });
 
             modelBuilder.Entity("Core.Models.Role", b =>
@@ -269,20 +471,36 @@ namespace DAL.Migrations
                     b.Navigation("ChatRoles");
 
                     b.Navigation("ServerRoles");
+
+                    b.Navigation("UserServerRoles");
                 });
 
             modelBuilder.Entity("Core.Models.Server", b =>
                 {
                     b.Navigation("Chats");
 
+                    b.Navigation("Messages");
+
                     b.Navigation("ServerRoles");
 
                     b.Navigation("UserServers");
                 });
 
+            modelBuilder.Entity("Core.Models.ServerRole", b =>
+                {
+                    b.Navigation("ServerRolePermissions");
+                });
+
             modelBuilder.Entity("Core.Models.User", b =>
                 {
+                    b.Navigation("Messages");
+
                     b.Navigation("UserServers");
+                });
+
+            modelBuilder.Entity("Core.Models.UserServer", b =>
+                {
+                    b.Navigation("UserServerRoles");
                 });
 #pragma warning restore 612, 618
         }

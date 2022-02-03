@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Core.Models
 {
@@ -10,6 +11,7 @@ namespace Core.Models
         public int RoleId { get; set; }
         public Role Role { get; set; }
         
+        [Column(TypeName = "datetime2(0)")]
         public DateTime DateApplied { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Core.Models
 {
@@ -13,10 +14,13 @@ namespace Core.Models
         public int ChatId { get; set; }
         public Chat Chat { get; set; }
 
+        [Column(TypeName = "nvarchar(500)")]
         public string Value { get; set; }
 
+        [Column(TypeName = "datetime2(0)")]
         public DateTime DateCreated { get; set; }
-        
+
+        [Column(TypeName = "datetime2(0)")]
         public DateTime? DateLastEdited { get; set; }
     }
 }

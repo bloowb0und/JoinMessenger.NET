@@ -8,7 +8,6 @@ using BLL.Services;
 using DAL.Abstractions.Interfaces;
 using DAL.Contexts;
 using DAL.Repository;
-using DAL.Database;
 using Microsoft.EntityFrameworkCore;
 
 namespace PresentationLayer

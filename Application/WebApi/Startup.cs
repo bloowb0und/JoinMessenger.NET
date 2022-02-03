@@ -6,7 +6,6 @@ using BLL.Abstractions.Interfaces;
 using BLL.Services;
 using DAL.Abstractions.Interfaces;
 using DAL.Contexts;
-using DAL.Database;
 using DAL.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
