@@ -10,6 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Core.Models.ServiceMethodsModels;
 
 namespace BLL.Services
 {
@@ -153,6 +154,20 @@ namespace BLL.Services
             await _emailNotificationService.InviteByEmailAsync(server, user);
 
             await _serverRepository.UpdateAsync(server);
+        }
+
+        public async Task<bool> EditServerAsync(Server server, ServerServiceEditServer newServer)
+        {
+            if (_serverRepository.Any(s => s.Name == newServer.ServerName))
+            {
+                return false;
+            }
+
+            server.Name = newServer.ServerName;
+            
+            await _serverRepository.UpdateAsync(server);
+            
+            return true;
         }
     }
 }

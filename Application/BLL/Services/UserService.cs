@@ -1,11 +1,11 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using Core.Models;
+using Core.Models.ServiceMethodsModels;
 using DAL.Abstractions.Interfaces;
 
 namespace BLL.Services
@@ -106,45 +106,21 @@ namespace BLL.Services
             return true;
         }
 
-        public async Task<bool> ChangeUserDataAsync(User user, UserDataTypes userDataType, string oldValue, string newValue)
+        public async Task<bool> ChangeUserDataAsync(User user, UserServiceChangeUserData newUserData)
         {
-            if (_userRepository.FindByCondition(u => u.Id == user.Id).FirstOrDefault() == null)
+            if (_userRepository.FirstOrDefault(u => u.Id == user.Id) == null)
             {
                 return false;
             }
 
-            switch (userDataType)
+            user.Name = string.IsNullOrWhiteSpace(newUserData.Name) ? user.Name : newUserData.Name;
+            
+            if (!_userRepository.Any(u => u.Login == newUserData.Login))
             {
-                case UserDataTypes.Password: // password idx
-                    if (user.Password != oldValue)
-                    {
-                        return false;
-                    }
-
-                    user.Password = newValue;
-                    break;
-
-                case UserDataTypes.Login: // login idx
-                    if (user.Login != oldValue)
-                    {
-                        return false;
-                    }
-
-                    user.Login = newValue;
-                    break;
-
-                case UserDataTypes.Name: // name idx
-                    if (user.Name != oldValue)
-                    {
-                        return false;
-                    }
-
-                    user.Name = newValue;
-                    break;
-                
-                default:
-                    return false;
+                user.Login = string.IsNullOrWhiteSpace(newUserData.Login) ? user.Login : newUserData.Login;
             }
+            
+            user.Password = string.IsNullOrWhiteSpace(newUserData.Password) ? user.Password : newUserData.Password;
 
             await _userRepository.UpdateAsync(user);
             

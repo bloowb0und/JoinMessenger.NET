@@ -1,7 +1,7 @@
-using System.Linq;
 using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using Core.Models;
+using Core.Models.ServiceMethodsModels;
 using DAL.Abstractions.Interfaces;
 
 namespace BLL.Services
@@ -17,7 +17,7 @@ namespace BLL.Services
 
         public async Task<bool> CreateChatAsync(Chat chat)
         {
-            if (_chatRepository.Any(c => c == chat))
+            if (_chatRepository.Any(c => c.Id == chat.Id))
             {
                 return false;
             }
@@ -34,12 +34,7 @@ namespace BLL.Services
 
         public Chat GetChatById(int id)
         {
-            if (!_chatRepository.Any(c => c.Id == id))
-            {
-                return null;
-            }
-
-            return _chatRepository.FindByCondition(c => c.Id == id).First();
+            return _chatRepository.FirstOrDefault(c => c.Id == id);
         }
 
         public async Task<bool> DeleteChatAsync(Chat chat)
@@ -54,19 +49,19 @@ namespace BLL.Services
             return true;
         }
 
-        public async Task<bool> EditChatNameAsync(Chat chat, string newChatName)
+        public async Task<bool> EditChatAsync(Chat chat, ChatServiceEditChat newChat)
         {
             if (_chatRepository.Any(c => c == chat))
             {
                 return false;
             }
             
-            if (_chatRepository.Any(c => c.Server == chat.Server && c.Name == newChatName))
+            if (_chatRepository.Any(c => c.Server == chat.Server && c.Name == newChat.ChatName))
             {
                 return false;
             }
             
-            chat.Name = newChatName;
+            chat.Name = newChat.ChatName;
             await _chatRepository.UpdateAsync(chat);
             
             return true;

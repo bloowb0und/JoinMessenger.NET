@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Core.Models.ServiceMethodsModels;
 
 namespace BLL.Abstractions.Interfaces
 {
@@ -23,5 +24,7 @@ namespace BLL.Abstractions.Interfaces
         Task<bool> DeleteUsersAsync(Server server, IEnumerable<User> user);
 
         Task SendInvitationAsync(Server server, User user);
+
+        Task<bool> EditServerAsync(Server server, ServerServiceEditServer newServer);
     }
 }

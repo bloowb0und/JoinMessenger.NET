@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using Core.Models;
+using Core.Models.ServiceMethodsModels;
 using DAL.Abstractions.Interfaces;
 
 namespace BLL.Services
@@ -35,9 +36,9 @@ namespace BLL.Services
             return _messageRepository.FindByCondition(m => m.Id == id).SingleOrDefault();
         }
 
-        public async Task<bool> EditMessageAsync([NotNull] User user, [NotNull] Message message, [NotNull] string newValue)
+        public async Task<bool> EditMessageAsync(User user, Message message, MessageServiceEditMessage newMessage)
         {
-            if (_messageRepository.Any(m => m == message))
+            if (!_messageRepository.Any(m => m == message))
             {
                 return false;
             }
@@ -48,14 +49,14 @@ namespace BLL.Services
                 return false;
             }
 
-            message.Value = newValue;
+            message.Value = newMessage.MessageValue;
             message.DateLastEdited = DateTime.Now;
             await _messageRepository.UpdateAsync(message);
             
             return true;
         }
 
-        public async Task<bool> DeleteMessageAsync([NotNull] User user, [NotNull] Message message)
+        public async Task<bool> DeleteMessageAsync(User user, Message message)
         {
             if (message.User == null 
                 || message.Server == null 

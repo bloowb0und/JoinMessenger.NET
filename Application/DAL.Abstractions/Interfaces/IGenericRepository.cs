@@ -12,6 +12,10 @@ namespace DAL.Abstractions.Interfaces
         
         IEnumerable<T> FindByCondition(Expression<Func<T, bool>> expression);
 
+        T FirstOrDefault(Expression<Func<T, bool>> expression);
+        
+        T SingleOrDefault(Expression<Func<T, bool>> expression);
+
         bool Any();
         
         bool Any(Expression<Func<T, bool>> expression);
