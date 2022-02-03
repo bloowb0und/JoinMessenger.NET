@@ -1,8 +1,11 @@
 using System;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using Core.Models;
+using Core.Models.ServiceMethodsModels;
 using DAL.Abstractions.Interfaces;
 
 namespace BLL.Services
@@ -16,16 +19,8 @@ namespace BLL.Services
             _messageRepository = messageRepository;
         }
 
-        public async Task<bool> CreateMessage(Message message)
+        public async Task<bool> CreateMessageAsync(Message message)
         {
-            if (message.User == null 
-                || message.Server == null 
-                || message.Chat == null
-                || string.IsNullOrWhiteSpace(message.Value))
-            {
-                return false;
-            }
-
             if (_messageRepository.Any(m => m == message))
             {
                 return false;
@@ -36,28 +31,9 @@ namespace BLL.Services
             return true;
         }
 
-        public Message? GetMessageById(int id)
+        public async Task<bool> EditMessageAsync(User user, Message message, MessageServiceEditMessage newMessage)
         {
-            if (!_messageRepository.Any(m => m.Id == id))
-            {
-                return null;
-            }
-
-            return _messageRepository.FindByCondition(m => m.Id == id).First();
-        }
-
-        public async Task<bool> EditMessage(User user, Message message, string newValue)
-        {
-            if (message.User == null 
-                || message.Server == null 
-                || message.Chat == null 
-                || string.IsNullOrWhiteSpace(message.Value)
-                || string.IsNullOrWhiteSpace(newValue))
-            {
-                return false;
-            }
-
-            if (_messageRepository.Any(m => m == message))
+            if (!_messageRepository.Any(m => m == message))
             {
                 return false;
             }
@@ -68,14 +44,14 @@ namespace BLL.Services
                 return false;
             }
 
-            message.Value = newValue;
+            message.Value = newMessage.MessageValue;
             message.DateLastEdited = DateTime.Now;
             await _messageRepository.UpdateAsync(message);
             
             return true;
         }
 
-        public async Task<bool> DeleteMessage(User user, Message message)
+        public async Task<bool> DeleteMessageAsync(User user, Message message)
         {
             if (message.User == null 
                 || message.Server == null 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using BLL.Services;
+using Core.Models;
 using DAL.Abstractions.Interfaces;
 using DAL.Contexts;
 using DAL.Repository;
@@ -34,6 +35,7 @@ namespace WebApi
             services.AddScoped<IEmailNotificationService, EmailNotificationService>();
             
             services.AddSingleton<MessengerContext>(provider => new MessengerContext(Configuration.GetConnectionString("PathToFile")));
+            services.Configure<EmailCredentialsModel>(Configuration.GetSection("EmailCredentials"));
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             
             services.AddControllers();

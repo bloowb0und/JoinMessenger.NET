@@ -1,6 +1,7 @@
-using System.Linq;
+using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using Core.Models;
+using Core.Models.ServiceMethodsModels;
 using DAL.Abstractions.Interfaces;
 
 namespace BLL.Services
@@ -14,15 +15,9 @@ namespace BLL.Services
             _chatRepository = chatRepository;
         }
 
-        public bool CreateChat(Chat chat)
+        public async Task<bool> CreateChatAsync(Chat chat)
         {
-            if (string.IsNullOrWhiteSpace(chat.Name)
-                || chat.Server == null)
-            {
-                return false;
-            }
-            
-            if (_chatRepository.Any(c => c == chat))
+            if (_chatRepository.Any(c => c.Id == chat.Id))
             {
                 return false;
             }
@@ -32,58 +27,37 @@ namespace BLL.Services
                 return false;
             }
 
-            _chatRepository.CreateAsync(chat);
+            await _chatRepository.CreateAsync(chat);
             
             return true;
         }
 
-        public Chat? GetChatById(int id)
+        public async Task<bool> DeleteChatAsync(Chat chat)
         {
-            if (!_chatRepository.Any(c => c.Id == id))
-            {
-                return null;
-            }
-
-            return _chatRepository.FindByCondition(c => c.Id == id).First();
-        }
-
-        public bool DeleteChat(Chat chat)
-        {
-            if (string.IsNullOrWhiteSpace(chat.Name)
-                || chat.Server == null)
-            {
-                return false;
-            }
-            
             if (!_chatRepository.Any(c => c == chat))
             {
                 return false;
             }
 
-            _chatRepository.DeleteAsync(chat);
+            await _chatRepository.DeleteAsync(chat);
             
             return true;
         }
 
-        public bool EditChatName(Chat chat, string newChatName)
+        public async Task<bool> EditChatAsync(Chat chat, ChatServiceEditChat newChat)
         {
-            if (string.IsNullOrWhiteSpace(newChatName))
-            {
-                return false;
-            }
-
             if (_chatRepository.Any(c => c == chat))
             {
                 return false;
             }
             
-            if (_chatRepository.Any(c => c.Server == chat.Server && c.Name == newChatName))
+            if (_chatRepository.Any(c => c.Server == chat.Server && c.Name == newChat.ChatName))
             {
                 return false;
             }
             
-            chat.Name = newChatName;
-            _chatRepository.UpdateAsync(chat);
+            chat.Name = newChat.ChatName;
+            await _chatRepository.UpdateAsync(chat);
             
             return true;
         }
