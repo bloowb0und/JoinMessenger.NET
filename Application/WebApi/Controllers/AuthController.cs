@@ -1,4 +1,3 @@
-using System.Threading;
 using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using Core.Models;
@@ -20,15 +19,20 @@ namespace WebApi.Controllers
 
         [HttpPost]
         [Route("login")]
-        public async Task<ActionResult<User>> SignIn([FromBody] LoginPswd loginPswd)
+        public ActionResult<User> SignIn([FromBody] LoginPswd loginPswd)
         {
+            if (loginPswd == null
+                || string.IsNullOrWhiteSpace(loginPswd.Login)
+                || string.IsNullOrWhiteSpace(loginPswd.Password))
+            {
+                return BadRequest("Invalid value provided");
+            }
+            
             var user = _userService.SignIn(loginPswd.Login, loginPswd.Password);
 
             if (user == null)
             {
-                ModelState.AddModelError("Login", "User was not found");
-                
-                return Conflict(ModelState);
+                return Conflict("User was not found");
             }
             
             return Ok(user);
@@ -38,12 +42,16 @@ namespace WebApi.Controllers
         [Route("register")]
         public async Task<ActionResult<User>> Register([FromBody] User user)
         {
-            if (user == null)
+            if (user == null
+                || string.IsNullOrWhiteSpace(user.Name)
+                || string.IsNullOrWhiteSpace(user.Email)
+                || string.IsNullOrWhiteSpace(user.Login)
+                || string.IsNullOrWhiteSpace(user.Password)) // check if any values are null or empty
             {
-                return BadRequest();
+                return BadRequest("User values can't be empty");
             }
 
-            if (!await _userService.Register(user))
+            if (!await _userService.RegisterAsync(null))
             {
                 return BadRequest();
             }
@@ -55,18 +63,15 @@ namespace WebApi.Controllers
         [Route("forgot")]
         public async Task<ActionResult> ForgotPassword([FromBody] EmailHttpModel email)
         {
-            if (string.IsNullOrWhiteSpace(email.Email))
+            if (email == null 
+            || string.IsNullOrWhiteSpace(email.Email))
             {
-                ModelState.AddModelError("email", "Email can't be null or empty");
-                
-                return BadRequest(ModelState);
+                return BadRequest("Email can't be null or empty");
             }
-            Thread.Sleep(1000);
-            if (! _userService.PasswordRecovery(email.Email))
+
+            if (!await _userService.PasswordRecoveryAsync(email.Email))
             {
-                ModelState.AddModelError("email", "Email not found");
-                
-                return BadRequest(ModelState);
+                return BadRequest("Email not found");
             }
 
             return Ok();

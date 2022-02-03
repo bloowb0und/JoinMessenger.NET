@@ -5,36 +5,24 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using Core.Models;
+using Core.Models.ServiceMethodsModels;
 using DAL.Abstractions.Interfaces;
 
 namespace BLL.Services
 {
     public class UserService : IUserService
     {
-        private readonly IGenericRepository<User?> _userRepository;
+        private readonly IGenericRepository<User> _userRepository;
         private readonly IEmailNotificationService _emailNotificationService;
 
-        public UserService(IGenericRepository<User?> userRepository, IEmailNotificationService emailNotificationService)
+        public UserService(IGenericRepository<User> userRepository, IEmailNotificationService emailNotificationService)
         {
             _userRepository = userRepository;
             _emailNotificationService = emailNotificationService;
         }
 
-        public async Task<bool> Register(User? user)
+        public async Task<bool> RegisterAsync(User user)
         {
-            if (user == null)
-            {
-                return false;
-            }
-            
-            if (string.IsNullOrWhiteSpace(user.Name) 
-                || string.IsNullOrWhiteSpace(user.Email) 
-                || string.IsNullOrWhiteSpace(user.Login) 
-                || string.IsNullOrWhiteSpace(user.Password)) // check if any values are null or empty
-            {
-                return false;
-            }
-
             try
             {
                 var checkedEmail = new MailAddress(user.Email).Address; // check if email string is in a email format
@@ -53,12 +41,8 @@ namespace BLL.Services
                 return false;
             }
 
-            if (_userRepository.Any(u => u.Email == user.Email)) // check if email is unique
-            {
-                return false;
-            }
-
-            if (_userRepository.Any(u => u.Login == user.Login)) // check if login is unique
+            if (_userRepository.Any(u => u.Email == user.Email)
+                || _userRepository.Any(u => u.Login == user.Login)) // check if email is unique
             {
                 return false;
             }
@@ -68,16 +52,10 @@ namespace BLL.Services
             return true;
         }
 
-        public User? SignIn(string username, string password)
+        public User SignIn(string username, string password)
         {
             var isLogin = false;
-            
-            if (string.IsNullOrWhiteSpace(username) 
-                || string.IsNullOrWhiteSpace(password)) // check if any values are null or empty
-            {
-                return null;
-            }
-            
+
             try
             {
                 var checkedEmail = new MailAddress(username).Address; // check if email string is in a email format
@@ -92,22 +70,18 @@ namespace BLL.Services
                 return null;
             }
 
-            User? foundUser = null;
+            User foundUser = null;
             if (isLogin)
             {
-                foundUser = _userRepository.FindByCondition(u => u.Login == username).FirstOrDefault();
+                foundUser = _userRepository.FindByCondition(u => u.Login == username).SingleOrDefault();
             }
             else
             {
-                foundUser = _userRepository.FindByCondition(u => u.Email == username).FirstOrDefault();
+                foundUser = _userRepository.FindByCondition(u => u.Email == username).SingleOrDefault();
             }
 
-            if (foundUser == null)
-            {
-                return null;
-            }
-
-            if (foundUser.Password != password)
+            if (foundUser == null
+                || foundUser.Password != password)
             {
                 return null;
             }
@@ -115,71 +89,40 @@ namespace BLL.Services
             return foundUser;
         }
 
-        public bool PasswordRecovery(string email)
+        public async Task<bool> PasswordRecoveryAsync(string email)
         {
-            if (string.IsNullOrWhiteSpace(email))
-            {
-                return false;
-            }
-
-            var foundUser = _userRepository.FindByCondition(u => u.Email == email).FirstOrDefault();
+            var foundUser = _userRepository.FindByCondition(u => u.Email == email).SingleOrDefault();
 
             if (foundUser == null)
             {
                 return false;
             }
 
-            _emailNotificationService.SendForgotPassword(foundUser);
-            
+            if (!await _emailNotificationService.SendForgotPasswordAsync(foundUser))
+            {
+                return false;
+            }
+
             return true;
         }
 
-        public bool ChangeUserData(User user, UserDataTypes userDataType, string oldValue, string newValue)
+        public async Task<bool> ChangeUserDataAsync(User user, UserServiceChangeUserData newUserData)
         {
-            if (_userRepository.FindByCondition(u => u.Id == user.Id).FirstOrDefault() == null)
+            if (_userRepository.FirstOrDefault(u => u.Id == user.Id) == null)
             {
                 return false;
             }
 
-            if (string.IsNullOrWhiteSpace(oldValue) || string.IsNullOrWhiteSpace(newValue))
+            user.Name = string.IsNullOrWhiteSpace(newUserData.Name) ? user.Name : newUserData.Name;
+            
+            if (!_userRepository.Any(u => u.Login == newUserData.Login))
             {
-                return false;
+                user.Login = string.IsNullOrWhiteSpace(newUserData.Login) ? user.Login : newUserData.Login;
             }
+            
+            user.Password = string.IsNullOrWhiteSpace(newUserData.Password) ? user.Password : newUserData.Password;
 
-            switch (userDataType)
-            {
-                case UserDataTypes.Password: // password idx
-                    if (user.Password != oldValue)
-                    {
-                        return false;
-                    }
-
-                    user.Password = newValue;
-                    break;
-
-                case UserDataTypes.Login: // login idx
-                    if (user.Login != oldValue)
-                    {
-                        return false;
-                    }
-
-                    user.Login = newValue;
-                    break;
-
-                case UserDataTypes.Name: // name idx
-                    if (user.Name != oldValue)
-                    {
-                        return false;
-                    }
-
-                    user.Name = newValue;
-                    break;
-                
-                default:
-                    return false;
-            }
-
-            _userRepository.UpdateAsync(user);
+            await _userRepository.UpdateAsync(user);
             
             return true;
         }
