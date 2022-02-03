@@ -27,7 +27,7 @@ namespace BLL.Services
             _emailNotificationService = emailNotificationService;
         }
 
-        public async Task<bool> CreateServer(string name)
+        public async Task<bool> CreateServerAsync(string name)
         {
             var server = new Server
             {
@@ -52,7 +52,7 @@ namespace BLL.Services
             return true;
         }
 
-        public async Task<bool> DeleteServer(Server server)
+        public async Task<bool> DeleteServerAsync(Server server)
         {
             // checking if such server exists
             if (_context.Servers.FirstOrDefault(s => s.Id == server.Id) == null)
@@ -72,11 +72,10 @@ namespace BLL.Services
             _context.Servers.Remove(server);
             await _context.SaveChangesAsync();
 
-            _serverRepository.DeleteAsync(server);
             return true;
         }
 
-        public async Task<bool> AddUser(Server server, User user)
+        public async Task<bool> AddUserAsync(Server server, User user)
         {
             // checking if this user is already in this server
             if (server.Users.FirstOrDefault(u => u == user) != null)
@@ -101,7 +100,7 @@ namespace BLL.Services
             return true;
         }
 
-        public async Task<bool> AddUsers(Server server,IEnumerable<User> users)
+        public async Task<bool> AddUsersAsync(Server server,IEnumerable<User> users)
         {
             if (server == null)
             {
@@ -125,7 +124,7 @@ namespace BLL.Services
             return true;
         }
 
-        public async Task<bool> DeleteUser(Server server, User user)
+        public async Task<bool> DeleteUserAsync(Server server, User user)
         {
             if (user == null || server == null)
             {
@@ -150,7 +149,7 @@ namespace BLL.Services
             return true;
         }
 
-        public async Task<bool> DeleteUsers(Server server, IEnumerable<User> users)
+        public async Task<bool> DeleteUsersAsync(Server server, IEnumerable<User> users)
         {
             if (server == null)
             {
@@ -179,19 +178,20 @@ namespace BLL.Services
             await _emailNotificationService.InviteByEmailAsync(server, user);
 
             _context.Servers.Update(server);
-            await _serverRepository.UpdateAsync(server);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<bool> EditServerAsync(Server server, ServerServiceEditServer newServer)
         {
-            if (_serverRepository.Any(s => s.Name == newServer.ServerName))
+            if (_context.Servers.FirstOrDefault(s => s.Name == newServer.ServerName) != null)
             {
                 return false;
             }
 
             server.Name = newServer.ServerName;
-            
-            await _serverRepository.UpdateAsync(server);
+
+            _context.Servers.Update(server);
+            await _context.SaveChangesAsync();
             
             return true;
         }
