@@ -14,6 +14,9 @@ namespace Core.Models
         public int ChatId { get; set; }
         public Chat Chat { get; set; }
 
+        public Message RepliedMessage { get; set; }
+
+
         [Column(TypeName = "nvarchar(500)")]
         public string Value { get; set; }
 
