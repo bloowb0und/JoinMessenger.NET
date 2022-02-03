@@ -14,5 +14,6 @@ namespace Core.Models
         public List<User> Users { get; set; }
 
         public List<ServerRole> ServerRoles { get; set; }
+        public string Icon { get; set; }
     }
 }

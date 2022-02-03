@@ -14,15 +14,14 @@ using System.Windows.Shapes;
 namespace NextGenWPF.Pages
 {
     /// <summary>
-    /// Логика взаимодействия для StartPage.xaml
+    /// Логика взаимодействия для MainPage.xaml
     /// </summary>
-    public partial class StartPage : BasePage
+    public partial class MainPage : BasePage
     {
-        public StartPage()
+        public MainPage()
         {
             InitializeComponent();
         }
-
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             App.Current.Shutdown();

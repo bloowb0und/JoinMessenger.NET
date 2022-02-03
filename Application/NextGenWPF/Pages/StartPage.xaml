@@ -6,7 +6,8 @@
       xmlns:local="clr-namespace:NextGenWPF.Pages"
       mc:Ignorable="d" 
       Title="StartPage"
-      DataContext="{Binding StartPageViewModel, Source={StaticResource Locator}}">
+      DataContext="{Binding StartPageViewModel, Source={StaticResource Locator}}" Height="450" Width="800"
+                >
 
     <Grid Background="#FF3F1E64">
         <Grid.RowDefinitions>
@@ -17,7 +18,7 @@
             <ColumnDefinition />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <Frame Grid.Row="1" Grid.Column="2" Source="{Binding CurrentPath}"/>
+        <Frame Source="{Binding CurrentPath}" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
         <Grid Background="#FF2B103D" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="43*" />
@@ -35,11 +36,11 @@
                 <ColumnDefinition Width="57*" />
                 <ColumnDefinition Width="57*" />
             </Grid.ColumnDefinitions>
-            <TextBlock Text="GSDALL"
+            <TextBlock Text="JOINME"
                        Foreground="White"
                        Grid.Column="1"
                        TextAlignment="Center"
-                       HorizontalAlignment="Center"
+                       HorizontalAlignment="Left"
                        FontFamily="Showcard Gothic" Width="70"
                        FontStretch="Medium" VerticalAlignment="Top" FontWeight="Normal" FontSize="14" Height="21"
                        Margin="0,4,0,0" />
@@ -49,7 +50,7 @@
                        TextAlignment="Center"
                        HorizontalAlignment="Left"
                        FontFamily="Dosis ExtraLight" Width="55"
-                       FontStretch="Medium" FontWeight="Bold" FontSize="11" Margin="72,7,0,2" Grid.ColumnSpan="2" />
+                       FontStretch="Medium" FontWeight="Bold" FontSize="11" Margin="80,7,0,2" Grid.ColumnSpan="2" />
             <TextBlock Text="Website"
                        Foreground="#FFC6C4C4"
                        Grid.Column="2"
@@ -57,12 +58,13 @@
                        HorizontalAlignment="Left"
                        FontFamily="Dosis ExtraLight" Width="55"
                        FontStretch="Medium" FontWeight="Bold" FontSize="11" Margin="55,7,0,2" Grid.ColumnSpan="2" />
-            <Button Content="Start"
+            <Button Content="Exit"
                     Grid.Column="11" Grid.ColumnSpan="2"
                     Foreground="White"
                     FontSize="10"
                     FontWeight="Medium" HorizontalAlignment="Left" VerticalAlignment="Center" Width="50"
-                    IsDefault="True" Margin="54,0,0,0">
+                    IsDefault="True" Margin="54,0,0,0" Cursor="Hand"
+                    Click="Button_Click">
                 <Button.Style>
                     <Style TargetType="Button">
                         <Setter Property="TextElement.FontFamily" Value="Dosis ExtraLight" />
@@ -86,36 +88,20 @@
             </Button>
 
         </Grid>
-        
-        <StackPanel Grid.Row="1" VerticalAlignment="Center" Margin="60">
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
-                <Image Width="60" Height="60" Source="D:\Project\NextGen\NextGenWPF\Images\image (1).png" />
-                <TextBlock Text="GSDALL" TextAlignment="Center" Foreground="White" FontFamily="Showcard Gothic"
-                           FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="6" />
+
+        <StackPanel Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" Width="270" Height="249" Margin="0,130,0,0" Panel.ZIndex="-1">
+            <StackPanel Orientation="Horizontal" Height="102">
+                <Image Width="60" Height="60" Source="D:\Project\NextGen\NextGenWPF\Images\image (1).png" Margin="11,0,0,0" />
+                <TextBlock Text="JOIN" TextAlignment="Center" Foreground="White" FontFamily="Showcard Gothic"
+                           FontSize="45" VerticalAlignment="Center" Margin="6" Width="113" />
             </StackPanel>
-            <TextBlock Text="Custom"
-                       Foreground="White"
-                       FontSize="25"
-                       FontWeight="Medium" Margin="0,-20,0,5" />
-            <TextBlock Text="Custom"
-                       Foreground="White"
-                       FontSize="25"
-                       FontWeight="Medium" Margin="0,0,0,5" />
-            <TextBlock Text="Custom"
-                       Foreground="White"
-                       FontSize="25"
-                       FontWeight="Medium" Margin="0,0,0,5" />
-            <TextBlock Text="Custom bla bla bla"
-                       Foreground="White"
-                       FontSize="16"
-                       FontWeight="Medium" />
         </StackPanel>
-        <Button Content="Join"
+        <Button Content="Log in"
                 Foreground="White"
-                FontSize="15"
-                FontWeight="Medium" Margin="150,325,0,0" Grid.Row="1" HorizontalAlignment="Left"
-                VerticalAlignment="Top" Width="50" IsDefault="True" Cursor="Hand"
-                Command="{Binding MoveToLoginPage}">
+                FontSize="20"
+                FontWeight="Medium" Margin="84,247,0,0" Grid.Row="1" HorizontalAlignment="Left"
+                VerticalAlignment="Top" Width="137" IsDefault="True" Cursor="Hand"
+                Command="{Binding MoveToLoginPage}" Panel.ZIndex="-1">
             <Button.Style>
                 <Style TargetType="Button">
                     <Setter Property="TextElement.FontFamily" Value="Dosis ExtraLight" />
@@ -130,19 +116,18 @@
             </Button.Style>
             <Button.Template>
                 <ControlTemplate TargetType="Button">
-                    <Border Width="100" Height="25" CornerRadius="12" Background="{TemplateBinding Background}"
+                    <Border Width="170" Height="35" CornerRadius="17" Background="{TemplateBinding Background}"
                             Margin="0,0,-70,0">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
                 </ControlTemplate>
             </Button.Template>
         </Button>
-        <Button Content="Registration"
+        <Button Content="Sign in"
                 Foreground="White"
-                FontSize="15"
-                FontWeight="Medium" Margin="0,325,290,75" Grid.Row="1" HorizontalAlignment="Right" Width="100"
-                Height="25" Cursor="Hand"
-                Command="{Binding MoveToRegistrationPage}">
+                FontSize="20"
+                FontWeight="Medium" Margin="0,287,167,92" Grid.Row="1" HorizontalAlignment="Right" Width="161" Cursor="Hand"
+                Command="{Binding MoveToRegistrationPage}" Panel.ZIndex="-1">
             <Button.Style>
                 <Style TargetType="Button">
                     <Setter Property="TextElement.FontFamily" Value="Dosis ExtraLight" />
@@ -157,7 +142,7 @@
             </Button.Style>
             <Button.Template>
                 <ControlTemplate TargetType="Button">
-                    <Border Width="100" Height="25" CornerRadius="12" Background="{TemplateBinding Background}"
+                    <Border Width="170" Height="35" CornerRadius="17" Background="{TemplateBinding Background}"
                             Margin="0,0,-70,0">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
@@ -187,5 +172,20 @@
                 </StackPanel>
             </StackPanel>
         </Grid>
+        <StackPanel Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="172" Height="211" Grid.Column="1" Margin="143,177,0,0" Panel.ZIndex="-1">
+            <Button Command="{Binding MoveToMainPage}" Height="103" Width="96" Margin="0,41,0,0" Panel.ZIndex="-1" BorderBrush="{x:Null}" >
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border   CornerRadius="80" Background="{TemplateBinding Background}"
+                            Margin="-15,0,5,0">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+                <Button.Background>
+                    <ImageBrush ImageSource="D:\Project\JoinMes\Application\NextGenWPF\Images\star_button.png"/>
+                </Button.Background>
+            </Button>
+        </StackPanel>
     </Grid>
 </local:BasePage>

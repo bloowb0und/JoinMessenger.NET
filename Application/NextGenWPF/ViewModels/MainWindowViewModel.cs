@@ -3,6 +3,8 @@ using NextGenWPF.Services.Navigations;
 using NextGenWPF.ViewModels.Base;
 using System;
 using System.Collections.Generic;
+using System.Windows;
+using System.Windows.Media;
 
 namespace NextGenWPF.ViewModels
 {
@@ -12,7 +14,8 @@ namespace NextGenWPF.ViewModels
         {
             {PageKeys.RegistrationPage, "RegistrationPage.xaml"},
             {PageKeys.LoginPage, "LoginPage.xaml"},
-            {PageKeys.StartPage, "StartPage.xaml" }
+            {PageKeys.StartPage, "StartPage.xaml" },
+            {PageKeys.MainPage, "MainPage.xaml" },
         };
 
         private IDisposable currentPageKeyDisposable;
@@ -31,10 +34,9 @@ namespace NextGenWPF.ViewModels
                }
            });
         }
-
         public string PathToView { get; private set; }
 
-
+        #region dispose
         private bool disposedValue = false;
 
         protected virtual void Dispose(bool disposing)
@@ -55,5 +57,6 @@ namespace NextGenWPF.ViewModels
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
+        #endregion dispose    
     }
 }

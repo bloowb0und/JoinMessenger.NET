@@ -13,6 +13,7 @@ namespace NextGenWPF.Pages
         public RegistrationPageViewModel RegistrationPageViewModel { get; }
         public StartPageViewModel StartPageViewModel { get; }
         public MainWindowViewModel MainWindowViewModel { get; }
+        public MainPageViewModel MainPageViewModel { get; }
         public ApplicationLocator()
         {
 #if DEBUG
@@ -22,6 +23,7 @@ namespace NextGenWPF.Pages
             StartPageViewModel = serviceProvider.GetRequiredService<StartPageViewModel>();
             LoginPageViewModel = serviceProvider.GetRequiredService<LoginPageViewModel>();
             MainWindowViewModel = serviceProvider.GetRequiredService<MainWindowViewModel>();
+            MainPageViewModel = serviceProvider.GetRequiredService<MainPageViewModel>();
             RegistrationPageViewModel = serviceProvider.GetRequiredService<RegistrationPageViewModel>();
 #else
             var dbconnection = ConfigurationManager.ConnectionStrings["defaultDbConnection"].ConnectionString;
@@ -34,8 +36,10 @@ namespace NextGenWPF.Pages
             services.AddSingleton<INavigationService, NavigationService>();
             services.AddSingleton<IAutorizationService, DesignTime>();
             services.AddSingleton<IRegistrationService, DesignTime>();
+            services.AddSingleton<ICurrentDeterminatorService,CurrentDeterminatorService>();
             services.AddSingleton<LoginPageViewModel>();
             services.AddSingleton<RegistrationPageViewModel>();
+            services.AddSingleton<MainPageViewModel>();
         }
     }
 }

@@ -4,6 +4,7 @@ using NextGenWPF.Services;
 using NextGenWPF.Services.Navigations;
 using NextGenWPF.ViewModels.Base;
 using System.Windows;
+using NextGenWPF.Pages;
 
 namespace NextGenWPF.ViewModels
 {
@@ -15,15 +16,18 @@ namespace NextGenWPF.ViewModels
         private IAutorizationService _autorization;
 
         private INavigationService _navigationService;
-        public LoginPageViewModel(IAutorizationService autorization, INavigationService navigationService)
+        private ICurrentDeterminatorService _currentDeterminatorService;
+        public LoginPageViewModel(IAutorizationService autorization, INavigationService navigationService, ICurrentDeterminatorService currentDeterminatorService)
         {
             _autorization = autorization;
             LoginCommand = new RelayCommand(this.Login);
             RecoverCommand = new RelayCommand(this.RecoverPassword);
+            MoveToRegistrationPage = new RelayCommand(this.MoveToRegistration);
             _navigationService = navigationService;
+            _currentDeterminatorService = currentDeterminatorService;
         }
         public RelayCommand MoveToStartPage { get; }
-
+        public string CurrentPath { get; set; }
         public RelayCommand MoveToRegistrationPage { get; }
         public RelayCommand LoginCommand { get; }
         public RelayCommand RecoverCommand { get; }
@@ -48,7 +52,18 @@ namespace NextGenWPF.ViewModels
                 this.OnPropertyChanged();
             }
         }
-
+        private void MoveToRegistration()
+        {
+            if (this.PageLoaded)
+            {
+                this.CurrentPath = "RegistrationPage.xaml";
+                this.OnPropertyChanged(nameof(CurrentPath));
+            }
+        }
+        protected override void OnPageLoaded()
+        {
+            base.OnPageLoaded();
+        }
         private async void Login()
         {
             if (string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(username))
@@ -63,8 +78,38 @@ namespace NextGenWPF.ViewModels
             var result = await _autorization.Autorization(user);
             if (result)
             {
+                _currentDeterminatorService.SetCurrentUser(user);
                 MessageBox.Show("Come home, sweety)", "Login");
-                this._navigationService.NavigateTo(PageKeys.StartPage);
+                this._navigationService.NavigateTo(PageKeys.MainPage);
+                this.Password = string.Empty;
+                this.Username = string.Empty;
+            }
+            else
+            {
+                var act = MessageBox.Show("We can't find such sweety like u( Do u want to become our member?", "Login",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question, MessageBoxResult.Yes);
+                if (act == MessageBoxResult.Yes)
+                {
+                    this.Password = string.Empty;
+                    this.Username = string.Empty;
+                    MoveToRegistrationPage.Execute(this);
+                }
+                else
+                {
+                    this._navigationService.NavigateTo(PageKeys.StartPage);
+                    this.Password = string.Empty;
+                    this.Username = string.Empty;
+                }
+            }
+        }
+        private async void RecoverPassword()
+        {
+            var result =  await _autorization.Recover(this.Username);
+            if (result)
+            {
+                MessageBox.Show("Try again, sweety)", "Recover");
+                this._navigationService.NavigateTo(PageKeys.LoginPage);
                 this.Password = string.Empty;
                 this.Username = string.Empty;
             }
@@ -85,10 +130,6 @@ namespace NextGenWPF.ViewModels
                     this.Username = string.Empty;
                 }
             }
-        }
-        private async void RecoverPassword()
-        {
-            await _autorization.Recover(this.Username);
         }
 
     }

@@ -8,7 +8,8 @@
         WindowStyle="None"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen" 
-        DataContext="{Binding MainWindowViewModel, Source={StaticResource Locator}}">
+        DataContext="{Binding MainWindowViewModel, Source={StaticResource Locator}}"
+        MouseDown="Window_MouseDown">
     <Grid>
         <Frame Source="{Binding PathToView}" NavigationUIVisibility="Hidden"/>
     </Grid>

@@ -10,6 +10,7 @@
 
     <Grid>
         <Image HorizontalAlignment="Center" Height="224" VerticalAlignment="Center" Width="173" Source="D:\Project\NextGen\NextGenWPF\Images\bgcolor.jpg" Stretch="Fill"/>
+        <Frame Source="{Binding CurrentPath}"/>
         <StackPanel Orientation="Vertical"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center" Width="106" Height="148">

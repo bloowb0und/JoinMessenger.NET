@@ -61,7 +61,7 @@ namespace NextGenWPF.ViewModels
             }
         }
 
-        private void Registration()
+        private async void Registration()
         {
             RegistrationCommand.RaiseCanExecuteChanged();
             if (string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(username) || !IsValidEmail(email))
@@ -74,7 +74,7 @@ namespace NextGenWPF.ViewModels
                 Login = username,
                 Email = email
             };
-            var result = _registration.Registration(user).Result;
+            var result =await _registration.Registration(user);
             if (result)
             {
                 MessageBox.Show("Welcome home, sweety)", "Registrate");

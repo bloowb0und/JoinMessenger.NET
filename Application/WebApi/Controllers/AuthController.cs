@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using Core.Models;
@@ -60,8 +61,8 @@ namespace WebApi.Controllers
                 
                 return BadRequest(ModelState);
             }
-
-            if (!_userService.PasswordRecovery(email.Email))
+            Thread.Sleep(1000);
+            if (! _userService.PasswordRecovery(email.Email))
             {
                 ModelState.AddModelError("email", "Email not found");
                 

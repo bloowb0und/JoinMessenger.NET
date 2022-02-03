@@ -14,11 +14,13 @@ namespace NextGenWPF.ViewModels
             this._navigationService = navigationService;
             this.MoveToLoginPage = new RelayCommand(this.MoveToLogin);
             this.MoveToRegistrationPage = new RelayCommand(this.MoveToRegistration);
+            this.MoveToMainPage = new RelayCommand(this.MoveToMain);
         }
         public RelayCommand MoveToLoginPage { get; }
 
         public string CurrentPath { get; private set; }
         public RelayCommand MoveToRegistrationPage { get; }
+        public RelayCommand MoveToMainPage { get; }
 
         private readonly INavigationService _navigationService;
 
@@ -31,7 +33,6 @@ namespace NextGenWPF.ViewModels
             if (this.PageLoaded)
             {
                 this.CurrentPath = "LoginPage.xaml";
-                //this._navigationService.NavigateTo(PageKeys.LoginPage);
                 this.OnPropertyChanged(nameof(CurrentPath));
             }
         }
@@ -40,7 +41,14 @@ namespace NextGenWPF.ViewModels
             if (this.PageLoaded)
             {
                 this.CurrentPath = "RegistrationPage.xaml";
-                //this._navigationService.NavigateTo(PageKeys.RegistrationPage);
+                this.OnPropertyChanged(nameof(CurrentPath));
+            }
+        }
+        private void MoveToMain()
+        {
+            if (this.PageLoaded)
+            {
+                this.CurrentPath = "MainPage.xaml";
                 this.OnPropertyChanged(nameof(CurrentPath));
             }
         }

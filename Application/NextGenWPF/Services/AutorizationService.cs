@@ -34,10 +34,15 @@ namespace NextGenWPF.Services
              }
              return false;
          }
-        public async Task Recover(string mail)
+        public async Task<bool> Recover(string mail)
         {
             var req = new NetworkService();
-            await req.SendRequestAsync(new RecoverRequest(mail));
+            var result = await req.SendRequestAsync(new RecoverRequest(mail));
+            if (result.ResponseCode == 200)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

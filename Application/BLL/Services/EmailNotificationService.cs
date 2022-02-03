@@ -41,7 +41,7 @@ namespace BLL.Services
                     $"<h2>Forgot password</h2>Hello, <b>{user.Name}</b><br><br>We recently received a request about a forgot password on:<br><b>{user.Email}</b><br><br>Password for your account is:<br><b>{user.Password}</b><br><br>If it wasn't you, please ignore this message.";
                 mailMessage.IsBodyHtml = true;
 
-                await _smtpClient.SendMailAsync(mailMessage);
+                 await _smtpClient.SendMailAsync(mailMessage);
             }
         }
 
