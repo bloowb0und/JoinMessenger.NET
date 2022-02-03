@@ -31,11 +31,6 @@ namespace BLL.Services
             return true;
         }
 
-        public Message GetMessageById(int id)
-        {
-            return _messageRepository.FindByCondition(m => m.Id == id).SingleOrDefault();
-        }
-
         public async Task<bool> EditMessageAsync(User user, Message message, MessageServiceEditMessage newMessage)
         {
             if (!_messageRepository.Any(m => m == message))

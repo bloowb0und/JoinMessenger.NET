@@ -32,11 +32,6 @@ namespace BLL.Services
             return true;
         }
 
-        public Chat GetChatById(int id)
-        {
-            return _chatRepository.FirstOrDefault(c => c.Id == id);
-        }
-
         public async Task<bool> DeleteChatAsync(Chat chat)
         {
             if (!_chatRepository.Any(c => c == chat))
