@@ -9,17 +9,17 @@ namespace BLL.Abstractions.Interfaces
 {
     public interface IServerService
     {
-        bool CreateServer(string name);
+        Task<bool> CreateServer(string name);
 
-        bool DeleteServer(Server server);
+        Task<bool> DeleteServer(Server server);
 
-        bool AddUser(Server server, User user);
+        Task<bool> AddUser(Server server, User user);
 
-        bool AddUsers(Server server, IEnumerable<User> user);
+        Task<bool> AddUsers(Server server, IEnumerable<User> user);
 
-        bool DeleteUser(Server server, User user);
+        Task<bool> DeleteUser(Server server, User user);
 
-        bool DeleteUsers(Server server, IEnumerable<User> user);
+        Task<bool> DeleteUsers(Server server, IEnumerable<User> user);
 
         Task SendInvitation(Server server, User user);
     }

@@ -25,7 +25,7 @@ namespace BLL.Services
             _emailNotificationService = emailNotificationService;
         }
 
-        public bool CreateServer(string name)
+        public async Task<bool> CreateServer(string name)
         {
             if (name == null)
             {
@@ -48,11 +48,12 @@ namespace BLL.Services
 
             // creating a server
             _context.Servers.Add(server);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+
             return true;
         }
 
-        public bool DeleteServer(Server server)
+        public async Task<bool> DeleteServer(Server server)
         {
             if (server == null)
             {
@@ -60,7 +61,7 @@ namespace BLL.Services
             }
 
             // checking if such server exists
-            if (!_context.Servers.Any(s => s.Id == server.Id))
+            if (_context.Servers.FirstOrDefault(s => s.Id == server.Id) == null)
             {
                 return false;
             }
@@ -71,14 +72,16 @@ namespace BLL.Services
             foreach (var chat in server.Chats)
             {
                 _context.Chats.Remove(chat);
+                _context.Chats.Update(chat);
             }
 
             _context.Servers.Remove(server);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+
             return true;
         }
 
-        public bool AddUser(Server server, User user)
+        public async Task<bool> AddUser(Server server, User user)
         {
             if (user == null || server == null)
             {
@@ -92,18 +95,18 @@ namespace BLL.Services
             }
 
             server.Users.Add(user);
+            user.Servers.Add(server);
 
             // adding this user to all chats that are in this server ...
 
-            user.Servers.Add(server);
-
             _context.Servers.Update(server);
-            _context.SaveChanges();
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
 
             return true;
         }
 
-        public bool AddUsers(Server server,IEnumerable<User> users)
+        public async Task<bool> AddUsers(Server server,IEnumerable<User> users)
         {
             if (server == null)
             {
@@ -116,17 +119,18 @@ namespace BLL.Services
                 {
                     server.Users.Add(user);
                     user.Servers.Add(server);
+                    _context.Users.Update(user);
                     // adding all chats that are in this server in this user's chats
                 }
             }
 
             _context.Servers.Update(server);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return true;
         }
 
-        public bool DeleteUser(Server server, User user)
+        public async Task<bool> DeleteUser(Server server, User user)
         {
             if (user == null || server == null)
             {
@@ -145,12 +149,13 @@ namespace BLL.Services
             server.Users.Remove(user);
 
             _context.Servers.Update(server);
-            _context.SaveChanges();
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
 
             return true;
         }
 
-        public bool DeleteUsers(Server server, IEnumerable<User> users)
+        public async Task<bool> DeleteUsers(Server server, IEnumerable<User> users)
         {
             if (server == null)
             {
@@ -163,12 +168,13 @@ namespace BLL.Services
                 {
                     server.Users.Remove(user);
                     user.Servers.Remove(server);
+                    _context.Users.Update(user);
                     // deleting all chats that are in this server in this user's chats
                 }
             }
 
             _context.Servers.Update(server);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return true;
         }
