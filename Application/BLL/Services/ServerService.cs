@@ -7,9 +7,11 @@ using DAL.Contexts;
 using DAL.Repository;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Core.Models.ServiceMethodsModels;
 
 namespace BLL.Services
 {
@@ -27,13 +29,10 @@ namespace BLL.Services
 
         public async Task<bool> CreateServer(string name)
         {
-            if (name == null)
+            var server = new Server
             {
-                return false;
-            }
-
-            var server = new Server();
-            server.Name = name;
+                Name = name
+            };
 
             // checking if server with this name already exists
             if (_context.Servers.Any(s => s.Name == server.Name))
@@ -55,11 +54,6 @@ namespace BLL.Services
 
         public async Task<bool> DeleteServer(Server server)
         {
-            if (server == null)
-            {
-                return false;
-            }
-
             // checking if such server exists
             if (_context.Servers.FirstOrDefault(s => s.Id == server.Id) == null)
             {
@@ -78,20 +72,21 @@ namespace BLL.Services
             _context.Servers.Remove(server);
             await _context.SaveChangesAsync();
 
+            _serverRepository.DeleteAsync(server);
             return true;
         }
 
         public async Task<bool> AddUser(Server server, User user)
         {
-            if (user == null || server == null)
+            // checking if this user is already in this server
+            if (server.Users.FirstOrDefault(u => u == user) != null)
             {
                 return false;
             }
 
             // checking if this user is alreadly in this server
             if (server.Users.FirstOrDefault(u => u == user) != null)
-            { 
-                return false;
+            {                return false;
             }
 
             server.Users.Add(user);
@@ -179,11 +174,26 @@ namespace BLL.Services
             return true;
         }
 
-        public async Task SendInvitation(Server server, User user)
+        public async Task SendInvitationAsync(Server server, User user)
         {
             await _emailNotificationService.InviteByEmailAsync(server, user);
 
             _context.Servers.Update(server);
+            await _serverRepository.UpdateAsync(server);
+        }
+
+        public async Task<bool> EditServerAsync(Server server, ServerServiceEditServer newServer)
+        {
+            if (_serverRepository.Any(s => s.Name == newServer.ServerName))
+            {
+                return false;
+            }
+
+            server.Name = newServer.ServerName;
+            
+            await _serverRepository.UpdateAsync(server);
+            
+            return true;
         }
     }
 }

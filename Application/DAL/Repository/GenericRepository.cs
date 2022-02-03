@@ -29,6 +29,18 @@ namespace DAL.Repository
             return m.Where(expression.Compile());
         }
         
+        public T FirstOrDefault(Expression<Func<T, bool>> expression)
+        {
+            var m = GetAll();
+            return m.FirstOrDefault(expression.Compile());
+        }
+        
+        public T SingleOrDefault(Expression<Func<T, bool>> expression)
+        {
+            var m = GetAll();
+            return m.SingleOrDefault(expression.Compile());
+        }
+        
         public bool Any()
         {
             var m = GetAll();

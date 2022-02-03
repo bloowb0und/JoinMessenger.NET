@@ -36,7 +36,6 @@ namespace PresentationLayer
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IEmailNotificationService, EmailNotificationService>();
             services.AddScoped<IServerService, ServerService>();
-            services.AddScoped<IServerInvitationService, EmailNotificationService>();
 
             // DAL Services
             services.AddSingleton<MessengerContext>();
