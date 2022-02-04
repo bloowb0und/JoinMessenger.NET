@@ -20,12 +20,15 @@ namespace BLL.Services
     {
         private readonly IEmailNotificationService _emailNotificationService;
         private readonly AppDbContext _context;
+        private readonly UnitOfWork _unitOfWork;
 
         public ServerService(AppDbContext context,
-            IEmailNotificationService emailNotificationService)
+            IEmailNotificationService emailNotificationService,
+            UnitOfWork unitOfWork)
         {
             _context = context;
             _emailNotificationService = emailNotificationService;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<bool> CreateServerAsync(string name)
@@ -40,28 +43,31 @@ namespace BLL.Services
                 Name = name
             };
 
-            // checking if server with this name already exists
-            if (_context.Servers.Any(s => s.Name == server.Name))
+            if (_unitOfWork.ServerRepository.Any(s => s.Name == name))
             {
                 return false;
             }
 
             server.DateCreated = DateTime.Now;
             server.Chats = new List<Chat>();
-            
+
             // adding roles
 
             // creating a server
-            _context.Servers.Add(server);
-            await _context.SaveChangesAsync();
+            await _unitOfWork.ServerRepository.Create(server);
 
             return true;
         }
 
         public async Task<bool> DeleteServerAsync(Server server)
         {
+            if (server == null)
+            {
+                return false;
+            }
+
             // checking if such server exists
-            if (!_context.Servers.Any(s => s.Id == server.Id))
+            if (!_unitOfWork.ServerRepository.Any(s => s.Id == server.Id))
             {
                 return false;
             }
@@ -70,30 +76,28 @@ namespace BLL.Services
 
             // deleting all chats from the server
 
-            _context.Servers.Remove(server);
-            await _context.SaveChangesAsync();
+            await _unitOfWork.ServerRepository.Delete(server);
 
             return true;
         }
 
         public async Task<bool> AddUserAsync(Server server, User user)
         {
-            var list = _context.UserServers.ToList();
-
             if (server == null || user == null)
             {
                 return false;
             }
 
             // checking if this user is already in this server
-            if (list.Any(us => us.UserId == user.Id && us.ServerId == server.Id))
+            if (_unitOfWork.UserServerRepository.Any
+                (us => us.ServerId == server.Id && us.UserId == user.Id))
             {
                 return false;
             }
 
             server.Users.Add(user);
 
-            await _context.SaveChangesAsync();
+            await _unitOfWork.Save();
 
             return true;
         }
@@ -105,32 +109,32 @@ namespace BLL.Services
                 return false;
             }
 
-            var list = await _context.UserServers.ToListAsync();
+            var list = await _unitOfWork.UserServerRepository.Get();
 
-            foreach(var user in users)
+            foreach (var user in users)
             {
-                if (user != null && !list.Any(us => us.UserId == user.Id && us.ServerId == server.Id))
+                if (user != null && !list.Any
+                    (us => us.ServerId == server.Id && us.UserId == user.Id))
                 {
                     server.Users.Add(user);
                 }
             }
-
-            await _context.SaveChangesAsync();
+            
+            await _unitOfWork.ServerRepository.Update(server);
 
             return true;
         }
 
         public async Task<bool> DeleteUserAsync(Server server, User user)
         {
-            if (user == null || server == null)
+            if (server == null || user == null)
             {
                 return false;
             }
 
-            var list = _context.UserServers.ToList();
-
             // checking if this user is in this server
-            if (!list.Any(us => us.UserId == user.Id && us.ServerId == server.Id))
+            if (!_unitOfWork.UserServerRepository.Any
+                (us => us.ServerId == server.Id && us.UserId == user.Id))
             {
                 return false;
             }
@@ -139,7 +143,7 @@ namespace BLL.Services
 
             server.Users.Remove(user);
 
-            await _context.SaveChangesAsync();
+            await _unitOfWork.ServerRepository.Update(server);
 
             return true;
         }
@@ -151,17 +155,18 @@ namespace BLL.Services
                 return false;
             }
 
-            var list = _context.UserServers.ToList();
+            var dbServer = _unitOfWork.ServerRepository.FirstOrDefault(s => s.Id == server.Id);
+            var list = await _unitOfWork.UserServerRepository.Get();
 
             foreach (var user in users)
             {
-                if (user != null && list.Any(us => us.UserId == user.Id && us.ServerId == server.Id))
+                if (user != null && list.Any(us => us.ServerId == dbServer.Id && us.UserId == user.Id))
                 {
-                    user.Servers.Remove(server);
+                    dbServer.Users.Remove(user);
                 }
             }
 
-            await _context.SaveChangesAsync();
+            await _unitOfWork.ServerRepository.Update(server);
 
             return true;
         }
@@ -176,14 +181,14 @@ namespace BLL.Services
 
         public async Task<bool> EditServerAsync(Server server, ServerServiceEditServer newServer)
         {
-            if (_context.Servers.Any(s => s.Name == newServer.ServerName))
+            if (_unitOfWork.ServerRepository.Any(s => s.Name == newServer.ServerName))
             {
                 return false;
             }
 
             server.Name = newServer.ServerName;
 
-            await _context.SaveChangesAsync();
+            await _unitOfWork.ServerRepository.Update(server);
             
             return true;
         }
