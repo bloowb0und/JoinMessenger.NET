@@ -41,7 +41,7 @@ namespace BLL.Services
             };
 
             // checking if server with this name already exists
-            if (_context.Servers.FirstOrDefault(s => s.Name == server.Name) != null)
+            if (_context.Servers.Any(s => s.Name == server.Name))
             {
                 return false;
             }
@@ -61,7 +61,7 @@ namespace BLL.Services
         public async Task<bool> DeleteServerAsync(Server server)
         {
             // checking if such server exists
-            if (_context.Servers.FirstOrDefault(s => s.Id == server.Id) == null)
+            if (!_context.Servers.Any(s => s.Id == server.Id))
             {
                 return false;
             }
@@ -86,7 +86,7 @@ namespace BLL.Services
             }
 
             // checking if this user is already in this server
-            if (list.FirstOrDefault(us => us.UserId == user.Id && us.ServerId == server.Id) != null)
+            if (list.Any(us => us.UserId == user.Id && us.ServerId == server.Id))
             {
                 return false;
             }
@@ -109,7 +109,7 @@ namespace BLL.Services
 
             foreach(var user in users)
             {
-                if (list.FirstOrDefault(us => us.UserId == user.Id && us.ServerId == server.Id) == null)
+                if (user != null && !list.Any(us => us.UserId == user.Id && us.ServerId == server.Id))
                 {
                     server.Users.Add(user);
                 }
@@ -130,7 +130,7 @@ namespace BLL.Services
             var list = _context.UserServers.ToList();
 
             // checking if this user is in this server
-            if (list.FirstOrDefault(us => us.UserId == user.Id && us.ServerId == server.Id) == null)
+            if (!list.Any(us => us.UserId == user.Id && us.ServerId == server.Id))
             {
                 return false;
             }
@@ -155,7 +155,7 @@ namespace BLL.Services
 
             foreach (var user in users)
             {
-                if (user != null && list.FirstOrDefault(us => us.UserId == user.Id && us.ServerId == server.Id) != null)
+                if (user != null && list.Any(us => us.UserId == user.Id && us.ServerId == server.Id))
                 {
                     user.Servers.Remove(server);
                 }
@@ -176,7 +176,7 @@ namespace BLL.Services
 
         public async Task<bool> EditServerAsync(Server server, ServerServiceEditServer newServer)
         {
-            if (_context.Servers.FirstOrDefault(s => s.Name == newServer.ServerName) != null)
+            if (_context.Servers.Any(s => s.Name == newServer.ServerName))
             {
                 return false;
             }
