@@ -19,14 +19,11 @@ namespace BLL.Services
     public class ServerService : IServerService
     {
         private readonly IEmailNotificationService _emailNotificationService;
-        private readonly AppDbContext _context;
         private readonly UnitOfWork _unitOfWork;
 
-        public ServerService(AppDbContext context,
-            IEmailNotificationService emailNotificationService,
+        public ServerService(IEmailNotificationService emailNotificationService,
             UnitOfWork unitOfWork)
         {
-            _context = context;
             _emailNotificationService = emailNotificationService;
             _unitOfWork = unitOfWork;
         }
@@ -171,12 +168,12 @@ namespace BLL.Services
             return true;
         }
 
+        // not done yet
         public async Task SendInvitationAsync(Server server, User user)
         {
             await _emailNotificationService.InviteByEmailAsync(server, user);
 
-            _context.Servers.Update(server);
-            await _context.SaveChangesAsync();
+            await _unitOfWork.ServerRepository.Update(server);
         }
 
         public async Task<bool> EditServerAsync(Server server, ServerServiceEditServer newServer)
