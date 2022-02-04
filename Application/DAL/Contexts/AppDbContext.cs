@@ -16,6 +16,7 @@ namespace DAL.Contexts
         public DbSet<Server> Servers { get; set; }
         public DbSet<Chat> Chats { get; set; }
         public DbSet<Message> Messages { get; set; }
+        public DbSet<UserServer> UserServers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -38,6 +39,7 @@ namespace DAL.Contexts
                     j.HasKey(t => new { t.UserId, t.ServerId });
                     j.ToTable("UserServer");
                 });
+
 
             // Many to Many (Chat & Role)
             builder.Entity<ChatRole>()
@@ -117,7 +119,7 @@ namespace DAL.Contexts
                 .HasForeignKey(f => f.PermissionId);
 
             // Many to Many (UserServer & Role)
-            builder.Entity<UserServerRole>()
+            /*builder.Entity<UserServerRole>()
                 .HasKey(usr => new { usr.UserServerID, usr.RoleId });
 
             builder.Entity<UserServerRole>()
@@ -129,7 +131,7 @@ namespace DAL.Contexts
             builder.Entity<UserServerRole>()
                 .HasOne(usr => usr.Role)
                 .WithMany(r => r.UserServerRoles)
-                .HasForeignKey(f => f.RoleId);
+                .HasForeignKey(f => f.RoleId);*/
         }
     }
 

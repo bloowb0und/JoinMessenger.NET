@@ -12,16 +12,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Core.Models.ServiceMethodsModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace BLL.Services
 {
     public class ServerService : IServerService
     {
-        private readonly EmailNotificationService _emailNotificationService;
+        private readonly IEmailNotificationService _emailNotificationService;
         private readonly AppDbContext _context;
 
         public ServerService(AppDbContext context,
-            EmailNotificationService emailNotificationService)
+            IEmailNotificationService emailNotificationService)
         {
             _context = context;
             _emailNotificationService = emailNotificationService;
@@ -29,13 +30,18 @@ namespace BLL.Services
 
         public async Task<bool> CreateServerAsync(string name)
         {
+            if (string.IsNullOrEmpty(name))
+            {
+                return false;
+            }
+
             var server = new Server
             {
                 Name = name
             };
 
             // checking if server with this name already exists
-            if (_context.Servers.Any(s => s.Name == server.Name))
+            if (_context.Servers.FirstOrDefault(s => s.Name == server.Name) != null)
             {
                 return false;
             }
@@ -63,11 +69,6 @@ namespace BLL.Services
             // checking if you have particular roles to delete the server ...
 
             // deleting all chats from the server
-            foreach (var chat in server.Chats)
-            {
-                _context.Chats.Remove(chat);
-                _context.Chats.Update(chat);
-            }
 
             _context.Servers.Remove(server);
             await _context.SaveChangesAsync();
@@ -77,24 +78,21 @@ namespace BLL.Services
 
         public async Task<bool> AddUserAsync(Server server, User user)
         {
-            // checking if this user is already in this server
-            if (server.Users.FirstOrDefault(u => u == user) != null)
+            var list = _context.UserServers.ToList();
+
+            if (server == null || user == null)
             {
                 return false;
             }
 
-            // checking if this user is alreadly in this server
-            if (server.Users.FirstOrDefault(u => u == user) != null)
-            {                return false;
+            // checking if this user is already in this server
+            if (list.FirstOrDefault(us => us.UserId == user.Id && us.ServerId == server.Id) != null)
+            {
+                return false;
             }
 
             server.Users.Add(user);
-            user.Servers.Add(server);
 
-            // adding this user to all chats that are in this server ...
-
-            _context.Servers.Update(server);
-            _context.Users.Update(user);
             await _context.SaveChangesAsync();
 
             return true;
@@ -107,18 +105,16 @@ namespace BLL.Services
                 return false;
             }
 
+            var list = await _context.UserServers.ToListAsync();
+
             foreach(var user in users)
             {
-                if (user != null && server.Users.FirstOrDefault(u => u.Id == user.Id) == null)
+                if (list.FirstOrDefault(us => us.UserId == user.Id && us.ServerId == server.Id) == null)
                 {
                     server.Users.Add(user);
-                    user.Servers.Add(server);
-                    _context.Users.Update(user);
-                    // adding all chats that are in this server in this user's chats
                 }
             }
 
-            _context.Servers.Update(server);
             await _context.SaveChangesAsync();
 
             return true;
@@ -130,20 +126,19 @@ namespace BLL.Services
             {
                 return false;
             }
-            
+
+            var list = _context.UserServers.ToList();
+
             // checking if this user is in this server
-            if (server.Users.FirstOrDefault(u => u == user) == null)
+            if (list.FirstOrDefault(us => us.UserId == user.Id && us.ServerId == server.Id) == null)
             {
                 return false;
             }
 
             // checking if you have particular roles to delete users from the server ... 
 
-            user.Servers.Remove(server);
             server.Users.Remove(user);
 
-            _context.Servers.Update(server);
-            _context.Users.Update(user);
             await _context.SaveChangesAsync();
 
             return true;
@@ -156,18 +151,16 @@ namespace BLL.Services
                 return false;
             }
 
+            var list = _context.UserServers.ToList();
+
             foreach (var user in users)
             {
-                if (user != null && server.Users.FirstOrDefault(u => u.Id == user.Id) != null)
+                if (user != null && list.FirstOrDefault(us => us.UserId == user.Id && us.ServerId == server.Id) != null)
                 {
-                    server.Users.Remove(user);
                     user.Servers.Remove(server);
-                    _context.Users.Update(user);
-                    // deleting all chats that are in this server in this user's chats
                 }
             }
 
-            _context.Servers.Update(server);
             await _context.SaveChangesAsync();
 
             return true;
@@ -190,7 +183,6 @@ namespace BLL.Services
 
             server.Name = newServer.ServerName;
 
-            _context.Servers.Update(server);
             await _context.SaveChangesAsync();
             
             return true;

@@ -12,9 +12,9 @@ namespace Core.Models
 
         public RoleType RoleType;
 
-        public List<ChatRole> ChatRoles { get; set; }
-        public List<ServerRole> ServerRoles { get; set; }
+        public List<ChatRole> ChatRoles { get; set; } = new List<ChatRole>();
+        public List<ServerRole> ServerRoles { get; set; } = new List<ServerRole>();
 
-        public List<UserServerRole> UserServerRoles { get; set; }
+        //public List<UserServerRole> UserServerRoles { get; set; }
     }
 }

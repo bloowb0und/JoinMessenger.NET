@@ -34,11 +34,14 @@ namespace WebApi
         {
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IEmailNotificationService, EmailNotificationService>();
+            services.AddScoped<IServerService, ServerService>();
 
             services.AddDbContext<AppDbContext>(options =>
             {
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
+
+            
             
             services.AddSingleton<MessengerContext>(provider => new MessengerContext(Configuration.GetConnectionString("PathToFile")));
             services.Configure<EmailCredentialsModel>(Configuration.GetSection("EmailCredentials"));

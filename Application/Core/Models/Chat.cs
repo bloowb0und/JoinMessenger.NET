@@ -17,7 +17,7 @@ namespace Core.Models
 
         public Server Server { get; set; }
 
-        public ICollection<Message> Messages { get; set; }
+        public ICollection<Message> Messages { get; set; } = new List<Message>();
 
         public List<ChatRole> ChatRoles { get; set; }
     }

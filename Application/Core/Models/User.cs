@@ -23,9 +23,9 @@ namespace Core.Models
         [Column(TypeName = "nvarchar(30)")]
         public string Password { get; set; }
 
-        public ICollection<Server> Servers { get; set; }
+        public ICollection<Server> Servers { get; set; } = new List<Server>();
 
-        public ICollection<Message> Messages { get; set; }
+        public ICollection<Message> Messages { get; set; } = new List<Message>();
 
         public List<UserServer> UserServers { get; set; }
     }
