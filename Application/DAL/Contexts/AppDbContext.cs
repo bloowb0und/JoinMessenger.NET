@@ -20,6 +20,14 @@ namespace DAL.Contexts
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            // User
+            builder.Entity<User>()
+                .HasIndex(u => u.Name)
+                .IsUnique(true);
+            builder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique(true);
+
             //Many to Many (Server & User)
             builder.Entity<Server>()
             .HasMany(p => p.Users)

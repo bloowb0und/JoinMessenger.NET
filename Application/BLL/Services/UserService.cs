@@ -43,8 +43,8 @@ namespace BLL.Services
                 return false;
             }
 
-            if (_unitOfWork.UserRepository.Any(u => u.Email == user.Email)
-                ||_unitOfWork.UserRepository.Any(u => u.Login == user.Login)) // check if email is unique
+            if (_unitOfWork.UserRepository.Any
+                (u => u.Email == user.Email || u.Name == user.Name)) // check if email/name is unique
             {
                 return false;
             }
