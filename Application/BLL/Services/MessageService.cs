@@ -53,9 +53,8 @@ namespace BLL.Services
 
         public async Task<bool> DeleteMessageAsync(User user, Message message)
         {
-            if (message.User == null 
-                || message.Server == null 
-                || message.Chat == null 
+            if (message.User == null
+                || message.Chat == null
                 || string.IsNullOrWhiteSpace(message.Value))
             {
                 return false;

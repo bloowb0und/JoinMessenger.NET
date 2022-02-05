@@ -8,11 +8,11 @@ namespace Core.Models
     public class User : BaseEntity
     { 
         [Required]
-        [Column(TypeName = "nvarchar(30)")]
+        [Column(TypeName = "nvarchar(50)")]
         public string Name { get; set; }
 
         [Required]
-        [Column(TypeName = "varchar(30)")]
+        [Column(TypeName = "varchar(150)")]
         public string Email { get; set; }
 
         [Required]
@@ -22,11 +22,7 @@ namespace Core.Models
         [Required]
         [Column(TypeName = "nvarchar(30)")]
         public string Password { get; set; }
-
-        public ICollection<Server> Servers { get; set; } = new List<Server>();
-
-        public ICollection<Message> Messages { get; set; } = new List<Message>();
-
-        public List<UserServer> UserServers { get; set; }
+        
+        public ICollection<UserServer> UserServers { get; set; }
     }
 }

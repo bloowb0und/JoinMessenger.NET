@@ -12,7 +12,8 @@ namespace DAL.Repository
         private readonly AppDbContext _context;
         private DbGenericRepository<Server> _serverRepository;
         private DbGenericRepository<User> _userRepository;
-        private DbGenericRepository<UserServer> _userServerRepository;
+        private DbGenericRepository<Chat> _chatRepository;
+        private DbGenericRepository<Role> _roleRepository;
 
         public UnitOfWork(AppDbContext context)
         {
@@ -44,16 +45,29 @@ namespace DAL.Repository
             }
         }
 
-        public DbGenericRepository<UserServer> UserServerRepository
+        public DbGenericRepository<Chat> ChatRepository
         {
             get
             {
-                if (_userServerRepository == null)
+                if (_chatRepository == null)
                 {
-                    _userServerRepository = new DbGenericRepository<UserServer>(_context);
+                    _chatRepository = new DbGenericRepository<Chat>(_context);
                 }
 
-                return _userServerRepository;
+                return _chatRepository;
+            }
+        }
+        
+        public DbGenericRepository<Role> RoleRepository
+        {
+            get
+            {
+                if (_roleRepository == null)
+                {
+                    _roleRepository = new DbGenericRepository<Role>(_context);
+                }
+
+                return _roleRepository;
             }
         }
 

@@ -46,9 +46,16 @@ namespace BLL.Services
             }
 
             server.DateCreated = DateTime.Now;
-            server.Chats = new List<Chat>();
+            
+            var newChat = new Chat()
+            {
+                Name = "general",
+                Server = server,
+                Type = ChatType.Text,
+            };
+            await _unitOfWork.ChatRepository.Create(newChat);
 
-            // adding roles
+            // create everyone and owner roles in RoleService
 
             // creating a server
             await _unitOfWork.ServerRepository.Create(server);
@@ -86,13 +93,13 @@ namespace BLL.Services
             }
 
             // checking if this user is already in this server
-            if (_unitOfWork.UserServerRepository.Any
-                (us => us.ServerId == server.Id && us.UserId == user.Id))
+            if (_unitOfWork.UserRepository.Any(us =>
+                    us.UserServers.Any(u => u.User.Id == user.Id && u.Server.Id == server.Id)))
             {
                 return false;
             }
 
-            server.Users.Add(user);
+            // server.Users.Add(user);
 
             await _unitOfWork.Save();
 
@@ -106,14 +113,16 @@ namespace BLL.Services
                 return false;
             }
 
-            var list = await _unitOfWork.UserServerRepository.Get();
-
             foreach (var user in users)
             {
-                if (user != null && !list.Any
-                    (us => us.ServerId == server.Id && us.UserId == user.Id))
+                if (user != null && !_unitOfWork.UserRepository.Any(us =>
+                        us.UserServers.Any(u => u.User.Id == user.Id && u.Server.Id == server.Id)))
                 {
-                    server.Users.Add(user);
+                    server.UserServers.Add(new UserServer()
+                    {
+                        User = user,
+                        Server = server,
+                    });
                 }
             }
             
@@ -130,15 +139,22 @@ namespace BLL.Services
             }
 
             // checking if this user is in this server
-            if (!_unitOfWork.UserServerRepository.Any
-                (us => us.ServerId == server.Id && us.UserId == user.Id))
+            if (_unitOfWork.UserRepository.Any(us =>
+                    us.UserServers.Any(u => u.User.Id == user.Id && u.Server.Id == server.Id)))
             {
                 return false;
             }
 
             // checking if you have particular roles to delete users from the server ... 
-
-            server.Users.Remove(user);
+            if (!user.UserServers.Any(us => us.UserServerRoles.Any(usr =>
+                    usr.Role.ServerPermissionRoles.Any(spr =>
+                        spr.ServerPermission.Id == 0 && spr.ServerPermissionStatus)))) // change spr.ServerPermission.Id to particular in ServerPermissions table
+            {
+                return false;
+            }
+            
+            server.UserServers.Remove(
+                server.UserServers.FirstOrDefault(us => us.User.Id == user.Id && us.Server.Id == server.Id));
 
             await _unitOfWork.ServerRepository.Update(server);
 
@@ -153,13 +169,15 @@ namespace BLL.Services
             }
 
             var dbServer = _unitOfWork.ServerRepository.FirstOrDefault(s => s.Id == server.Id);
-            var list = await _unitOfWork.UserServerRepository.Get();
 
             foreach (var user in users)
             {
-                if (user != null && list.Any(us => us.ServerId == dbServer.Id && us.UserId == user.Id))
+                if (user != null && _unitOfWork.UserRepository.Any(us =>
+                        us.UserServers.Any(u => u.User.Id == user.Id && u.Server.Id == server.Id)))
                 {
-                    dbServer.Users.Remove(user);
+                    _unitOfWork.UserRepository.Any(u =>
+                        u.UserServers.Remove(u.UserServers.FirstOrDefault(us =>
+                            us.User.Id == user.Id && us.Server.Id == server.Id)));
                 }
             }
 

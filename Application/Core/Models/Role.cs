@@ -7,14 +7,13 @@ namespace Core.Models
     public class Role : BaseEntity
     {
         [Required]
-        [Column(TypeName = "nvarchar(30)")]
+        [Column(TypeName = "nvarchar(50)")]
         public string Name { get; set; }
-
-        public RoleType RoleType;
-
-        public List<ChatRole> ChatRoles { get; set; } = new List<ChatRole>();
-        public List<ServerRole> ServerRoles { get; set; } = new List<ServerRole>();
-
-        //public List<UserServerRole> UserServerRoles { get; set; }
+        [Required]
+        public Server Server { get; set; }
+        
+        public ICollection<UserServerRole> UserServerRoles { get; set; }
+        public ICollection<ServerPermissionRole> ServerPermissionRoles { get; set; }
+        public ICollection<ChatPermissionRole> ChatPermissionRoles { get; set; }
     }
 }

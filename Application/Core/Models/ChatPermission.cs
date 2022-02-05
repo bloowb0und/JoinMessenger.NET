@@ -4,16 +4,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Core.Models
 {
-    public class Chat : BaseEntity
+    public class ChatPermission : BaseEntity
     {
         [Required]
         [Column(TypeName = "nvarchar(50)")]
         public string Name { get; set; }
         [Required]
-        public ChatType Type { get; set; }
+        [Column(TypeName = "nvarchar(200)")]
+        public string Description { get; set; }
         [Required]
-        public Server Server { get; set; }
-
-        public ICollection<ChatPermissionRole> ChatPermissionRoles { get; set; } // changed permission for a specific role
+        public bool DefaultStatus { get; set; } // default value for all chats
+        
+        // public ICollection<ChatPermissionRole> ChatPermissionRoles { get; set; }
     }
 }
