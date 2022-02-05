@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -31,14 +32,29 @@ namespace WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMvc(option => option.EnableEndpointRouting = false)
+                .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IEmailNotificationService, EmailNotificationService>();
-            
+            services.AddScoped<IServerService, ServerService>();
+            services.AddScoped(typeof(IDbGenericRepository<>), typeof(DbGenericRepository<>));
+            services.AddScoped<UnitOfWork>();
+
+            services.AddDbContext<AppDbContext>(options =>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+            });
+
             services.AddSingleton<MessengerContext>(provider => new MessengerContext(Configuration.GetConnectionString("PathToFile")));
             services.Configure<EmailCredentialsModel>(Configuration.GetSection("EmailCredentials"));
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-            
-            services.AddControllers();
+
+            services.AddControllers().AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                options.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.Indented;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

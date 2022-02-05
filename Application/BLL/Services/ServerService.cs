@@ -3,6 +3,7 @@ using BLL.Abstractions;
 using BLL.Abstractions.Interfaces;
 using Core.Models;
 using DAL.Abstractions.Interfaces;
+using DAL.Contexts;
 using DAL.Repository;
 using System;
 using System.Collections.Generic;
@@ -11,51 +12,59 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Core.Models.ServiceMethodsModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace BLL.Services
 {
     public class ServerService : IServerService
     {
-        private readonly IGenericRepository<Server> _serverRepository;
-        private readonly IGenericRepository<Chat> _chatRepository;
-        private readonly EmailNotificationService _emailNotificationService;
+        private readonly IEmailNotificationService _emailNotificationService;
+        private readonly UnitOfWork _unitOfWork;
 
-        public ServerService(IGenericRepository<Server> serverRepository,
-            IGenericRepository<Chat> chatRepository,
-            EmailNotificationService emailNotificationService)
+        public ServerService(IEmailNotificationService emailNotificationService,
+            UnitOfWork unitOfWork)
         {
-            _serverRepository = serverRepository;
-            _chatRepository = chatRepository;
             _emailNotificationService = emailNotificationService;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<bool> CreateServerAsync(string name)
         {
+            if (string.IsNullOrEmpty(name))
+            {
+                return false;
+            }
+
             var server = new Server
             {
                 Name = name
             };
 
-            // checking if server with this name already exists
-            if (_serverRepository.Any(s => s.Name == server.Name))
+            if (_unitOfWork.ServerRepository.Any(s => s.Name == name))
             {
                 return false;
             }
 
             server.DateCreated = DateTime.Now;
             server.Chats = new List<Chat>();
-            server.Users = new List<User>();
+
             // adding roles
 
             // creating a server
-            await _serverRepository.CreateAsync(server);
+            await _unitOfWork.ServerRepository.Create(server);
+
             return true;
         }
 
         public async Task<bool> DeleteServerAsync(Server server)
         {
+            if (server == null)
+            {
+                return false;
+            }
+
             // checking if such server exists
-            if (!_serverRepository.Any(s => s.Id == server.Id))
+            if (!_unitOfWork.ServerRepository.Any(s => s.Id == server.Id))
             {
                 return false;
             }
@@ -63,109 +72,120 @@ namespace BLL.Services
             // checking if you have particular roles to delete the server ...
 
             // deleting all chats from the server
-            foreach (var chat in server.Chats)
-            {
-                await _chatRepository.DeleteAsync(chat);
-            }
 
-            // deleting all users from the server
-            foreach (var user in server.Users)
-            {
-                user.Servers.Remove(server);
-            }
+            await _unitOfWork.ServerRepository.Delete(server);
 
-            await _serverRepository.DeleteAsync(server);
             return true;
         }
 
         public async Task<bool> AddUserAsync(Server server, User user)
         {
+            if (server == null || user == null)
+            {
+                return false;
+            }
+
             // checking if this user is already in this server
-            if (server.Users.FirstOrDefault(u => u == user) != null)
+            if (_unitOfWork.UserServerRepository.Any
+                (us => us.ServerId == server.Id && us.UserId == user.Id))
             {
                 return false;
             }
 
             server.Users.Add(user);
 
-            // adding this user to all chats that are in this server ...
-
-            user.Servers.Add(server);
-
-            await _serverRepository.UpdateAsync(server);
+            await _unitOfWork.Save();
 
             return true;
         }
 
-        public async Task<bool> AddUsersAsync(Server server, IEnumerable<User> users)
+        public async Task<bool> AddUsersAsync(Server server,IEnumerable<User> users)
         {
-            foreach(var user in users)
+            if (server == null)
             {
-                if (user != null && server.Users.FirstOrDefault(u => u.Id == user.Id) == null)
-                {
-                    server.Users.Add(user);
-                    user.Servers.Add(server);
-                    // adding all chats that are in this server in this user's chats
-                }
+                return false;
             }
 
-            await _serverRepository.UpdateAsync(server);
+            var list = await _unitOfWork.UserServerRepository.Get();
+
+            foreach (var user in users)
+            {
+                if (user != null && !list.Any
+                    (us => us.ServerId == server.Id && us.UserId == user.Id))
+                {
+                    server.Users.Add(user);
+                }
+            }
+            
+            await _unitOfWork.ServerRepository.Update(server);
 
             return true;
         }
 
         public async Task<bool> DeleteUserAsync(Server server, User user)
         {
+            if (server == null || user == null)
+            {
+                return false;
+            }
+
             // checking if this user is in this server
-            if (server.Users.FirstOrDefault(u => u == user) == null)
+            if (!_unitOfWork.UserServerRepository.Any
+                (us => us.ServerId == server.Id && us.UserId == user.Id))
             {
                 return false;
             }
 
             // checking if you have particular roles to delete users from the server ... 
 
-            user.Servers.Remove(server);
             server.Users.Remove(user);
 
-            await _serverRepository.UpdateAsync(server);
+            await _unitOfWork.ServerRepository.Update(server);
 
             return true;
         }
 
         public async Task<bool> DeleteUsersAsync(Server server, IEnumerable<User> users)
         {
+            if (server == null)
+            {
+                return false;
+            }
+
+            var dbServer = _unitOfWork.ServerRepository.FirstOrDefault(s => s.Id == server.Id);
+            var list = await _unitOfWork.UserServerRepository.Get();
+
             foreach (var user in users)
             {
-                if (user != null && server.Users.FirstOrDefault(u => u.Id == user.Id) != null)
+                if (user != null && list.Any(us => us.ServerId == dbServer.Id && us.UserId == user.Id))
                 {
-                    server.Users.Remove(user);
-                    user.Servers.Remove(server);
-                    // deleting all chats that are in this server in this user's chats
+                    dbServer.Users.Remove(user);
                 }
             }
 
-            await _serverRepository.UpdateAsync(server);
+            await _unitOfWork.ServerRepository.Update(server);
 
             return true;
         }
 
+        // not done yet
         public async Task SendInvitationAsync(Server server, User user)
         {
             await _emailNotificationService.InviteByEmailAsync(server, user);
 
-            await _serverRepository.UpdateAsync(server);
+            await _unitOfWork.ServerRepository.Update(server);
         }
 
         public async Task<bool> EditServerAsync(Server server, ServerServiceEditServer newServer)
         {
-            if (_serverRepository.Any(s => s.Name == newServer.ServerName))
+            if (_unitOfWork.ServerRepository.Any(s => s.Name == newServer.ServerName))
             {
                 return false;
             }
 
             server.Name = newServer.ServerName;
-            
-            await _serverRepository.UpdateAsync(server);
+
+            await _unitOfWork.ServerRepository.Update(server);
             
             return true;
         }
