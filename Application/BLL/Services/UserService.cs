@@ -7,18 +7,20 @@ using BLL.Abstractions.Interfaces;
 using Core.Models;
 using Core.Models.ServiceMethodsModels;
 using DAL.Abstractions.Interfaces;
+using DAL.Repository;
 
 namespace BLL.Services
 {
     public class UserService : IUserService
     {
-        private readonly IGenericRepository<User> _userRepository;
+        private readonly UnitOfWork _unitOfWork;
         private readonly IEmailNotificationService _emailNotificationService;
 
-        public UserService(IGenericRepository<User> userRepository, IEmailNotificationService emailNotificationService)
+        public UserService(IEmailNotificationService emailNotificationService,
+            UnitOfWork unitOfWork)
         {
-            _userRepository = userRepository;
             _emailNotificationService = emailNotificationService;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<bool> RegisterAsync(User user)
@@ -41,13 +43,13 @@ namespace BLL.Services
                 return false;
             }
 
-            if (_userRepository.Any(u => u.Email == user.Email)
-                || _userRepository.Any(u => u.Login == user.Login)) // check if email is unique
+            if (_unitOfWork.UserRepository.Any(u => u.Email == user.Email)
+                ||_unitOfWork.UserRepository.Any(u => u.Login == user.Login)) // check if email is unique
             {
                 return false;
             }
 
-            await _userRepository.CreateAsync(user);
+            await _unitOfWork.UserRepository.Create(user);
             
             return true;
         }
@@ -65,7 +67,7 @@ namespace BLL.Services
                 isLogin = true;
             }
 
-            if (!_userRepository.Any())
+            if (!_unitOfWork.UserRepository.Any())
             {
                 return null;
             }
@@ -73,11 +75,11 @@ namespace BLL.Services
             User foundUser = null;
             if (isLogin)
             {
-                foundUser = _userRepository.FindByCondition(u => u.Login == username).SingleOrDefault();
+                foundUser = _unitOfWork.UserRepository.FindByCondition(u => u.Login == username).SingleOrDefault();
             }
             else
             {
-                foundUser = _userRepository.FindByCondition(u => u.Email == username).SingleOrDefault();
+                foundUser = _unitOfWork.UserRepository.FindByCondition(u => u.Email == username).SingleOrDefault();
             }
 
             if (foundUser == null
@@ -91,7 +93,7 @@ namespace BLL.Services
 
         public async Task<bool> PasswordRecoveryAsync(string email)
         {
-            var foundUser = _userRepository.FindByCondition(u => u.Email == email).SingleOrDefault();
+            var foundUser = _unitOfWork.UserRepository.FindByCondition(u => u.Email == email).SingleOrDefault();
 
             if (foundUser == null)
             {
@@ -108,21 +110,21 @@ namespace BLL.Services
 
         public async Task<bool> ChangeUserDataAsync(User user, UserServiceChangeUserData newUserData)
         {
-            if (_userRepository.FirstOrDefault(u => u.Id == user.Id) == null)
+            if (_unitOfWork.UserRepository.FirstOrDefault(u => u.Id == user.Id) == null)
             {
                 return false;
             }
 
             user.Name = string.IsNullOrWhiteSpace(newUserData.Name) ? user.Name : newUserData.Name;
             
-            if (!_userRepository.Any(u => u.Login == newUserData.Login))
+            if (!_unitOfWork.UserRepository.Any(u => u.Login == newUserData.Login))
             {
                 user.Login = string.IsNullOrWhiteSpace(newUserData.Login) ? user.Login : newUserData.Login;
             }
             
             user.Password = string.IsNullOrWhiteSpace(newUserData.Password) ? user.Password : newUserData.Password;
 
-            await _userRepository.UpdateAsync(user);
+            await _unitOfWork.UserRepository.Update(user);
             
             return true;
         }
