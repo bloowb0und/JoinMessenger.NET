@@ -24,8 +24,13 @@ namespace DAL.Contexts
             builder.Entity<User>()
                 .HasIndex(u => u.Name)
                 .IsUnique(true);
+
             builder.Entity<User>()
                 .HasIndex(u => u.Email)
+                .IsUnique(true);
+
+            builder.Entity<User>()
+                .HasIndex(u => u.Login)
                 .IsUnique(true);
 
             //Many to Many (Server & User)

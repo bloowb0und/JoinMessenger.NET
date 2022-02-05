@@ -44,7 +44,7 @@ namespace BLL.Services
             }
 
             if (_unitOfWork.UserRepository.Any
-                (u => u.Email == user.Email || u.Name == user.Name)) // check if email/name is unique
+                (u => u.Email == user.Email || u.Name == user.Name || u.Login == user.Login)) // check if email/login/name is unique
             {
                 return false;
             }
@@ -110,18 +110,21 @@ namespace BLL.Services
 
         public async Task<bool> ChangeUserDataAsync(User user, UserServiceChangeUserData newUserData)
         {
-            if (_unitOfWork.UserRepository.FirstOrDefault(u => u.Id == user.Id) == null)
+            if (!_unitOfWork.UserRepository.Any(u => u.Id == user.Id))
             {
                 return false;
             }
 
-            user.Name = string.IsNullOrWhiteSpace(newUserData.Name) ? user.Name : newUserData.Name;
-            
+            if (!_unitOfWork.UserRepository.Any(u => u.Name == newUserData.Name))
+            {
+                user.Name = string.IsNullOrWhiteSpace(newUserData.Name) ? user.Name : newUserData.Name;
+            }
+
             if (!_unitOfWork.UserRepository.Any(u => u.Login == newUserData.Login))
             {
                 user.Login = string.IsNullOrWhiteSpace(newUserData.Login) ? user.Login : newUserData.Login;
             }
-            
+
             user.Password = string.IsNullOrWhiteSpace(newUserData.Password) ? user.Password : newUserData.Password;
 
             await _unitOfWork.UserRepository.Update(user);

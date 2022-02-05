@@ -113,6 +113,15 @@ namespace DAL.Repository
 
         public bool Any(Expression<Func<TEntity, bool>> expression)
         {
+            try
+            {
+               _dbSet.Any(expression.Compile());
+            }
+            catch (NullReferenceException)
+            {
+                return false;
+            }
+
             return _dbSet.Any(expression.Compile());
         }
 
