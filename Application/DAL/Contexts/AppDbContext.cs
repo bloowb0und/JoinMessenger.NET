@@ -8,6 +8,8 @@ namespace DAL.Contexts
 {
     public class AppDbContext : DbContext
     {
+        public AppDbContext(DbContextOptions options) : base(options) {}
+
         public DbSet<User> Users { get; set; }
         public DbSet<Server> Servers { get; set; }
         public DbSet<Chat> Chats { get; set; }
@@ -20,7 +22,6 @@ namespace DAL.Contexts
         {
             optionsBuilder.UseSqlServer(@"Server=BLOOWB0UND ;Database=JoinChatApp;Trusted_Connection=True;");
         }
-
     }
 
 }

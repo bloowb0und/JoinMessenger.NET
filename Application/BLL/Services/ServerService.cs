@@ -19,10 +19,10 @@ namespace BLL.Services
     public class ServerService : IServerService
     {
         private readonly IEmailNotificationService _emailNotificationService;
-        private readonly UnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
 
         public ServerService(IEmailNotificationService emailNotificationService,
-            UnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork)
         {
             _emailNotificationService = emailNotificationService;
             _unitOfWork = unitOfWork;
@@ -47,18 +47,33 @@ namespace BLL.Services
 
             server.DateCreated = DateTime.Now;
             
+            // creating a server
+
+            // create everyone and owner roles in RoleService
             var newChat = new Chat()
             {
                 Name = "general",
                 Server = server,
                 Type = ChatType.Text,
             };
-            await _unitOfWork.ChatRepository.Create(newChat);
 
-            // create everyone and owner roles in RoleService
-
-            // creating a server
-            await _unitOfWork.ServerRepository.Create(server);
+            using (_unitOfWork.BeginTransactionAsync())
+            {
+                try
+                {
+                    await _unitOfWork.ServerRepository.CreateAsync(server);
+                    await _unitOfWork.SaveAsync();
+                    
+                    await _unitOfWork.ChatRepository.CreateAsync(newChat);
+                    await _unitOfWork.SaveAsync();
+                    
+                    await _unitOfWork.CommitTransactionAsync();
+                }
+                catch 
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                }
+            }
 
             return true;
         }
@@ -80,7 +95,20 @@ namespace BLL.Services
 
             // deleting all chats from the server
 
-            await _unitOfWork.ServerRepository.Delete(server);
+            using (_unitOfWork.BeginTransactionAsync())
+            {
+                try
+                {
+                    _unitOfWork.ServerRepository.Delete(server);
+                    await _unitOfWork.SaveAsync();
+
+                    await _unitOfWork.CommitTransactionAsync();
+                }
+                catch
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                }
+            }
 
             return true;
         }
@@ -92,16 +120,33 @@ namespace BLL.Services
                 return false;
             }
 
-            // checking if this user is already in this server
-            if (_unitOfWork.UserRepository.Any(us =>
-                    us.UserServers.Any(u => u.User.Id == user.Id && u.Server.Id == server.Id)))
+            if (Equals(await _unitOfWork.ServerRepository.Get(
+                    u => u.UserServers.Any(us => us.User.Id == user.Id && us.Server.Id == server.Id), null,
+                    "UserServers"), Enumerable.Empty<Server>()))
             {
                 return false;
             }
+            
+            using (_unitOfWork.BeginTransactionAsync())
+            {
+                try
+                {
+                    (await _unitOfWork.ServerRepository.Get(s => s.Id == server.Id, null, "UserServers"))
+                        .FirstOrDefault()?.UserServers.Add(new UserServer()
+                        {
+                            User = user,
+                            Server = server,
+                            DateEntered = DateTime.Now
+                        });
+                    await _unitOfWork.SaveAsync();
 
-            // server.Users.Add(user);
-
-            await _unitOfWork.Save();
+                    await _unitOfWork.CommitTransactionAsync();
+                }
+                catch
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                }
+            }
 
             return true;
         }
@@ -126,7 +171,20 @@ namespace BLL.Services
                 }
             }
             
-            await _unitOfWork.ServerRepository.Update(server);
+            using (_unitOfWork.BeginTransactionAsync())
+            {
+                try
+                {
+                    _unitOfWork.ServerRepository.Update(server);
+                    await _unitOfWork.SaveAsync();
+
+                    await _unitOfWork.CommitTransactionAsync();
+                }
+                catch
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                }
+            }
 
             return true;
         }
@@ -156,7 +214,20 @@ namespace BLL.Services
             server.UserServers.Remove(
                 server.UserServers.FirstOrDefault(us => us.User.Id == user.Id && us.Server.Id == server.Id));
 
-            await _unitOfWork.ServerRepository.Update(server);
+            using (_unitOfWork.BeginTransactionAsync())
+            {
+                try
+                {
+                    _unitOfWork.ServerRepository.Update(server);
+                    await _unitOfWork.SaveAsync();
+
+                    await _unitOfWork.CommitTransactionAsync();
+                }
+                catch
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                }
+            }
 
             return true;
         }
@@ -180,18 +251,49 @@ namespace BLL.Services
                             us.User.Id == user.Id && us.Server.Id == server.Id)));
                 }
             }
+            
+            using (_unitOfWork.BeginTransactionAsync())
+            {
+                try
+                {
+                    _unitOfWork.ServerRepository.Update(server);
+                    await _unitOfWork.SaveAsync();
 
-            await _unitOfWork.ServerRepository.Update(server);
+                    await _unitOfWork.CommitTransactionAsync();
+                }
+                catch
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                }
+            }
 
             return true;
+        }
+
+        public Server GetServerByName(string name)
+        {
+            return _unitOfWork.ServerRepository.FirstOrDefault(s => s.Name == name);
         }
 
         // not done yet
         public async Task SendInvitationAsync(Server server, User user)
         {
             await _emailNotificationService.InviteByEmailAsync(server, user);
+            
+            using (_unitOfWork.BeginTransactionAsync())
+            {
+                try
+                {
+                    _unitOfWork.ServerRepository.Update(server);
+                    await _unitOfWork.SaveAsync();
 
-            await _unitOfWork.ServerRepository.Update(server);
+                    await _unitOfWork.CommitTransactionAsync();
+                }
+                catch
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                }
+            }
         }
 
         public async Task<bool> EditServerAsync(Server server, ServerServiceEditServer newServer)
@@ -202,8 +304,21 @@ namespace BLL.Services
             }
 
             server.Name = newServer.ServerName;
+            
+            using (_unitOfWork.BeginTransactionAsync())
+            {
+                try
+                {
+                    _unitOfWork.ServerRepository.Update(server);
+                    await _unitOfWork.SaveAsync();
 
-            await _unitOfWork.ServerRepository.Update(server);
+                    await _unitOfWork.CommitTransactionAsync();
+                }
+                catch
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                }
+            }
             
             return true;
         }

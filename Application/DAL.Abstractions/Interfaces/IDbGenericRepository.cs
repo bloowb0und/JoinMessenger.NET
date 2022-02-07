@@ -7,28 +7,28 @@ using System.Threading.Tasks;
 
 namespace DAL.Abstractions.Interfaces
 {
-    public interface IDbGenericRepository<T> where T : class
+    public interface IDbGenericRepository<TEntity> where TEntity : class
     {
-        Task<IEnumerable<T>> Get(Expression<Func<T, bool>> filter,
-            Func<IQueryable<T>, IOrderedQueryable<T>> orderBy,
+        Task<IEnumerable<TEntity>> Get(Expression<Func<TEntity, bool>> filter,
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy,
             string includeProperties);
 
-        Task<T> GetByID(object id);
+        Task<TEntity> GetById(object id);
 
-        Task Delete(object id);
+        Task DeleteById(object id);
 
-        Task Delete(T entity);
+        void Delete(TEntity entity);
 
-        Task Update(T entityToUpdate);
+        void Update(TEntity entityToUpdate);
 
-        Task Create(T entity);
+        Task CreateAsync(TEntity entity);
 
-        IEnumerable<T> FindByCondition(Expression<Func<T, bool>> expression);
+        IEnumerable<TEntity> FindByCondition(Expression<Func<TEntity, bool>> expression);
 
-        T FirstOrDefault(Expression<Func<T, bool>> expression);
+        TEntity FirstOrDefault(Expression<Func<TEntity, bool>> expression);
 
         bool Any();
 
-        bool Any(Expression<Func<T, bool>> expression);
+        bool Any(Expression<Func<TEntity, bool>> expression);
     }
 }

@@ -2,78 +2,51 @@
 using DAL.Contexts;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using DAL.Abstractions.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace DAL.Repository
 {
-    public class UnitOfWork : IDisposable
+    public class UnitOfWork : IUnitOfWork
     {
         private readonly AppDbContext _context;
-        private DbGenericRepository<Server> _serverRepository;
-        private DbGenericRepository<User> _userRepository;
-        private DbGenericRepository<Chat> _chatRepository;
-        private DbGenericRepository<Role> _roleRepository;
+        
+        private IDbContextTransaction _transaction;
 
         public UnitOfWork(AppDbContext context)
         {
             _context = context;
         }
 
-        public DbGenericRepository<Server> ServerRepository
+        public IDbGenericRepository<Server> ServerRepository => new DbGenericRepository<Server>(_context);
+        public IDbGenericRepository<User> UserRepository => new DbGenericRepository<User>(_context);
+        public IDbGenericRepository<Chat> ChatRepository => new DbGenericRepository<Chat>(_context);
+        public IDbGenericRepository<Role> RoleRepository => new DbGenericRepository<Role>(_context);
+
+        public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
         {
-            get
-            {
-                if (_serverRepository == null)
-                {
-                    _serverRepository = new DbGenericRepository<Server>(_context);
-                }
-
-                return _serverRepository;
-            }
-        }
-
-        public DbGenericRepository<User> UserRepository
-        {
-            get
-            {
-                if (_userRepository == null)
-                {
-                    _userRepository = new DbGenericRepository<User>(_context);
-                }
-                return _userRepository;
-            }
-        }
-
-        public DbGenericRepository<Chat> ChatRepository
-        {
-            get
-            {
-                if (_chatRepository == null)
-                {
-                    _chatRepository = new DbGenericRepository<Chat>(_context);
-                }
-
-                return _chatRepository;
-            }
+            _transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
         }
         
-        public DbGenericRepository<Role> RoleRepository
+        public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
         {
-            get
-            {
-                if (_roleRepository == null)
-                {
-                    _roleRepository = new DbGenericRepository<Role>(_context);
-                }
-
-                return _roleRepository;
-            }
+            await _transaction.CommitAsync(cancellationToken);
         }
-
-        public async Task Save()
+        
+        public async Task RollbackTransactionAsync(CancellationToken cancellationToken = default)
         {
-            await _context.SaveChangesAsync();
+            await _transaction.RollbackAsync(cancellationToken);
+            await _transaction.DisposeAsync();
+        }
+        
+        public async Task<int> SaveAsync(CancellationToken cancellationToken = default)
+        {
+            return await _context.SaveChangesAsync(cancellationToken);
         }
 
         private bool disposed = false;
@@ -96,5 +69,5 @@ namespace DAL.Repository
             await Dispose(true);
             GC.SuppressFinalize(this);
         }
-    }
+    } 
 }

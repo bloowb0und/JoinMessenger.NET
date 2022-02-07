@@ -1,27 +1,24 @@
-﻿using Core.Models;
-using DAL.Abstractions.Interfaces;
+﻿using DAL.Abstractions.Interfaces;
 using DAL.Contexts;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DAL.Repository
 {
-    public class DbGenericRepository<TEntity> : IDbGenericRepository<TEntity> where TEntity : class
+    public class DbGenericRepository<TEntity> : IDbGenericRepository<TEntity> 
+        where TEntity : class
     {
         private readonly AppDbContext _context;
         private DbSet<TEntity> _dbSet;
-        private UnitOfWork _unitOfWork;
 
         public DbGenericRepository(AppDbContext context)
         {
             _context = context;
             _dbSet = context.Set<TEntity>();
-            _unitOfWork = new UnitOfWork(_context);
         }
 
         public virtual async Task<IEnumerable<TEntity>> Get(
@@ -37,7 +34,7 @@ namespace DAL.Repository
             }
 
             foreach (var includeProperty in includeProperties.Split
-                         (new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                         (new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
             {
                 query = query.Include(includeProperty);
             }
@@ -52,12 +49,12 @@ namespace DAL.Repository
             }
         }
 
-        public virtual async Task<TEntity> GetByID(object id)
+        public virtual async Task<TEntity> GetById(object id)
         {  
             return await _dbSet.FindAsync(id);
         }
 
-        public virtual async Task Delete(object id)
+        public virtual async Task DeleteById(object id)
         {
             if (id == null)
             {
@@ -65,10 +62,10 @@ namespace DAL.Repository
             }
 
             TEntity entityToDelete = await _dbSet.FindAsync(id);
-            await Delete(entityToDelete);
+            Delete(entityToDelete);
         }
 
-        public async virtual Task Delete(TEntity entityToDelete)
+        public virtual void Delete(TEntity entityToDelete)
         {
             if (entityToDelete == null)
             {
@@ -81,10 +78,9 @@ namespace DAL.Repository
             }
 
             _dbSet.Remove(entityToDelete);
-            await _unitOfWork.Save();
         }
 
-        public async virtual Task Update(TEntity entityToUpdate)
+        public virtual void Update(TEntity entityToUpdate)
         {
             if (entityToUpdate == null)
             {
@@ -93,7 +89,6 @@ namespace DAL.Repository
 
             _dbSet.Attach(entityToUpdate);
             _context.Entry(entityToUpdate).State = EntityState.Modified;
-            await _unitOfWork.Save();
         }
 
         public IEnumerable<TEntity> FindByCondition(Expression<Func<TEntity, bool>> expression)
@@ -116,10 +111,9 @@ namespace DAL.Repository
             return _dbSet.Any(expression.Compile());
         }
 
-        public async Task Create(TEntity entity)
+        public async Task CreateAsync(TEntity entity)
         {
-            _dbSet.Add(entity);
-            await _unitOfWork.Save();
+            await _dbSet.AddAsync(entity);
         }
     }
 }

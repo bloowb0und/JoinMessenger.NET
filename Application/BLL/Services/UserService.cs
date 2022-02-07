@@ -7,17 +7,19 @@ using BLL.Abstractions.Interfaces;
 using Core.Models;
 using Core.Models.ServiceMethodsModels;
 using DAL.Abstractions.Interfaces;
+using DAL.Repository;
+using Microsoft.EntityFrameworkCore;
 
 namespace BLL.Services
 {
     public class UserService : IUserService
     {
-        private readonly IGenericRepository<User> _userRepository;
         private readonly IEmailNotificationService _emailNotificationService;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public UserService(IGenericRepository<User> userRepository, IEmailNotificationService emailNotificationService)
+        public UserService(IUnitOfWork unitOfWork, IEmailNotificationService emailNotificationService)
         {
-            _userRepository = userRepository;
+            _unitOfWork = unitOfWork;
             _emailNotificationService = emailNotificationService;
         }
 
@@ -41,14 +43,28 @@ namespace BLL.Services
                 return false;
             }
 
-            if (_userRepository.Any(u => u.Email == user.Email)
-                || _userRepository.Any(u => u.Login == user.Login)) // check if email is unique
+            if (_unitOfWork.UserRepository
+                .Any(u => u.Email == user.Email 
+                          || u.Login == user.Login)) // check if email and login is unique
             {
                 return false;
             }
-
-            await _userRepository.CreateAsync(user);
             
+            using (_unitOfWork.BeginTransactionAsync())
+            {
+                try
+                {
+                    await _unitOfWork.UserRepository.CreateAsync(user);
+                    await _unitOfWork.SaveAsync();
+                    
+                    await _unitOfWork.CommitTransactionAsync();
+                }
+                catch 
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                }
+            }
+
             return true;
         }
 
@@ -65,7 +81,7 @@ namespace BLL.Services
                 isLogin = true;
             }
 
-            if (!_userRepository.Any())
+            if (!_unitOfWork.UserRepository.Any())
             {
                 return null;
             }
@@ -73,11 +89,11 @@ namespace BLL.Services
             User foundUser = null;
             if (isLogin)
             {
-                foundUser = _userRepository.FindByCondition(u => u.Login == username).SingleOrDefault();
+                foundUser = _unitOfWork.UserRepository.FirstOrDefault(u => u.Login == username);
             }
             else
             {
-                foundUser = _userRepository.FindByCondition(u => u.Email == username).SingleOrDefault();
+                foundUser = _unitOfWork.UserRepository.FirstOrDefault(u => u.Email == username);
             }
 
             if (foundUser == null
@@ -91,7 +107,7 @@ namespace BLL.Services
 
         public async Task<bool> PasswordRecoveryAsync(string email)
         {
-            var foundUser = _userRepository.FindByCondition(u => u.Email == email).SingleOrDefault();
+            var foundUser = _unitOfWork.UserRepository.FirstOrDefault(u => u.Email == email);
 
             if (foundUser == null)
             {
@@ -108,21 +124,34 @@ namespace BLL.Services
 
         public async Task<bool> ChangeUserDataAsync(User user, UserServiceChangeUserData newUserData)
         {
-            if (_userRepository.FirstOrDefault(u => u.Id == user.Id) == null)
+            if (_unitOfWork.UserRepository.FirstOrDefault(u => u.Id == user.Id) == null)
             {
                 return false;
             }
 
             user.Name = string.IsNullOrWhiteSpace(newUserData.Name) ? user.Name : newUserData.Name;
             
-            if (!_userRepository.Any(u => u.Login == newUserData.Login))
+            if (!_unitOfWork.UserRepository.Any(u => u.Login == newUserData.Login))
             {
                 user.Login = string.IsNullOrWhiteSpace(newUserData.Login) ? user.Login : newUserData.Login;
             }
             
             user.Password = string.IsNullOrWhiteSpace(newUserData.Password) ? user.Password : newUserData.Password;
 
-            await _userRepository.UpdateAsync(user);
+            using (_unitOfWork.BeginTransactionAsync())
+            {
+                try
+                {
+                    _unitOfWork.UserRepository.Update(user);
+                    await _unitOfWork.SaveAsync();
+                    
+                    await _unitOfWork.CommitTransactionAsync();
+                }
+                catch 
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                }
+            }
             
             return true;
         }

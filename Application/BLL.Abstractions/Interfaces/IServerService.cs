@@ -23,6 +23,8 @@ namespace BLL.Abstractions.Interfaces
 
         Task<bool> DeleteUsersAsync(Server server, IEnumerable<User> user);
 
+        Server GetServerByName(string name);
+
         Task SendInvitationAsync(Server server, User user);
 
         Task<bool> EditServerAsync(Server server, ServerServiceEditServer newServer);
