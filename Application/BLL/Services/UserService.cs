@@ -43,7 +43,7 @@ namespace BLL.Services
                 return false;
             }
 
-            if (_unitOfWork.UserRepository
+            if (await _unitOfWork.UserRepository
                 .Any(u => u.Email == user.Email 
                           || u.Login == user.Login)) // check if email and login is unique
             {
@@ -68,7 +68,7 @@ namespace BLL.Services
             return true;
         }
 
-        public User SignIn(string username, string password)
+        public async Task<User> SignInAsync(string username, string password)
         {
             var isLogin = false;
 
@@ -81,7 +81,7 @@ namespace BLL.Services
                 isLogin = true;
             }
 
-            if (!_unitOfWork.UserRepository.Any())
+            if (!await _unitOfWork.UserRepository.Any())
             {
                 return null;
             }
@@ -131,7 +131,7 @@ namespace BLL.Services
 
             user.Name = string.IsNullOrWhiteSpace(newUserData.Name) ? user.Name : newUserData.Name;
             
-            if (!_unitOfWork.UserRepository.Any(u => u.Login == newUserData.Login))
+            if (!await _unitOfWork.UserRepository.Any(u => u.Login == newUserData.Login))
             {
                 user.Login = string.IsNullOrWhiteSpace(newUserData.Login) ? user.Login : newUserData.Login;
             }

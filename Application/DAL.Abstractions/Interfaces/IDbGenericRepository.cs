@@ -18,17 +18,13 @@ namespace DAL.Abstractions.Interfaces
         Task DeleteById(object id);
 
         void Delete(TEntity entity);
+        
+        Task CreateAsync(TEntity entity);
 
         void Update(TEntity entityToUpdate);
 
-        Task CreateAsync(TEntity entity);
+        TEntity FirstOrDefault(Expression<Func<TEntity, bool>> expression = null);
 
-        IEnumerable<TEntity> FindByCondition(Expression<Func<TEntity, bool>> expression);
-
-        TEntity FirstOrDefault(Expression<Func<TEntity, bool>> expression);
-
-        bool Any();
-
-        bool Any(Expression<Func<TEntity, bool>> expression);
+        Task<bool> Any(Expression<Func<TEntity, bool>> filter = null, string includeProperties = "");
     }
 }

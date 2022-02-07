@@ -9,6 +9,6 @@ namespace Core.Models
         [Required]
         public ServerPermission ServerPermission { get; set; }
         [Required] 
-        public bool ServerPermissionStatus { get; set; }
+        public bool Status { get; set; }
     }
 }

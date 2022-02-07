@@ -14,5 +14,6 @@ namespace Core.Models
         public DateTime DateCreated { get; set; }
 
         public ICollection<UserServer> UserServers { get; set; }
+        public ICollection<ServerPermissionRole> ServerPermissionRoles { get; set; } // changed permission for a specific role
     }
 }

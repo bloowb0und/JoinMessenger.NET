@@ -40,7 +40,7 @@ namespace BLL.Services
                 Name = name
             };
 
-            if (_unitOfWork.ServerRepository.Any(s => s.Name == name))
+            if (await _unitOfWork.ServerRepository.Any(s => s.Name == name))
             {
                 return false;
             }
@@ -64,7 +64,7 @@ namespace BLL.Services
                     await _unitOfWork.ServerRepository.CreateAsync(server);
                     await _unitOfWork.SaveAsync();
                     
-                    await _unitOfWork.ChatRepository.CreateAsync(newChat);
+                    await _unitOfWork.ChatRepository.CreateAsync(newChat); // call chat service
                     await _unitOfWork.SaveAsync();
                     
                     await _unitOfWork.CommitTransactionAsync();
@@ -86,7 +86,7 @@ namespace BLL.Services
             }
 
             // checking if such server exists
-            if (!_unitOfWork.ServerRepository.Any(s => s.Id == server.Id))
+            if (!await _unitOfWork.ServerRepository.Any(s => s.Id == server.Id))
             {
                 return false;
             }
@@ -160,7 +160,7 @@ namespace BLL.Services
 
             foreach (var user in users)
             {
-                if (user != null && !_unitOfWork.UserRepository.Any(us =>
+                if (user != null && !await _unitOfWork.UserRepository.Any(us =>
                         us.UserServers.Any(u => u.User.Id == user.Id && u.Server.Id == server.Id)))
                 {
                     server.UserServers.Add(new UserServer()
@@ -197,7 +197,7 @@ namespace BLL.Services
             }
 
             // checking if this user is in this server
-            if (_unitOfWork.UserRepository.Any(us =>
+            if (await _unitOfWork.UserRepository.Any(us =>
                     us.UserServers.Any(u => u.User.Id == user.Id && u.Server.Id == server.Id)))
             {
                 return false;
@@ -206,7 +206,7 @@ namespace BLL.Services
             // checking if you have particular roles to delete users from the server ... 
             if (!user.UserServers.Any(us => us.UserServerRoles.Any(usr =>
                     usr.Role.ServerPermissionRoles.Any(spr =>
-                        spr.ServerPermission.Id == 0 && spr.ServerPermissionStatus)))) // change spr.ServerPermission.Id to particular in ServerPermissions table
+                        spr.ServerPermission.Id == 0 && spr.Status)))) // change spr.ServerPermission.Id to particular in ServerPermissions table
             {
                 return false;
             }
@@ -243,7 +243,7 @@ namespace BLL.Services
 
             foreach (var user in users)
             {
-                if (user != null && _unitOfWork.UserRepository.Any(us =>
+                if (user != null && await _unitOfWork.UserRepository.Any(us =>
                         us.UserServers.Any(u => u.User.Id == user.Id && u.Server.Id == server.Id)))
                 {
                     _unitOfWork.UserRepository.Any(u =>
@@ -298,7 +298,7 @@ namespace BLL.Services
 
         public async Task<bool> EditServerAsync(Server server, ServerServiceEditServer newServer)
         {
-            if (_unitOfWork.ServerRepository.Any(s => s.Name == newServer.ServerName))
+            if (await _unitOfWork.ServerRepository.Any(s => s.Name == newServer.ServerName))
             {
                 return false;
             }

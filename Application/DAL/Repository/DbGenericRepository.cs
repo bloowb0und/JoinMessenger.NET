@@ -43,10 +43,8 @@ namespace DAL.Repository
             {
                 return await orderBy(query).ToListAsync();
             }
-            else
-            {
-                return await query.ToListAsync();
-            }
+
+            return await query.ToListAsync();
         }
 
         public virtual async Task<TEntity> GetById(object id)
@@ -79,6 +77,11 @@ namespace DAL.Repository
 
             _dbSet.Remove(entityToDelete);
         }
+        
+        public async Task CreateAsync(TEntity entity)
+        {
+            await _dbSet.AddAsync(entity);
+        }
 
         public virtual void Update(TEntity entityToUpdate)
         {
@@ -91,29 +94,33 @@ namespace DAL.Repository
             _context.Entry(entityToUpdate).State = EntityState.Modified;
         }
 
-        public IEnumerable<TEntity> FindByCondition(Expression<Func<TEntity, bool>> expression)
+        public TEntity FirstOrDefault(Expression<Func<TEntity, bool>> expression = null)
         {
-            return _dbSet.Where(expression.Compile());
+            return expression == null ? _dbSet.FirstOrDefault() : _dbSet.FirstOrDefault(expression.Compile());
         }
 
-        public TEntity FirstOrDefault(Expression<Func<TEntity, bool>> expression)
+        public async Task<bool> Any(Expression<Func<TEntity, bool>> filter = null, 
+            string includeProperties = "")
         {
-            return _dbSet.FirstOrDefault(expression.Compile());
-        }
+            if (filter == null && string.IsNullOrWhiteSpace(includeProperties))
+            {
+                return _dbSet.Any();
+            }
+            
+            IQueryable<TEntity> query = _dbSet;
 
-        public bool Any()
-        {
-            return _dbSet.Any();
-        }
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
 
-        public bool Any(Expression<Func<TEntity, bool>> expression)
-        {
-            return _dbSet.Any(expression.Compile());
-        }
-
-        public async Task CreateAsync(TEntity entity)
-        {
-            await _dbSet.AddAsync(entity);
+            foreach (var includeProperty in includeProperties.Split
+                         (new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                query = query.Include(includeProperty);
+            }
+            
+            return (await query.ToListAsync()).Any();
         }
     }
 }

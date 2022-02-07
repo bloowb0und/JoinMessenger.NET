@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Core.Models
@@ -13,6 +14,6 @@ namespace Core.Models
         [Required]
         public bool DefaultStatus { get; set; } // default value for all chats
         
-        // public ICollection<ChatPermissionRole> ChatPermissionRoles { get; set; }
+        public ICollection<ChatPermissionRole> ChatPermissionRoles { get; set; }
     }
 }

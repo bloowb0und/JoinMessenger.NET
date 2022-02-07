@@ -8,56 +8,96 @@ namespace BLL.Services
 {
     public class ChatService : IChatService
     {
-        private readonly IGenericRepository<Chat> _chatRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public ChatService(IGenericRepository<Chat> chatRepository)
+        public ChatService(IUnitOfWork unitOfWork)
         {
-            _chatRepository = chatRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<bool> CreateChatAsync(Chat chat)
         {
-            if (_chatRepository.Any(c => c.Id == chat.Id))
+            if (await _unitOfWork.ChatRepository.Any(c => c.Id == chat.Id))
             {
                 return false;
             }
 
-            if (_chatRepository.Any(c => c.Server == chat.Server && c.Name == chat.Name))
+            if (await _unitOfWork.ChatRepository.Any(c => c.Server == chat.Server && c.Name == chat.Name))
             {
                 return false;
             }
 
-            await _chatRepository.CreateAsync(chat);
+            using (_unitOfWork.BeginTransactionAsync())
+            {
+                try
+                {
+                    await _unitOfWork.ChatRepository.CreateAsync(chat);
+                    await _unitOfWork.SaveAsync();
+
+                    await _unitOfWork.CommitTransactionAsync();
+                }
+                catch 
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                }
+            }
             
             return true;
         }
 
         public async Task<bool> DeleteChatAsync(Chat chat)
         {
-            if (!_chatRepository.Any(c => c == chat))
+            if (!await _unitOfWork.ChatRepository.Any(c => c == chat))
             {
                 return false;
             }
+            
+            using (_unitOfWork.BeginTransactionAsync())
+            {
+                try
+                {
+                    _unitOfWork.ChatRepository.Delete(chat);
+                    await _unitOfWork.SaveAsync();
 
-            await _chatRepository.DeleteAsync(chat);
+                    await _unitOfWork.CommitTransactionAsync();
+                }
+                catch 
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                }
+            }
             
             return true;
         }
 
         public async Task<bool> EditChatAsync(Chat chat, ChatServiceEditChat newChat)
         {
-            if (_chatRepository.Any(c => c == chat))
+            if (await _unitOfWork.ChatRepository.Any(c => c == chat))
             {
                 return false;
             }
             
-            if (_chatRepository.Any(c => c.Server == chat.Server && c.Name == newChat.ChatName))
+            if (await _unitOfWork.ChatRepository.Any(c => c.Server == chat.Server && c.Name == newChat.ChatName))
             {
                 return false;
             }
             
             chat.Name = newChat.ChatName;
-            await _chatRepository.UpdateAsync(chat);
+            
+            using (_unitOfWork.BeginTransactionAsync())
+            {
+                try
+                {
+                    _unitOfWork.ChatRepository.Update(chat);
+                    await _unitOfWork.SaveAsync();
+
+                    await _unitOfWork.CommitTransactionAsync();
+                }
+                catch 
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                }
+            }
             
             return true;
         }
