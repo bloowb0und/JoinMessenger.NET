@@ -12,6 +12,8 @@ namespace DAL.Contexts
         public DbSet<Chat> Chats { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<Role> Roles { get; set; }
+        public DbSet<ChatPermission> ChatPermissions { get; set; }
+        public DbSet<ServerPermission> ServerPermissions { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

@@ -14,6 +14,8 @@ namespace DAL.Abstractions.Interfaces
         IDbGenericRepository<Chat> ChatRepository { get; }
         IDbGenericRepository<Role> RoleRepository { get; }
         IDbGenericRepository<Message> MessageRepository { get; }
+        IDbGenericRepository<ChatPermission> ChatPermissionRepository { get; }
+        IDbGenericRepository<ServerPermission> ServerPermissionRepository { get; }
         
         Task BeginTransactionAsync(CancellationToken cancellationToken = default);
         Task CommitTransactionAsync(CancellationToken cancellationToken = default);
