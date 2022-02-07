@@ -1,8 +1,5 @@
 ﻿using Core.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace DAL.Contexts
 {
@@ -15,8 +12,6 @@ namespace DAL.Contexts
         public DbSet<Chat> Chats { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<Role> Roles { get; set; }
-        public DbSet<ServerPermission> ServerPermissions { get; set; }
-        public DbSet<ChatPermission> ChatPermissions { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

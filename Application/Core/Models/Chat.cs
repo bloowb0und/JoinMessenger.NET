@@ -1,13 +1,12 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Core.Models
 {
     public class Chat : BaseEntity
     {
         [Required]
-        [Column(TypeName = "nvarchar(50)")]
+        [MaxLength(50)]
         public string Name { get; set; }
         [Required]
         public ChatType Type { get; set; }

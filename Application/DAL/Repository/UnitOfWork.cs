@@ -27,6 +27,7 @@ namespace DAL.Repository
         public IDbGenericRepository<User> UserRepository => new DbGenericRepository<User>(_context);
         public IDbGenericRepository<Chat> ChatRepository => new DbGenericRepository<Chat>(_context);
         public IDbGenericRepository<Role> RoleRepository => new DbGenericRepository<Role>(_context);
+        public IDbGenericRepository<Role> MessageRepository => new DbGenericRepository<Role>(_context);
 
         public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
         {

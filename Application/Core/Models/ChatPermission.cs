@@ -1,16 +1,14 @@
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Core.Models
 {
     public class ChatPermission : BaseEntity
     {
         [Required]
-        [Column(TypeName = "nvarchar(50)")]
+        [MaxLength(50)]
         public string Name { get; set; }
         [Required]
-        [Column(TypeName = "nvarchar(200)")]
+        [MaxLength(200)]
         public string Description { get; set; }
         [Required]
         public bool DefaultStatus { get; set; } // default value for all chats

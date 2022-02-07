@@ -7,7 +7,7 @@ namespace Core.Models
     public class Role : BaseEntity
     {
         [Required]
-        [Column(TypeName = "nvarchar(50)")]
+        [MaxLength(50)]
         public string Name { get; set; }
         [Required]
         public Server Server { get; set; }
