@@ -19,10 +19,10 @@ namespace BLL.Services
     public class ServerService : IServerService
     {
         private readonly IEmailNotificationService _emailNotificationService;
-        private readonly UnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
 
         public ServerService(IEmailNotificationService emailNotificationService,
-            UnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork)
         {
             _emailNotificationService = emailNotificationService;
             _unitOfWork = unitOfWork;
@@ -40,18 +40,40 @@ namespace BLL.Services
                 Name = name
             };
 
-            if (_unitOfWork.ServerRepository.Any(s => s.Name == name))
+            if (await _unitOfWork.ServerRepository.Any(s => s.Name == name))
             {
                 return false;
             }
 
             server.DateCreated = DateTime.Now;
-            server.Chats = new List<Chat>();
-
-            // adding roles
-
+            
             // creating a server
-            await _unitOfWork.ServerRepository.Create(server);
+
+            // create everyone and owner roles in RoleService
+            var newChat = new Chat()
+            {
+                Name = "general",
+                Server = server,
+                Type = ChatType.Text,
+            };
+
+            using (_unitOfWork.BeginTransactionAsync())
+            {
+                try
+                {
+                    await _unitOfWork.ServerRepository.CreateAsync(server);
+                    await _unitOfWork.SaveAsync();
+                    
+                    await _unitOfWork.ChatRepository.CreateAsync(newChat); // call chat service
+                    await _unitOfWork.SaveAsync();
+                    
+                    await _unitOfWork.CommitTransactionAsync();
+                }
+                catch 
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                }
+            }
 
             return true;
         }
@@ -64,7 +86,7 @@ namespace BLL.Services
             }
 
             // checking if such server exists
-            if (!_unitOfWork.ServerRepository.Any(s => s.Id == server.Id))
+            if (!await _unitOfWork.ServerRepository.Any(s => s.Id == server.Id))
             {
                 return false;
             }
@@ -73,7 +95,20 @@ namespace BLL.Services
 
             // deleting all chats from the server
 
-            await _unitOfWork.ServerRepository.Delete(server);
+            using (_unitOfWork.BeginTransactionAsync())
+            {
+                try
+                {
+                    _unitOfWork.ServerRepository.Delete(server);
+                    await _unitOfWork.SaveAsync();
+
+                    await _unitOfWork.CommitTransactionAsync();
+                }
+                catch
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                }
+            }
 
             return true;
         }
@@ -85,16 +120,33 @@ namespace BLL.Services
                 return false;
             }
 
-            // checking if this user is already in this server
-            if (_unitOfWork.UserServerRepository.Any
-                (us => us.ServerId == server.Id && us.UserId == user.Id))
+            if (Equals(await _unitOfWork.ServerRepository.Get(
+                    u => u.UserServers.Any(us => us.User.Id == user.Id && us.Server.Id == server.Id), null,
+                    "UserServers"), Enumerable.Empty<Server>()))
             {
                 return false;
             }
+            
+            using (_unitOfWork.BeginTransactionAsync())
+            {
+                try
+                {
+                    (await _unitOfWork.ServerRepository.Get(s => s.Id == server.Id, null, "UserServers"))
+                        .FirstOrDefault()?.UserServers.Add(new UserServer()
+                        {
+                            User = user,
+                            Server = server,
+                            DateEntered = DateTime.Now
+                        });
+                    await _unitOfWork.SaveAsync();
 
-            server.Users.Add(user);
-
-            await _unitOfWork.Save();
+                    await _unitOfWork.CommitTransactionAsync();
+                }
+                catch
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                }
+            }
 
             return true;
         }
@@ -106,18 +158,33 @@ namespace BLL.Services
                 return false;
             }
 
-            var list = await _unitOfWork.UserServerRepository.Get();
-
             foreach (var user in users)
             {
-                if (user != null && !list.Any
-                    (us => us.ServerId == server.Id && us.UserId == user.Id))
+                if (user != null && !await _unitOfWork.UserRepository.Any(us =>
+                        us.UserServers.Any(u => u.User.Id == user.Id && u.Server.Id == server.Id)))
                 {
-                    server.Users.Add(user);
+                    server.UserServers.Add(new UserServer()
+                    {
+                        User = user,
+                        Server = server,
+                    });
                 }
             }
             
-            await _unitOfWork.ServerRepository.Update(server);
+            using (_unitOfWork.BeginTransactionAsync())
+            {
+                try
+                {
+                    _unitOfWork.ServerRepository.Update(server);
+                    await _unitOfWork.SaveAsync();
+
+                    await _unitOfWork.CommitTransactionAsync();
+                }
+                catch
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                }
+            }
 
             return true;
         }
@@ -130,17 +197,37 @@ namespace BLL.Services
             }
 
             // checking if this user is in this server
-            if (!_unitOfWork.UserServerRepository.Any
-                (us => us.ServerId == server.Id && us.UserId == user.Id))
+            if (await _unitOfWork.UserRepository.Any(us =>
+                    us.UserServers.Any(u => u.User.Id == user.Id && u.Server.Id == server.Id)))
             {
                 return false;
             }
 
             // checking if you have particular roles to delete users from the server ... 
+            if (!user.UserServers.Any(us => us.UserServerRoles.Any(usr =>
+                    usr.Role.ServerPermissionRoles.Any(spr =>
+                        spr.ServerPermission.Id == 0 && spr.Status)))) // change spr.ServerPermission.Id to particular in ServerPermissions table
+            {
+                return false;
+            }
+            
+            server.UserServers.Remove(
+                server.UserServers.FirstOrDefault(us => us.User.Id == user.Id && us.Server.Id == server.Id));
 
-            server.Users.Remove(user);
+            using (_unitOfWork.BeginTransactionAsync())
+            {
+                try
+                {
+                    _unitOfWork.ServerRepository.Update(server);
+                    await _unitOfWork.SaveAsync();
 
-            await _unitOfWork.ServerRepository.Update(server);
+                    await _unitOfWork.CommitTransactionAsync();
+                }
+                catch
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                }
+            }
 
             return true;
         }
@@ -153,39 +240,85 @@ namespace BLL.Services
             }
 
             var dbServer = _unitOfWork.ServerRepository.FirstOrDefault(s => s.Id == server.Id);
-            var list = await _unitOfWork.UserServerRepository.Get();
 
             foreach (var user in users)
             {
-                if (user != null && list.Any(us => us.ServerId == dbServer.Id && us.UserId == user.Id))
+                if (user != null && await _unitOfWork.UserRepository.Any(us =>
+                        us.UserServers.Any(u => u.User.Id == user.Id && u.Server.Id == server.Id)))
                 {
-                    dbServer.Users.Remove(user);
+                    _unitOfWork.UserRepository.Any(u =>
+                        u.UserServers.Remove(u.UserServers.FirstOrDefault(us =>
+                            us.User.Id == user.Id && us.Server.Id == server.Id)));
+                }
+            }
+            
+            using (_unitOfWork.BeginTransactionAsync())
+            {
+                try
+                {
+                    _unitOfWork.ServerRepository.Update(server);
+                    await _unitOfWork.SaveAsync();
+
+                    await _unitOfWork.CommitTransactionAsync();
+                }
+                catch
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
                 }
             }
 
-            await _unitOfWork.ServerRepository.Update(server);
-
             return true;
+        }
+
+        public Server GetServerByName(string name)
+        {
+            return _unitOfWork.ServerRepository.FirstOrDefault(s => s.Name == name);
         }
 
         // not done yet
         public async Task SendInvitationAsync(Server server, User user)
         {
             await _emailNotificationService.InviteByEmailAsync(server, user);
+            
+            using (_unitOfWork.BeginTransactionAsync())
+            {
+                try
+                {
+                    _unitOfWork.ServerRepository.Update(server);
+                    await _unitOfWork.SaveAsync();
 
-            await _unitOfWork.ServerRepository.Update(server);
+                    await _unitOfWork.CommitTransactionAsync();
+                }
+                catch
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                }
+            }
         }
 
         public async Task<bool> EditServerAsync(Server server, ServerServiceEditServer newServer)
         {
-            if (_unitOfWork.ServerRepository.Any(s => s.Name == newServer.ServerName))
+            if (await _unitOfWork.ServerRepository.Any(s => s.Name == newServer.ServerName))
             {
                 return false;
             }
 
             server.Name = newServer.ServerName;
+            
+            using (_unitOfWork.BeginTransactionAsync())
+            {
+                try
+                {
+                    _unitOfWork.ServerRepository.Update(server);
+                    await _unitOfWork.SaveAsync();
 
-            await _unitOfWork.ServerRepository.Update(server);
+                    await _unitOfWork.CommitTransactionAsync();
+                }
+                catch
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                }
+            }
             
             return true;
         }

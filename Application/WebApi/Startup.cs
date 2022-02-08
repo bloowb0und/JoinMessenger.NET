@@ -39,16 +39,17 @@ namespace WebApi
             services.AddScoped<IEmailNotificationService, EmailNotificationService>();
             services.AddScoped<IServerService, ServerService>();
             services.AddScoped(typeof(IDbGenericRepository<>), typeof(DbGenericRepository<>));
-            services.AddScoped<UnitOfWork>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddDbContext<AppDbContext>(options =>
             {
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
-
+            
             services.AddSingleton<MessengerContext>(provider => new MessengerContext(Configuration.GetConnectionString("PathToFile")));
-            services.Configure<EmailCredentialsModel>(Configuration.GetSection("EmailCredentials"));
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+            services.Configure<EmailCredentialsModel>(Configuration.GetSection("EmailCredentials"));
 
             services.AddControllers().AddNewtonsoftJson(options =>
             {
