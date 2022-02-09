@@ -17,7 +17,8 @@ namespace NextGenWPF.ViewModels
 
         private INavigationService _navigationService;
         private ICurrentDeterminatorService _currentDeterminatorService;
-        public LoginPageViewModel(IAutorizationService autorization, INavigationService navigationService, ICurrentDeterminatorService currentDeterminatorService)
+        private ISwitchNavigationService _switchNavigationService;
+        public LoginPageViewModel(IAutorizationService autorization, INavigationService navigationService, ICurrentDeterminatorService currentDeterminatorService, ISwitchNavigationService switchNavigationService)
         {
             _autorization = autorization;
             LoginCommand = new RelayCommand(this.Login);
@@ -25,8 +26,8 @@ namespace NextGenWPF.ViewModels
             MoveToRegistrationPage = new RelayCommand(this.MoveToRegistration);
             _navigationService = navigationService;
             _currentDeterminatorService = currentDeterminatorService;
+            _switchNavigationService = switchNavigationService;
         }
-        public RelayCommand MoveToStartPage { get; }
         public string CurrentPath { get; set; }
         public RelayCommand MoveToRegistrationPage { get; }
         public RelayCommand LoginCommand { get; }
@@ -76,9 +77,9 @@ namespace NextGenWPF.ViewModels
                 Login = username
             };
             var result = await _autorization.Autorization(user);
-            if (result)
+            if (result!=null)
             {
-                _currentDeterminatorService.SetCurrentUser(user);
+                _currentDeterminatorService.SetCurrentUser(result);
                 MessageBox.Show("Come home, sweety)", "Login");
                 this._navigationService.NavigateTo(PageKeys.MainPage);
                 this.Password = string.Empty;
@@ -93,7 +94,8 @@ namespace NextGenWPF.ViewModels
                 {
                     this.Password = string.Empty;
                     this.Username = string.Empty;
-                    MoveToRegistrationPage.Execute(this);
+                    this.MoveToRegistrationPage.Execute(this);
+                    this._switchNavigationService.NavigateTo(PageKeys.RegistrationPage);
                 }
                 else
                 {
@@ -109,7 +111,7 @@ namespace NextGenWPF.ViewModels
             if (result)
             {
                 MessageBox.Show("Try again, sweety)", "Recover");
-                this._navigationService.NavigateTo(PageKeys.LoginPage);
+                this._switchNavigationService.NavigateTo(PageKeys.LoginPage);
                 this.Password = string.Empty;
                 this.Username = string.Empty;
             }
@@ -120,6 +122,8 @@ namespace NextGenWPF.ViewModels
                     MessageBoxImage.Question, MessageBoxResult.Yes);
                 if (act == MessageBoxResult.Yes)
                 {
+                    this.MoveToRegistrationPage.Execute(this);
+                    this._switchNavigationService.NavigateTo(PageKeys.RegistrationPage);
                     this.Password = string.Empty;
                     this.Username = string.Empty;
                 }

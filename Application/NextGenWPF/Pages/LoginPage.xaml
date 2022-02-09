@@ -7,10 +7,13 @@
       mc:Ignorable="d"
       Title="LoginPage"
       DataContext="{Binding LoginPageViewModel, Source={StaticResource Locator}}" Height="202" Width="157">
+    <local:BasePage.Background>
+        <ImageBrush ImageSource ="D:\Project\NextGen\NextGenWPF\Images\bgcolor.jpg"/>
+    </local:BasePage.Background>
 
     <Grid>
-        <Image HorizontalAlignment="Center" Height="224" VerticalAlignment="Center" Width="173" Source="D:\Project\NextGen\NextGenWPF\Images\bgcolor.jpg" Stretch="Fill"/>
-        <Frame Source="{Binding CurrentPath}"/>
+        
+        <Frame Source="{Binding CurrentPath}" Panel.ZIndex="3"/>
         <StackPanel Orientation="Vertical"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center" Width="106" Height="148">

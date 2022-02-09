@@ -76,7 +76,8 @@
                    VerticalAlignment="Top"
                    FontWeight="Medium"
                    Foreground="#FFBC55FF" HorizontalAlignment="Center" Margin="0,7,0,0" Width="52"/>
-            <ListView ItemsSource="{Binding Servers}"
+            <ListView ItemsSource="{Binding Servers}" SelectedItem="{Binding OnServerChanged}"
+                      Name="ServersList"
                       BorderThickness="0"
                       ItemContainerStyle="{StaticResource ContactCard}" d:ItemsSource="{d:SampleData ItemCount=5}" Grid.Row="1" HorizontalAlignment="Center" Width="69" Grid.RowSpan="2" Background="Transparent">
             </ListView>
@@ -91,7 +92,9 @@
                    VerticalAlignment="Top"
                    FontWeight="Medium"
                    Foreground="#FFBC55FF" HorizontalAlignment="Center" Width="196" Height="26"/>
-            <ListView ItemsSource="{Binding CurrentServerChats}"
+            <ListView ItemsSource="{Binding SelectedItem.Chats, ElementName=ServersList}"
+                      SelectedItem="{Binding OnChatChanged}"
+                      Name="ChatsList"
                       BorderThickness="0"
                       Background="Transparent"
                       ItemContainerStyle="{StaticResource ChatCard}" HorizontalAlignment="Center" Width="196" d:ItemsSource="{d:SampleData ItemCount=5}" Grid.Row="1"/>
@@ -120,7 +123,7 @@
                            VerticalAlignment="Center" Margin="5,-5,0,0"/>
                 </Grid>
             </Border>
-            <ListView ItemsSource="{Binding CurrentChatMessages}"
+            <ListView ItemsSource="{Binding SelectedItem.Messages, ElementName=ChatsList}"
                       Background="Transparent"
                       ItemContainerStyle="{StaticResource ChatItem}"
                       Margin="8,0,0,0"

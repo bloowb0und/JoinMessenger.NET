@@ -5,14 +5,14 @@ namespace NextGenWPF.Services.NetworkConnection
 {
     public class LoginRequest : JsonRequest
     {
-        public LoginRequest(string loginstring, string password) : base(@"/auth/login", HttpMethod.Post)
+        public LoginRequest(string loginstring, string password) : base(@"/test/test", HttpMethod.Post)
         {
-            this.body = JsonConvert.SerializeObject(new LoginBody()
-            {
-                LoginString = loginstring,
-                Password = password
-                
-            });
+            // this.body = JsonConvert.SerializeObject(new LoginBody()
+            // {
+            //     LoginString = loginstring,
+            //     Password = password
+            //     
+            // });
         }
         private class LoginBody
         {

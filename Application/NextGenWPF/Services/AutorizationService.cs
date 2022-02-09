@@ -13,15 +13,16 @@ namespace NextGenWPF.Services
 {
     public class DesignTime : IAutorizationService, IRegistrationService
     {
-        public async Task<bool> Autorization(User user)
+        public async Task<User> Autorization(User user)
         {
             var req = new NetworkService();
             var result = await req.SendRequestAsync(new LoginRequest(user.Login, user.Password));
             if (result.ResponseCode == 200)
             {
-                return true;
+                
+                return JsonConvert.DeserializeObject<User>( result.ResponseBody);;
             }
-            return false;
+            return null;
         }
 
          public async Task<bool> Registration(User user)

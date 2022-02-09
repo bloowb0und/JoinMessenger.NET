@@ -31,9 +31,10 @@ namespace NextGenWPF.Pages
         }
         private void ConfigureServices(ServiceCollection services)
         {
-            services.AddSingleton<StartPageViewModel>();
             services.AddSingleton<MainWindowViewModel>();
+            services.AddSingleton<StartPageViewModel>();
             services.AddSingleton<INavigationService, NavigationService>();
+            services.AddSingleton<ISwitchNavigationService, SwitchNavigationService>();
             services.AddSingleton<IAutorizationService, DesignTime>();
             services.AddSingleton<IRegistrationService, DesignTime>();
             services.AddSingleton<ICurrentDeterminatorService,CurrentDeterminatorService>();

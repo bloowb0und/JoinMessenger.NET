@@ -16,20 +16,22 @@ namespace NextGenWPF.ViewModels
         private IRegistrationService _registration;
 
         private INavigationService _navigationService;
-        public RegistrationPageViewModel(IRegistrationService registration, INavigationService navigationService)
+        private ISwitchNavigationService _switchNavigationService;
+        public RegistrationPageViewModel(IRegistrationService registration, INavigationService navigationService, ISwitchNavigationService switchNavigationService)
         {
             _registration = registration;
             RegistrationCommand = new RelayCommand(Registration);
             _navigationService = navigationService;
-            this.MoveToStartPage = new RelayCommand(this.MoveToStart);
             this.MoveToLoginPage = new RelayCommand(this.MoveToLogin);
+            _switchNavigationService = switchNavigationService;
         }
-
+        public string CurrentPath { get; set; }
         public RelayCommand RegistrationCommand { get; }
         public RelayCommand MoveToLoginPage { get; }
-
-        public RelayCommand MoveToStartPage { get; }
-
+        protected override void OnPageLoaded()
+        {
+            base.OnPageLoaded();
+        }
         private string username;
         public string Username
         {
@@ -78,7 +80,7 @@ namespace NextGenWPF.ViewModels
             if (result)
             {
                 MessageBox.Show("Welcome home, sweety)", "Registrate");
-                this._navigationService.NavigateTo(PageKeys.StartPage);
+                this.MoveToLogin();
                 this.Email = string.Empty;
                 this.Password = string.Empty;
                 this.Username = string.Empty;   
@@ -103,19 +105,14 @@ namespace NextGenWPF.ViewModels
                 }
             }
         }
-        private void MoveToStart()
-        {
-            if (this.PageLoaded)
-            {
-                this._navigationService.NavigateTo(PageKeys.StartPage);
-            }
-        }
 
         private void MoveToLogin()
         {
             if (this.PageLoaded)
             {
-                this._navigationService.NavigateTo(PageKeys.LoginPage);
+                this.CurrentPath = "LoginPage.xaml";
+                this.OnPropertyChanged(nameof(CurrentPath));
+                this._switchNavigationService.NavigateTo(PageKeys.LoginPage);
             }
         }
 

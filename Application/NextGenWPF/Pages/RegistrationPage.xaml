@@ -9,8 +9,11 @@
         xmlns:pages="clr-namespace:NextGenWPF.Pages"
         DataContext="{Binding RegistrationPageViewModel, Source={StaticResource Locator}}"
         Title="RegistrationPage" Height="202" Width="157">
+    <pages:BasePage.Background>
+    <ImageBrush ImageSource ="D:\Project\NextGen\NextGenWPF\Images\bgcolor.jpg"/>
+    </pages:BasePage.Background>
     <Grid>
-        <Image HorizontalAlignment="Center" Height="203" VerticalAlignment="Center" Width="157" Source="D:\Project\NextGen\NextGenWPF\Images\bgcolor.jpg" Stretch="Fill"/>
+        <Frame Source="{Binding CurrentPath}" Panel.ZIndex="3"/>
         <StackPanel Orientation="Vertical"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center" Width="106" Height="154">

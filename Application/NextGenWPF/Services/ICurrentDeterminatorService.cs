@@ -7,7 +7,7 @@ namespace NextGenWPF.Services
 {
     public interface ICurrentDeterminatorService
     {
-        public User GetCurrentUser();
+        IObservable<User> userSubject { get; }
         public void SetCurrentUser(User user);
     }
 }
