@@ -4,14 +4,16 @@ using DAL.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220207123916_FixedRequiredFields")]
+    partial class FixedRequiredFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -79,7 +81,7 @@ namespace DAL.Migrations
                     b.Property<int>("ChatId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ChatPermissionId")
+                    b.Property<int?>("ChatPermissionId")
                         .HasColumnType("int");
 
                     b.Property<int>("RoleId")
@@ -207,20 +209,15 @@ namespace DAL.Migrations
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ServerId")
-                        .HasColumnType("int");
-
                     b.Property<int>("ServerPermissionId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("Status")
+                    b.Property<bool>("ServerPermissionStatus")
                         .HasColumnType("bit");
 
                     b.HasKey("Id");
 
                     b.HasIndex("RoleId");
-
-                    b.HasIndex("ServerId");
 
                     b.HasIndex("ServerPermissionId");
 
@@ -327,10 +324,8 @@ namespace DAL.Migrations
                         .IsRequired();
 
                     b.HasOne("Core.Models.ChatPermission", "ChatPermission")
-                        .WithMany("ChatPermissionRoles")
-                        .HasForeignKey("ChatPermissionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany()
+                        .HasForeignKey("ChatPermissionId");
 
                     b.HasOne("Core.Models.Role", "Role")
                         .WithMany("ChatPermissionRoles")
@@ -376,10 +371,6 @@ namespace DAL.Migrations
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Core.Models.Server", null)
-                        .WithMany("ServerPermissionRoles")
-                        .HasForeignKey("ServerId");
 
                     b.HasOne("Core.Models.ServerPermission", "ServerPermission")
                         .WithMany("ServerPermissionRoles")
@@ -431,11 +422,6 @@ namespace DAL.Migrations
                     b.Navigation("ChatPermissionRoles");
                 });
 
-            modelBuilder.Entity("Core.Models.ChatPermission", b =>
-                {
-                    b.Navigation("ChatPermissionRoles");
-                });
-
             modelBuilder.Entity("Core.Models.Role", b =>
                 {
                     b.Navigation("ChatPermissionRoles");
@@ -447,8 +433,6 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("Core.Models.Server", b =>
                 {
-                    b.Navigation("ServerPermissionRoles");
-
                     b.Navigation("UserServers");
                 });
 

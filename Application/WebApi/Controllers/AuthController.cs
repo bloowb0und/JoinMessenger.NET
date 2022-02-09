@@ -28,7 +28,7 @@ namespace WebApi.Controllers
                 return BadRequest("Invalid value provided");
             }
             
-            var user = _userService.SignIn(loginPswd.Login, loginPswd.Password);
+            var user = _userService.SignInAsync(loginPswd.Login, loginPswd.Password);
 
             if (user == null)
             {

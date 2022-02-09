@@ -5,20 +5,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Core.Models
 {
-    public class UserServer 
+    public class UserServer : BaseEntity
     {
-        /*[Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }*/
-        public int UserId { get; set; }
         public User User { get; set; }
-
-        public int ServerId { get; set; }
         public Server Server { get; set; }
         
-        [Column(TypeName = "datetime2(0)")]
+        [Required]
         public DateTime DateEntered { get; set; }
 
-        //public List<UserServerRole> UserServerRoles { get; set; }
+        public ICollection<UserServerRole> UserServerRoles { get; set; }
     }
 }

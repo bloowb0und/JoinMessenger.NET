@@ -1,17 +1,15 @@
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace Core.Models
 {
     public class UserServerRole : BaseEntity
     {
-        public int UserServerID { get; set; }
+        [Required]
         public UserServer UserServer { get; set; }
-
-        public int RoleId { get; set; }
+        [Required]
         public Role Role { get; set; }
-        
-        [Column(TypeName = "datetime2(0)")]
+        [Required]
         public DateTime DateApplied { get; set; }
     }
 }

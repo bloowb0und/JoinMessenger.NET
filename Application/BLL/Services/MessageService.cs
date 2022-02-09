@@ -12,28 +12,41 @@ namespace BLL.Services
 {
     public class MessageService : IMessageService
     {
-        private readonly IGenericRepository<Message> _messageRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public MessageService(IGenericRepository<Message> messageRepository)
+        public MessageService(IUnitOfWork unitOfWork)
         {
-            _messageRepository = messageRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<bool> CreateMessageAsync(Message message)
         {
-            if (_messageRepository.Any(m => m == message))
+            if (await _unitOfWork.MessageRepository.Any(m => m.Id == message.Id))
             {
                 return false;
             }
+            
+            using (_unitOfWork.BeginTransactionAsync())
+            {
+                try
+                {
+                    await _unitOfWork.MessageRepository.CreateAsync(message);
+                    await _unitOfWork.SaveAsync();
 
-            await _messageRepository.CreateAsync(message);
+                    await _unitOfWork.CommitTransactionAsync();
+                }
+                catch 
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                }
+            }
             
             return true;
         }
 
         public async Task<bool> EditMessageAsync(User user, Message message, MessageServiceEditMessage newMessage)
         {
-            if (!_messageRepository.Any(m => m == message))
+            if (!await _unitOfWork.MessageRepository.Any(m => m.Id == message.Id))
             {
                 return false;
             }
@@ -46,22 +59,35 @@ namespace BLL.Services
 
             message.Value = newMessage.MessageValue;
             message.DateLastEdited = DateTime.Now;
-            await _messageRepository.UpdateAsync(message);
+            
+            using (_unitOfWork.BeginTransactionAsync())
+            {
+                try
+                {
+                    _unitOfWork.MessageRepository.Update(message);
+                    await _unitOfWork.SaveAsync();
+
+                    await _unitOfWork.CommitTransactionAsync();
+                }
+                catch 
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                }
+            }
             
             return true;
         }
 
         public async Task<bool> DeleteMessageAsync(User user, Message message)
         {
-            if (message.User == null 
-                || message.Server == null 
-                || message.Chat == null 
+            if (message.User == null
+                || message.Chat == null
                 || string.IsNullOrWhiteSpace(message.Value))
             {
                 return false;
             }
 
-            if (_messageRepository.Any(m => m == message))
+            if (await _unitOfWork.MessageRepository.Any(m => m.Id == message.Id))
             {
                 return false;
             }
@@ -71,8 +97,21 @@ namespace BLL.Services
             {
                 return false;
             }
+            
+            using (_unitOfWork.BeginTransactionAsync())
+            {
+                try
+                {
+                    _unitOfWork.MessageRepository.Delete(message);
+                    await _unitOfWork.SaveAsync();
 
-            await _messageRepository.DeleteAsync(message);
+                    await _unitOfWork.CommitTransactionAsync();
+                }
+                catch 
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                }
+            }
             
             return true;
         }
