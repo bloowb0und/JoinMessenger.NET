@@ -40,7 +40,7 @@ namespace BLL.Services
                     await _unitOfWork.RollbackTransactionAsync();
                 }
             }
-            
+
             return true;
         }
 

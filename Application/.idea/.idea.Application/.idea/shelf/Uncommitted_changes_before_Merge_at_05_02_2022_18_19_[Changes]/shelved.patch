@@ -1,0 +1,549 @@
+Index: NextGenWPF/Pages/LoginPage.xaml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><local:BasePage x:Class=\"NextGenWPF.Pages.LoginPage\"\r\n      xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\r\n      xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\r\n      xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \r\n      xmlns:d=\"http://schemas.microsoft.com/expression/blend/2008\" \r\n      xmlns:local=\"clr-namespace:NextGenWPF.Pages\"\r\n      mc:Ignorable=\"d\"\r\n      Title=\"LoginPage\"\r\n      DataContext=\"{Binding LoginPageViewModel, Source={StaticResource Locator}}\" Height=\"202\" Width=\"157\">\r\n\r\n    <Grid>\r\n        <Image HorizontalAlignment=\"Center\" Height=\"224\" VerticalAlignment=\"Center\" Width=\"173\" Source=\"D:\\Project\\NextGen\\NextGenWPF\\Images\\bgcolor.jpg\" Stretch=\"Fill\"/>\r\n        <Frame Source=\"{Binding CurrentPath}\"/>\r\n        <StackPanel Orientation=\"Vertical\"\r\n                HorizontalAlignment=\"Center\"\r\n                VerticalAlignment=\"Center\" Width=\"106\" Height=\"148\">\r\n            <Label Content=\"Login\" Width=\"106\" Height=\"24\" FontFamily=\"Dosis ExtraLight\" Foreground=\"#FF39385D\"/>\r\n            <TextBox Text=\"{Binding Username, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}\"/>\r\n            <Label Content=\"Password\" Height=\"24\" FontFamily=\"Dosis ExtraLight\" Foreground=\"#FF39385D\"/>\r\n            <TextBox Text=\"{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}\"/>\r\n            <Button Command=\"{Binding LoginCommand}\" Content=\"Join\"\r\n                Height=\"35\" Cursor=\"Hand\" Foreground=\"#FF6BB9B6\">\r\n                <Button.Style>\r\n                    <Style TargetType=\"{x:Type Button}\">\r\n                        <Setter Property=\"TextElement.FontFamily\" Value=\"Dosis ExtraLight\" />\r\n                        <Setter Property=\"Background\" Value=\"#39385D\" />\r\n                        <Setter Property=\"Cursor\" Value=\"Hand\" />\r\n                        <Style.Triggers>\r\n                            <Trigger Property=\"IsMouseOver\" Value=\"True\">\r\n                                <Setter Property=\"Background\" Value=\"#3A3952\" />\r\n                            </Trigger>\r\n                        </Style.Triggers>\r\n                    </Style>\r\n                </Button.Style>\r\n                <Button.Template>\r\n                    <ControlTemplate TargetType=\"{x:Type Button}\">\r\n                        <Border Width=\"100\" Height=\"25\" CornerRadius=\"12\" Background=\"{TemplateBinding Background}\"\r\n                            Margin=\"-40,0,-41,0\">\r\n                            <ContentPresenter HorizontalAlignment=\"Center\" VerticalAlignment=\"Center\" />\r\n                        </Border>\r\n                    </ControlTemplate>\r\n                </Button.Template>\r\n            </Button>\r\n            <Button Command=\"{Binding RecoverCommand}\" Content=\"Forgot password?\"\r\n                Height=\"28\" Cursor=\"Hand\" Foreground=\"#FF6BB9B6\" FontSize=\"8\">\r\n                <Button.Style>\r\n                    <Style TargetType=\"{x:Type Button}\">\r\n                        <Setter Property=\"TextElement.FontFamily\" Value=\"Dosis ExtraLight\" />\r\n                        <Setter Property=\"Background\" Value=\"#39385D\" />\r\n                        <Setter Property=\"Cursor\" Value=\"Hand\" />\r\n                        <Style.Triggers>\r\n                            <Trigger Property=\"IsMouseOver\" Value=\"True\">\r\n                                <Setter Property=\"Background\" Value=\"#3A3952\" />\r\n                            </Trigger>\r\n                        </Style.Triggers>\r\n                    </Style>\r\n                </Button.Style>\r\n                <Button.Template>\r\n                    <ControlTemplate TargetType=\"{x:Type Button}\">\r\n                        <Border Width=\"100\" Height=\"10\" CornerRadius=\"5\" Background=\"{TemplateBinding Background}\"\r\n                            Margin=\"-40,0,-41,0\">\r\n                            <ContentPresenter HorizontalAlignment=\"Center\" VerticalAlignment=\"Center\" />\r\n                        </Border>\r\n                    </ControlTemplate>\r\n                </Button.Template>\r\n            </Button>\r\n        </StackPanel>\r\n    </Grid>\r\n</local:BasePage>\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/NextGenWPF/Pages/LoginPage.xaml b/NextGenWPF/Pages/LoginPage.xaml
+--- a/NextGenWPF/Pages/LoginPage.xaml	(revision 1c05cc2011c8f759a3d9af35f7b94280c0b12b0c)
++++ b/NextGenWPF/Pages/LoginPage.xaml	(date 1643909032602)
+@@ -7,10 +7,13 @@
+       mc:Ignorable="d"
+       Title="LoginPage"
+       DataContext="{Binding LoginPageViewModel, Source={StaticResource Locator}}" Height="202" Width="157">
++    <local:BasePage.Background>
++        <ImageBrush ImageSource ="D:\Project\NextGen\NextGenWPF\Images\bgcolor.jpg"/>
++    </local:BasePage.Background>
+ 
+     <Grid>
+-        <Image HorizontalAlignment="Center" Height="224" VerticalAlignment="Center" Width="173" Source="D:\Project\NextGen\NextGenWPF\Images\bgcolor.jpg" Stretch="Fill"/>
+-        <Frame Source="{Binding CurrentPath}"/>
++        
++        <Frame Source="{Binding CurrentPath}" Panel.ZIndex="3"/>
+         <StackPanel Orientation="Vertical"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Center" Width="106" Height="148">
+Index: NextGenWPF/Pages/Themes/ChatItem.xaml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><ResourceDictionary xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\r\n                    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\">\r\n    <Style TargetType=\"ListViewItem\" x:Key=\"ChatItem\">\r\n        <Setter Property=\"Template\">\r\n            <Setter.Value>\r\n                <ControlTemplate>\r\n                    <StackPanel Orientation=\"Horizontal\">\r\n                        <Ellipse Width=\"30\" Height=\"30\" \r\n                                 Margin=\"10,0,0,-5\">\r\n                            <Ellipse.Fill>\r\n                                <ImageBrush ImageSource=\"{Binding UserIcon}\"\r\n                                            RenderOptions.BitmapScalingMode=\"Fant\"/>\r\n                            </Ellipse.Fill>\r\n                        </Ellipse>\r\n\r\n                        <StackPanel Orientation=\"Horizontal\">\r\n                            <Label Content=\"{Binding Username}\"\r\n                                   Foreground =\"{Binding UserColor}\"\r\n                                   FontWeight=\"SemiBold\"\r\n                                   VerticalAlignment=\"Center\"\r\n                                   Margin=\"0,0,-5,0\"/>\r\n                            <Label Content=\"{Binding Time}\"\r\n                                   Foreground =\"Gray\"\r\n                                   FontWeight=\"SemiBold\"\r\n                                   FontSize=\"8\"\r\n                                   VerticalAlignment=\"Center\"\r\n                                   Margin=\"0,0,-5,0\"/>\r\n                            <Label Content=\"{Binding Message}\"\r\n                                   Foreground=\"Wheat\"\r\n                                   FontWeight=\"SemiBold\"\r\n                                   VerticalAlignment=\"Center\"/>\r\n                        </StackPanel>\r\n                    </StackPanel>\r\n                </ControlTemplate>\r\n            </Setter.Value>\r\n        </Setter>\r\n        <Style.Resources>\r\n            <ControlTemplate x:Key=\"CustomRow\">\r\n                <StackPanel Orientation=\"Horizontal\">\r\n                    <Label Content=\"{Binding Message}\"\r\n                           Foreground=\"Wheat\"\r\n                           />\r\n                </StackPanel>\r\n            </ControlTemplate>\r\n        </Style.Resources>\r\n    </Style>\r\n</ResourceDictionary>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/NextGenWPF/Pages/Themes/ChatItem.xaml b/NextGenWPF/Pages/Themes/ChatItem.xaml
+--- a/NextGenWPF/Pages/Themes/ChatItem.xaml	(revision 1c05cc2011c8f759a3d9af35f7b94280c0b12b0c)
++++ b/NextGenWPF/Pages/Themes/ChatItem.xaml	(date 1643934119263)
+@@ -14,7 +14,7 @@
+                         </Ellipse>
+ 
+                         <StackPanel Orientation="Horizontal">
+-                            <Label Content="{Binding Username}"
++                            <Label Content="{Binding User.Login }"
+                                    Foreground ="{Binding UserColor}"
+                                    FontWeight="SemiBold"
+                                    VerticalAlignment="Center"
+@@ -25,7 +25,7 @@
+                                    FontSize="8"
+                                    VerticalAlignment="Center"
+                                    Margin="0,0,-5,0"/>
+-                            <Label Content="{Binding Message}"
++                            <Label Content="{Binding Value}"
+                                    Foreground="Wheat"
+                                    FontWeight="SemiBold"
+                                    VerticalAlignment="Center"/>
+@@ -37,7 +37,7 @@
+         <Style.Resources>
+             <ControlTemplate x:Key="CustomRow">
+                 <StackPanel Orientation="Horizontal">
+-                    <Label Content="{Binding Message}"
++                    <Label Content="{Binding Value}"
+                            Foreground="Wheat"
+                            />
+                 </StackPanel>
+Index: NextGenWPF/Pages/MainPage.xaml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><local:BasePage x:Class=\"NextGenWPF.Pages.MainPage\"\r\n      xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\r\n      xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\r\n      xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \r\n      xmlns:d=\"http://schemas.microsoft.com/expression/blend/2008\" \r\n      xmlns:local=\"clr-namespace:NextGenWPF.Pages\" xmlns:viewmodels=\"clr-namespace:NextGenWPF.ViewModels\" d:DataContext=\"{d:DesignInstance Type=viewmodels:MainPageViewModel}\"\r\n                mc:Ignorable=\"d\" \r\n      d:DesignHeight=\"450\" d:DesignWidth=\"800\"\r\n      Title=\"MainPage\"\r\n      Background=\"#FF58387C\"\r\n                 DataContext=\"{Binding MainPageViewModel, Source={StaticResource Locator}}\">\r\n\r\n    <Grid Margin=\"0,-2,0,0\">\r\n        <Grid.RowDefinitions>\r\n            <RowDefinition Height=\"25\" />\r\n            <RowDefinition />\r\n        </Grid.RowDefinitions>\r\n        <Grid.ColumnDefinitions>\r\n            <ColumnDefinition Width=\"64\" />\r\n            <ColumnDefinition Width=\"195*\" />\r\n            <ColumnDefinition Width=\"541*\"/>\r\n        </Grid.ColumnDefinitions>\r\n        <Grid Background=\"#FF2B103D\" Grid.ColumnSpan=\"3\">\r\n            <Grid.ColumnDefinitions>\r\n                <ColumnDefinition Width=\"43*\" />\r\n                <ColumnDefinition Width=\"73*\" />\r\n                <ColumnDefinition Width=\"55*\" />\r\n                <ColumnDefinition Width=\"57*\" />\r\n                <ColumnDefinition Width=\"57*\" />\r\n                <ColumnDefinition Width=\"57*\" />\r\n                <ColumnDefinition Width=\"57*\" />\r\n                <ColumnDefinition Width=\"57*\" />\r\n                <ColumnDefinition Width=\"57*\" />\r\n                <ColumnDefinition Width=\"57*\" />\r\n                <ColumnDefinition Width=\"57*\" />\r\n                <ColumnDefinition Width=\"57*\" />\r\n                <ColumnDefinition Width=\"57*\" />\r\n                <ColumnDefinition Width=\"57*\" />\r\n            </Grid.ColumnDefinitions>\r\n            <Button Content=\"Exit\"\r\n                    Grid.Column=\"11\" Grid.ColumnSpan=\"2\"\r\n                    Foreground=\"White\"\r\n                    FontSize=\"10\"\r\n                    FontWeight=\"Medium\" HorizontalAlignment=\"Left\" VerticalAlignment=\"Center\" Width=\"50\"\r\n                    IsDefault=\"True\" Margin=\"54,0,0,0\" Cursor=\"Hand\"\r\n                    Click=\"Button_Click\">\r\n                <Button.Style>\r\n                    <Style TargetType=\"Button\">\r\n                        <Setter Property=\"TextElement.FontFamily\" Value=\"Dosis ExtraLight\" />\r\n                        <Setter Property=\"Background\" Value=\"#FFD24E4E\" />\r\n                        <Setter Property=\"Cursor\" Value=\"Hand\" />\r\n                        <Style.Triggers>\r\n                            <Trigger Property=\"IsMouseOver\" Value=\"True\">\r\n                                <Setter Property=\"Background\" Value=\"#FFB54646\" />\r\n                            </Trigger>\r\n                        </Style.Triggers>\r\n                    </Style>\r\n                </Button.Style>\r\n                <Button.Template>\r\n                    <ControlTemplate TargetType=\"Button\">\r\n                        <Border Width=\"75\" Height=\"15\" CornerRadius=\"8\" Background=\"{TemplateBinding Background}\"\r\n                                Margin=\"0,0,-70,0\">\r\n                            <ContentPresenter HorizontalAlignment=\"Center\" VerticalAlignment=\"Center\" />\r\n                        </Border>\r\n                    </ControlTemplate>\r\n                </Button.Template>\r\n            </Button>\r\n        </Grid>\r\n        <Grid Background=\"#FF2A1343\" Grid.Row=\"1\" HorizontalAlignment=\"Center\" Width=\"64\">\r\n            <Grid.RowDefinitions>\r\n                <RowDefinition Height=\"50\"/>\r\n                <RowDefinition/>\r\n                <RowDefinition Height=\"60\"/>\r\n            </Grid.RowDefinitions>\r\n            <Label Content=\"Servers\"\r\n                   VerticalAlignment=\"Top\"\r\n                   FontWeight=\"Medium\"\r\n                   Foreground=\"#FFBC55FF\" HorizontalAlignment=\"Center\" Margin=\"0,7,0,0\" Width=\"52\"/>\r\n            <ListView ItemsSource=\"{Binding Servers}\"\r\n                      BorderThickness=\"0\"\r\n                      ItemContainerStyle=\"{StaticResource ContactCard}\" d:ItemsSource=\"{d:SampleData ItemCount=5}\" Grid.Row=\"1\" HorizontalAlignment=\"Center\" Width=\"69\" Grid.RowSpan=\"2\" Background=\"Transparent\">\r\n            </ListView>\r\n        </Grid>\r\n        <Grid Background=\"#FF402164\" Grid.Column=\"1\" HorizontalAlignment=\"Center\" Width=\"196\" Grid.Row=\"1\">\r\n            <Grid.RowDefinitions>\r\n                <RowDefinition Height=\"31\"/>\r\n                <RowDefinition/>\r\n                <RowDefinition Height=\"45\"/>\r\n            </Grid.RowDefinitions>\r\n            <Label Content=\"Server Name\"\r\n                   VerticalAlignment=\"Top\"\r\n                   FontWeight=\"Medium\"\r\n                   Foreground=\"#FFBC55FF\" HorizontalAlignment=\"Center\" Width=\"196\" Height=\"26\"/>\r\n            <ListView ItemsSource=\"{Binding CurrentServerChats}\"\r\n                      BorderThickness=\"0\"\r\n                      Background=\"Transparent\"\r\n                      ItemContainerStyle=\"{StaticResource ChatCard}\" HorizontalAlignment=\"Center\" Width=\"196\" d:ItemsSource=\"{d:SampleData ItemCount=5}\" Grid.Row=\"1\"/>\r\n            <StackPanel Grid.Row =\"2\" Orientation=\"Horizontal\" Background=\"#FF311A4A\">\r\n                <Border CornerRadius=\"25\"\r\n                        Height=\"30\"\r\n                        Width=\"30\"\r\n                        Background=\"Crimson\" Margin=\"8,0,0,0\"/>\r\n                <StackPanel Height=\"37\">\r\n                    <Label Content=\"username\" Height=\"21\" FontSize=\"10\" Foreground=\"#FF9F8ABA\" Margin=\"0,0,0,-7\" FontWeight=\"SemiBold\"/>\r\n                    <Label Content=\"status\" FontSize=\"10\" Foreground=\"#FF9F8ABA\" FontWeight=\"SemiBold\"/>\r\n                </StackPanel>\r\n            </StackPanel>\r\n        </Grid>\r\n        <Grid Grid.Row=\"2\" Grid.Column=\"2\">\r\n            <Grid.RowDefinitions>\r\n                <RowDefinition Height=\"40\"/>\r\n                <RowDefinition/>\r\n                <RowDefinition Height=\"50\"/>\r\n            </Grid.RowDefinitions>\r\n            <Border BorderBrush=\"#FF420E62\" HorizontalAlignment=\"Stretch\" VerticalAlignment=\"Stretch\" BorderThickness=\"0,0,0,2\">\r\n                <Grid HorizontalAlignment=\"Stretch\"\r\n                      Margin=\"8\">\r\n                    <Label Content=\"#  selectedchat\" Foreground=\"White\"\r\n                           FontWeight=\"Bold\"\r\n                           VerticalAlignment=\"Center\" Margin=\"5,-5,0,0\"/>\r\n                </Grid>\r\n            </Border>\r\n            <ListView ItemsSource=\"{Binding CurrentChatMessages}\"\r\n                      Background=\"Transparent\"\r\n                      ItemContainerStyle=\"{StaticResource ChatItem}\"\r\n                      Margin=\"8,0,0,0\"\r\n                      Grid.Row=\"1\" BorderBrush=\"{x:Null}\"/>\r\n            <Grid Grid.Row=\"2\">\r\n                <Grid.ColumnDefinitions>\r\n                    <ColumnDefinition Width=\"40\"/>\r\n                    <ColumnDefinition/>\r\n                    <ColumnDefinition Width=\"90\"/>\r\n                </Grid.ColumnDefinitions>\r\n                <Border Background=\"#FF75587B\"\r\n                        CornerRadius=\"10\" Grid.ColumnSpan=\"3\" Margin=\"10,10,10,10\">\r\n                    <TextBox Grid.Row=\"1\"\r\n                             Grid.Column=\"2\"\r\n                             Background=\"Transparent\" Margin=\"35,0,50,0\"\r\n                             VerticalAlignment=\"Stretch\"\r\n                             VerticalContentAlignment=\"Center\"\r\n                             TextWrapping=\"Wrap\"\r\n                             BorderThickness=\"0\"\r\n                             Foreground=\"White\"\r\n                             CaretBrush=\"White\"\r\n                             Text=\"{Binding Message, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}\">\r\n                        <TextBox.InputBindings>\r\n                            <KeyBinding Command=\"{Binding SendCommand}\" Key=\"Return\"/>\r\n                        </TextBox.InputBindings>\r\n                    </TextBox>\r\n                </Border>\r\n                <Button Grid.Column=\"0\" Margin=\"20,16,0,16\" HorizontalAlignment=\"Left\" Width=\"15\" RenderTransformOrigin=\"0.5,0.5\" BorderBrush=\"{x:Null}\">\r\n                    <Button.Background>\r\n                        <ImageBrush ImageSource=\"D:\\Project\\JoinMes\\Application\\NextGenWPF\\Images\\upload.png\"/>\r\n                    </Button.Background>\r\n                </Button>\r\n                <Button Grid.Column=\"2\" Margin=\"39,15,0,15\" HorizontalAlignment=\"Left\" Width=\"26\" RenderTransformOrigin=\"0.5,0.5\" BorderBrush=\"{x:Null}\">\r\n                    <Button.Background>\r\n                        <ImageBrush ImageSource=\"D:\\Project\\JoinMes\\Application\\NextGenWPF\\Images\\giffi.png\"/>\r\n                    </Button.Background>\r\n                </Button>\r\n\r\n            </Grid>\r\n        </Grid>\r\n    </Grid>\r\n</local:BasePage>\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/NextGenWPF/Pages/MainPage.xaml b/NextGenWPF/Pages/MainPage.xaml
+--- a/NextGenWPF/Pages/MainPage.xaml	(revision 1c05cc2011c8f759a3d9af35f7b94280c0b12b0c)
++++ b/NextGenWPF/Pages/MainPage.xaml	(date 1643919934293)
+@@ -92,6 +92,7 @@
+                    FontWeight="Medium"
+                    Foreground="#FFBC55FF" HorizontalAlignment="Center" Width="196" Height="26"/>
+             <ListView ItemsSource="{Binding CurrentServerChats}"
++                      Name="ServersList"
+                       BorderThickness="0"
+                       Background="Transparent"
+                       ItemContainerStyle="{StaticResource ChatCard}" HorizontalAlignment="Center" Width="196" d:ItemsSource="{d:SampleData ItemCount=5}" Grid.Row="1"/>
+@@ -120,7 +121,7 @@
+                            VerticalAlignment="Center" Margin="5,-5,0,0"/>
+                 </Grid>
+             </Border>
+-            <ListView ItemsSource="{Binding CurrentChatMessages}"
++            <ListView ItemsSource="{Binding SelectedItem.Messages, ElementName=ServersList}"
+                       Background="Transparent"
+                       ItemContainerStyle="{StaticResource ChatItem}"
+                       Margin="8,0,0,0"
+@@ -142,7 +143,7 @@
+                              BorderThickness="0"
+                              Foreground="White"
+                              CaretBrush="White"
+-                             Text="{Binding Message, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
++                             Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                         <TextBox.InputBindings>
+                             <KeyBinding Command="{Binding SendCommand}" Key="Return"/>
+                         </TextBox.InputBindings>
+Index: NextGenWPF/ViewModels/MainPageViewModel.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using Core.Models;\r\nusing NextGenWPF.ViewModels.Base;\r\nusing System;\r\nusing System.Collections.Generic;\r\nusing System.Collections.ObjectModel;\r\nusing System.Linq;\r\nusing System.Text;\r\n\r\nnamespace NextGenWPF.ViewModels\r\n{\r\n    public class MainPageViewModel : BasePageViewModel\r\n    {\r\n        public ObservableCollection<Server> Servers { get; set; }\r\n        public List<Chat> CurrentServerChats { get; set; }\r\n        public List<Message> CurrentChatMessages { get; set; }\r\n        private Server CurrentServer { get; set; }\r\n        public ObservableCollection<Message> Messages { get; set; }\r\n        public MainPageViewModel()\r\n        {\r\n            Servers = new ObservableCollection<Server>();\r\n#if DEBUG\r\n            Servers.Add(new Server()\r\n            {\r\n                Name = \"Kekises\",\r\n                DateCreated = DateTime.Now,\r\n                Chats = new List<Chat>() {\r\n                new Chat()\r\n                {\r\n                    Name = \"#  speaking\",\r\n                },\r\n                new Chat()\r\n                {\r\n                    Name = \"#  workayem parni\"\r\n                },\r\n                new Chat()\r\n                {\r\n                    Name = \"#  chill parni\"\r\n                },\r\n                new Chat()\r\n                {\r\n                    Name = \"#  dimich kill us parni\"\r\n                }\r\n                },\r\n                Icon = @\"D:\\Project\\JoinMes\\Application\\NextGenWPF\\Images\\image (1).png\",\r\n            });\r\n            Servers.Add(new Server()\r\n            {\r\n                Name = \"Team\",\r\n                DateCreated = DateTime.Now,\r\n                Chats = new List<Chat>() { new Chat()\r\n                {\r\n                    Name = \"BestTeam\",\r\n                } },\r\n                Icon = @\"D:\\Project\\JoinMes\\Application\\NextGenWPF\\Images\\image (1).png\",\r\n            });\r\n            Servers.Add(new Server()\r\n            {\r\n                Name = \"Doka foo\",\r\n                DateCreated = DateTime.Now,\r\n                Chats = new List<Chat>() { new Chat()\r\n                {\r\n                    Name = \"BestTeam\",\r\n                } },\r\n                Icon = @\"D:\\Project\\JoinMes\\Application\\NextGenWPF\\Images\\image (1).png\",\r\n            });\r\n            CurrentServer = Servers.FirstOrDefault();\r\n            CurrentServerChats = CurrentServer.Chats;\r\n#endif\r\n        }\r\n        private string message;\r\n        public string Message\r\n        {\r\n            get => this.message;\r\n            set\r\n            {\r\n                this.message = value;\r\n                this.OnPropertyChanged();\r\n            }\r\n        }\r\n        private void SetServer()\r\n        {\r\n            CurrentServer = Servers.FirstOrDefault();\r\n            CurrentServerChats = CurrentServer.Chats;\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/NextGenWPF/ViewModels/MainPageViewModel.cs b/NextGenWPF/ViewModels/MainPageViewModel.cs
+--- a/NextGenWPF/ViewModels/MainPageViewModel.cs	(revision 1c05cc2011c8f759a3d9af35f7b94280c0b12b0c)
++++ b/NextGenWPF/ViewModels/MainPageViewModel.cs	(date 1643922303413)
+@@ -1,4 +1,5 @@
+ using Core.Models;
++using NextGenWPF.Services;
+ using NextGenWPF.ViewModels.Base;
+ using System;
+ using System.Collections.Generic;
+@@ -10,14 +11,17 @@
+ {
+     public class MainPageViewModel : BasePageViewModel
+     {
+-        public ObservableCollection<Server> Servers { get; set; }
++        public List<Server> Servers { get; set; }
+         public List<Chat> CurrentServerChats { get; set; }
+         public List<Message> CurrentChatMessages { get; set; }
+         private Server CurrentServer { get; set; }
+-        public ObservableCollection<Message> Messages { get; set; }
+-        public MainPageViewModel()
++
++        private ICurrentDeterminatorService _currentDeterminatorService;
++        public MainPageViewModel(ICurrentDeterminatorService currentDeterminatorService)
+         {
+-            Servers = new ObservableCollection<Server>();
++            _currentDeterminatorService = currentDeterminatorService;
++            //this.Servers = this._currentDeterminatorService.GetCurrentUser().Servers;
++            Servers = new List<Server>();
+ #if DEBUG
+             Servers.Add(new Server()
+             {
+@@ -27,6 +31,20 @@
+                 new Chat()
+                 {
+                     Name = "#  speaking",
++                    Messages = new List<Message>()
++                    {
++                        new Message()
++                        {
++                            Value ="Test",
++                            User = new User
++                            {
++                                Name = null,
++                                Email = null,
++                                Login = "Kerich",
++                                Password = null,
++                            }
++                        }
++                    }
+                 },
+                 new Chat()
+                 {
+@@ -42,7 +60,7 @@
+                 }
+                 },
+                 Icon = @"D:\Project\JoinMes\Application\NextGenWPF\Images\image (1).png",
+-            });
++            });;
+             Servers.Add(new Server()
+             {
+                 Name = "Team",
+Index: BLL/Services/ServerService.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>\r\nusing BLL.Abstractions;\r\nusing BLL.Abstractions.Interfaces;\r\nusing Core.Models;\r\nusing DAL.Abstractions.Interfaces;\r\nusing DAL.Repository;\r\nusing System;\r\nusing System.Collections.Generic;\r\nusing System.Diagnostics.CodeAnalysis;\r\nusing System.Linq;\r\nusing System.Text;\r\nusing System.Threading.Tasks;\r\nusing Core.Models.ServiceMethodsModels;\r\n\r\nnamespace BLL.Services\r\n{\r\n    public class ServerService : IServerService\r\n    {\r\n        private readonly IGenericRepository<Server> _serverRepository;\r\n        private readonly IGenericRepository<Chat> _chatRepository;\r\n        private readonly EmailNotificationService _emailNotificationService;\r\n\r\n        public ServerService(IGenericRepository<Server> serverRepository,\r\n            IGenericRepository<Chat> chatRepository,\r\n            EmailNotificationService emailNotificationService)\r\n        {\r\n            _serverRepository = serverRepository;\r\n            _chatRepository = chatRepository;\r\n            _emailNotificationService = emailNotificationService;\r\n        }\r\n\r\n        public async Task<bool> CreateServerAsync(string name)\r\n        {\r\n            var server = new Server\r\n            {\r\n                Name = name\r\n            };\r\n\r\n            // checking if server with this name already exists\r\n            if (_serverRepository.Any(s => s.Name == server.Name))\r\n            {\r\n                return false;\r\n            }\r\n\r\n            server.DateCreated = DateTime.Now;\r\n            server.Chats = new List<Chat>();\r\n            server.Users = new List<User>();\r\n            // adding roles\r\n\r\n            // creating a server\r\n            await _serverRepository.CreateAsync(server);\r\n            return true;\r\n        }\r\n\r\n        public async Task<bool> DeleteServerAsync(Server server)\r\n        {\r\n            // checking if such server exists\r\n            if (!_serverRepository.Any(s => s.Id == server.Id))\r\n            {\r\n                return false;\r\n            }\r\n\r\n            // checking if you have particular roles to delete the server ...\r\n\r\n            // deleting all chats from the server\r\n            foreach (var chat in server.Chats)\r\n            {\r\n                await _chatRepository.DeleteAsync(chat);\r\n            }\r\n\r\n            // deleting all users from the server\r\n            foreach (var user in server.Users)\r\n            {\r\n                user.Servers.Remove(server);\r\n            }\r\n\r\n            await _serverRepository.DeleteAsync(server);\r\n            return true;\r\n        }\r\n\r\n        public async Task<bool> AddUserAsync(Server server, User user)\r\n        {\r\n            // checking if this user is already in this server\r\n            if (server.Users.FirstOrDefault(u => u == user) != null)\r\n            {\r\n                return false;\r\n            }\r\n\r\n            server.Users.Add(user);\r\n\r\n            // adding this user to all chats that are in this server ...\r\n\r\n            user.Servers.Add(server);\r\n\r\n            await _serverRepository.UpdateAsync(server);\r\n\r\n            return true;\r\n        }\r\n\r\n        public async Task<bool> AddUsersAsync(Server server, IEnumerable<User> users)\r\n        {\r\n            foreach(var user in users)\r\n            {\r\n                if (user != null && server.Users.FirstOrDefault(u => u.Id == user.Id) == null)\r\n                {\r\n                    server.Users.Add(user);\r\n                    user.Servers.Add(server);\r\n                    // adding all chats that are in this server in this user's chats\r\n                }\r\n            }\r\n\r\n            await _serverRepository.UpdateAsync(server);\r\n\r\n            return true;\r\n        }\r\n\r\n        public async Task<bool> DeleteUserAsync(Server server, User user)\r\n        {\r\n            // checking if this user is in this server\r\n            if (server.Users.FirstOrDefault(u => u == user) == null)\r\n            {\r\n                return false;\r\n            }\r\n\r\n            // checking if you have particular roles to delete users from the server ... \r\n\r\n            user.Servers.Remove(server);\r\n            server.Users.Remove(user);\r\n\r\n            await _serverRepository.UpdateAsync(server);\r\n\r\n            return true;\r\n        }\r\n\r\n        public async Task<bool> DeleteUsersAsync(Server server, IEnumerable<User> users)\r\n        {\r\n            foreach (var user in users)\r\n            {\r\n                if (user != null && server.Users.FirstOrDefault(u => u.Id == user.Id) != null)\r\n                {\r\n                    server.Users.Remove(user);\r\n                    user.Servers.Remove(server);\r\n                    // deleting all chats that are in this server in this user's chats\r\n                }\r\n            }\r\n\r\n            await _serverRepository.UpdateAsync(server);\r\n\r\n            return true;\r\n        }\r\n\r\n        public async Task SendInvitationAsync(Server server, User user)\r\n        {\r\n            await _emailNotificationService.InviteByEmailAsync(server, user);\r\n\r\n            await _serverRepository.UpdateAsync(server);\r\n        }\r\n\r\n        public async Task<bool> EditServerAsync(Server server, ServerServiceEditServer newServer)\r\n        {\r\n            if (_serverRepository.Any(s => s.Name == newServer.ServerName))\r\n            {\r\n                return false;\r\n            }\r\n\r\n            server.Name = newServer.ServerName;\r\n            \r\n            await _serverRepository.UpdateAsync(server);\r\n            \r\n            return true;\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/BLL/Services/ServerService.cs b/BLL/Services/ServerService.cs
+--- a/BLL/Services/ServerService.cs	(revision 1c05cc2011c8f759a3d9af35f7b94280c0b12b0c)
++++ b/BLL/Services/ServerService.cs	(date 1644077977231)
+@@ -1,4 +1,3 @@
+-
+ using BLL.Abstractions;
+ using BLL.Abstractions.Interfaces;
+ using Core.Models;
+@@ -97,9 +96,14 @@
+             return true;
+         }
+ 
++        public Server GetServerByName(string name)
++        {
++            return _serverRepository.FirstOrDefault(s => s.Name == name);
++        }
++
+         public async Task<bool> AddUsersAsync(Server server, IEnumerable<User> users)
+         {
+-            foreach(var user in users)
++            foreach (var user in users)
+             {
+                 if (user != null && server.Users.FirstOrDefault(u => u.Id == user.Id) == null)
+                 {
+@@ -126,7 +130,6 @@
+ 
+             user.Servers.Remove(server);
+             server.Users.Remove(user);
+-
+             await _serverRepository.UpdateAsync(server);
+ 
+             return true;
+@@ -156,18 +159,20 @@
+             await _serverRepository.UpdateAsync(server);
+         }
+ 
+-        public async Task<bool> EditServerAsync(Server server, ServerServiceEditServer newServer)
++        public async Task<bool> EditServerAsync(Server server, User user, ServerServiceEditServer newServer)
+         {
+             if (_serverRepository.Any(s => s.Name == newServer.ServerName))
+             {
+                 return false;
+             }
+ 
++            // check if user has permission
++
+             server.Name = newServer.ServerName;
+-            
++
+             await _serverRepository.UpdateAsync(server);
+-            
++
+             return true;
+         }
+     }
+-}
++}
+\ No newline at end of file
+Index: NextGenWPF/ViewModels/RegistrationPageViewModel.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using GalaSoft.MvvmLight.Command;\r\nusing Core.Models;\r\nusing NextGenWPF.Services;\r\nusing NextGenWPF.Services.Navigations;\r\nusing NextGenWPF.ViewModels.Base;\r\nusing System.Windows;\r\n\r\nnamespace NextGenWPF.ViewModels\r\n{\r\n    public class RegistrationPageViewModel : BasePageViewModel\r\n    {\r\n        public string NameLabelText => \"Nickname\";\r\n        public string PasswordLabelText => \"Password\";\r\n        public string EmailLabelText => \"Email\";\r\n\r\n        private IRegistrationService _registration;\r\n\r\n        private INavigationService _navigationService;\r\n        public RegistrationPageViewModel(IRegistrationService registration, INavigationService navigationService)\r\n        {\r\n            _registration = registration;\r\n            RegistrationCommand = new RelayCommand(Registration);\r\n            _navigationService = navigationService;\r\n            this.MoveToStartPage = new RelayCommand(this.MoveToStart);\r\n            this.MoveToLoginPage = new RelayCommand(this.MoveToLogin);\r\n        }\r\n\r\n        public RelayCommand RegistrationCommand { get; }\r\n        public RelayCommand MoveToLoginPage { get; }\r\n\r\n        public RelayCommand MoveToStartPage { get; }\r\n\r\n        private string username;\r\n        public string Username\r\n        {\r\n            get => this.username;\r\n            set\r\n            {\r\n                this.username = value;\r\n                this.OnPropertyChanged();\r\n            }\r\n        }\r\n        private string password;\r\n        public string Password\r\n        {\r\n            get => this.password;\r\n            set\r\n            {\r\n                this.password = value;\r\n                this.OnPropertyChanged();\r\n            }\r\n        }\r\n        private string email;\r\n        public string Email\r\n        {\r\n            get => this.email;\r\n            set\r\n            {\r\n                this.email = value;\r\n                this.OnPropertyChanged();\r\n            }\r\n        }\r\n\r\n        private async void Registration()\r\n        {\r\n            RegistrationCommand.RaiseCanExecuteChanged();\r\n            if (string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(username) || !IsValidEmail(email))\r\n            {\r\n                return;\r\n            }\r\n            var user = new User\r\n            {\r\n                Password = password,\r\n                Login = username,\r\n                Email = email\r\n            };\r\n            var result =await _registration.Registration(user);\r\n            if (result)\r\n            {\r\n                MessageBox.Show(\"Welcome home, sweety)\", \"Registrate\");\r\n                this._navigationService.NavigateTo(PageKeys.StartPage);\r\n                this.Email = string.Empty;\r\n                this.Password = string.Empty;\r\n                this.Username = string.Empty;   \r\n            }\r\n            else\r\n            {\r\n                var act = MessageBox.Show(\"Something went wrong?\", \"Try\",\r\n                    MessageBoxButton.YesNo,\r\n                    MessageBoxImage.Question, MessageBoxResult.Yes);\r\n                if (act == MessageBoxResult.Yes)\r\n                {\r\n                    this.Email = string.Empty;\r\n                    this.Password = string.Empty;\r\n                    this.Username = string.Empty;\r\n                }\r\n                else\r\n                {\r\n                    this._navigationService.NavigateTo(PageKeys.StartPage);\r\n                    this.Email = string.Empty;\r\n                    this.Password = string.Empty;\r\n                    this.Username = string.Empty;\r\n                }\r\n            }\r\n        }\r\n        private void MoveToStart()\r\n        {\r\n            if (this.PageLoaded)\r\n            {\r\n                this._navigationService.NavigateTo(PageKeys.StartPage);\r\n            }\r\n        }\r\n\r\n        private void MoveToLogin()\r\n        {\r\n            if (this.PageLoaded)\r\n            {\r\n                this._navigationService.NavigateTo(PageKeys.LoginPage);\r\n            }\r\n        }\r\n\r\n        private bool IsValidEmail(string email)\r\n        {\r\n            var trimmedEmail = email.Trim();\r\n\r\n            if (trimmedEmail.EndsWith(\".\"))\r\n            {\r\n                return false;\r\n            }\r\n            try\r\n            {\r\n                var addr = new System.Net.Mail.MailAddress(email);\r\n                return addr.Address == trimmedEmail;\r\n            }\r\n            catch\r\n            {\r\n                return false;\r\n            }\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/NextGenWPF/ViewModels/RegistrationPageViewModel.cs b/NextGenWPF/ViewModels/RegistrationPageViewModel.cs
+--- a/NextGenWPF/ViewModels/RegistrationPageViewModel.cs	(revision 1c05cc2011c8f759a3d9af35f7b94280c0b12b0c)
++++ b/NextGenWPF/ViewModels/RegistrationPageViewModel.cs	(date 1643909667470)
+@@ -16,20 +16,22 @@
+         private IRegistrationService _registration;
+ 
+         private INavigationService _navigationService;
+-        public RegistrationPageViewModel(IRegistrationService registration, INavigationService navigationService)
++        private ISwitchNavigationService _switchNavigationService;
++        public RegistrationPageViewModel(IRegistrationService registration, INavigationService navigationService, ISwitchNavigationService switchNavigationService)
+         {
+             _registration = registration;
+             RegistrationCommand = new RelayCommand(Registration);
+             _navigationService = navigationService;
+-            this.MoveToStartPage = new RelayCommand(this.MoveToStart);
+             this.MoveToLoginPage = new RelayCommand(this.MoveToLogin);
++            _switchNavigationService = switchNavigationService;
+         }
+-
++        public string CurrentPath { get; set; }
+         public RelayCommand RegistrationCommand { get; }
+         public RelayCommand MoveToLoginPage { get; }
+-
+-        public RelayCommand MoveToStartPage { get; }
+-
++        protected override void OnPageLoaded()
++        {
++            base.OnPageLoaded();
++        }
+         private string username;
+         public string Username
+         {
+@@ -78,7 +80,7 @@
+             if (result)
+             {
+                 MessageBox.Show("Welcome home, sweety)", "Registrate");
+-                this._navigationService.NavigateTo(PageKeys.StartPage);
++                this.MoveToLogin();
+                 this.Email = string.Empty;
+                 this.Password = string.Empty;
+                 this.Username = string.Empty;   
+@@ -103,19 +105,14 @@
+                 }
+             }
+         }
+-        private void MoveToStart()
+-        {
+-            if (this.PageLoaded)
+-            {
+-                this._navigationService.NavigateTo(PageKeys.StartPage);
+-            }
+-        }
+ 
+         private void MoveToLogin()
+         {
+             if (this.PageLoaded)
+             {
+-                this._navigationService.NavigateTo(PageKeys.LoginPage);
++                this.CurrentPath = "LoginPage.xaml";
++                this.OnPropertyChanged(nameof(CurrentPath));
++                this._switchNavigationService.NavigateTo(PageKeys.LoginPage);
+             }
+         }
+ 
+Index: NextGenWPF/Pages/ApplicationLocator.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using Microsoft.Extensions.DependencyInjection;\r\nusing NextGenWPF.Services;\r\nusing NextGenWPF.Services.Implementations;\r\nusing NextGenWPF.Services.Navigations;\r\nusing NextGenWPF.ViewModels;\r\n\r\nnamespace NextGenWPF.Pages\r\n{\r\n    public class ApplicationLocator\r\n    {\r\n        private ServiceProvider serviceProvider;\r\n        public LoginPageViewModel LoginPageViewModel { get; }\r\n        public RegistrationPageViewModel RegistrationPageViewModel { get; }\r\n        public StartPageViewModel StartPageViewModel { get; }\r\n        public MainWindowViewModel MainWindowViewModel { get; }\r\n        public MainPageViewModel MainPageViewModel { get; }\r\n        public ApplicationLocator()\r\n        {\r\n#if DEBUG\r\n            var serviceCollection = new ServiceCollection();\r\n            ConfigureServices(serviceCollection);\r\n            serviceProvider = serviceCollection.BuildServiceProvider();\r\n            StartPageViewModel = serviceProvider.GetRequiredService<StartPageViewModel>();\r\n            LoginPageViewModel = serviceProvider.GetRequiredService<LoginPageViewModel>();\r\n            MainWindowViewModel = serviceProvider.GetRequiredService<MainWindowViewModel>();\r\n            MainPageViewModel = serviceProvider.GetRequiredService<MainPageViewModel>();\r\n            RegistrationPageViewModel = serviceProvider.GetRequiredService<RegistrationPageViewModel>();\r\n#else\r\n            var dbconnection = ConfigurationManager.ConnectionStrings[\"defaultDbConnection\"].ConnectionString;\r\n#endif\r\n        }\r\n        private void ConfigureServices(ServiceCollection services)\r\n        {\r\n            services.AddSingleton<StartPageViewModel>();\r\n            services.AddSingleton<MainWindowViewModel>();\r\n            services.AddSingleton<INavigationService, NavigationService>();\r\n            services.AddSingleton<IAutorizationService, DesignTime>();\r\n            services.AddSingleton<IRegistrationService, DesignTime>();\r\n            services.AddSingleton<ICurrentDeterminatorService,CurrentDeterminatorService>();\r\n            services.AddSingleton<LoginPageViewModel>();\r\n            services.AddSingleton<RegistrationPageViewModel>();\r\n            services.AddSingleton<MainPageViewModel>();\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/NextGenWPF/Pages/ApplicationLocator.cs b/NextGenWPF/Pages/ApplicationLocator.cs
+--- a/NextGenWPF/Pages/ApplicationLocator.cs	(revision 1c05cc2011c8f759a3d9af35f7b94280c0b12b0c)
++++ b/NextGenWPF/Pages/ApplicationLocator.cs	(date 1643906879086)
+@@ -34,6 +34,7 @@
+             services.AddSingleton<StartPageViewModel>();
+             services.AddSingleton<MainWindowViewModel>();
+             services.AddSingleton<INavigationService, NavigationService>();
++            services.AddSingleton<ISwitchNavigationService, SwitchNavigationService>();
+             services.AddSingleton<IAutorizationService, DesignTime>();
+             services.AddSingleton<IRegistrationService, DesignTime>();
+             services.AddSingleton<ICurrentDeterminatorService,CurrentDeterminatorService>();
+Index: NextGenWPF/ViewModels/LoginPageViewModel.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using GalaSoft.MvvmLight.Command;\r\nusing Core.Models;\r\nusing NextGenWPF.Services;\r\nusing NextGenWPF.Services.Navigations;\r\nusing NextGenWPF.ViewModels.Base;\r\nusing System.Windows;\r\nusing NextGenWPF.Pages;\r\n\r\nnamespace NextGenWPF.ViewModels\r\n{\r\n    public class LoginPageViewModel : BasePageViewModel\r\n    {\r\n        public string NameLabelText => \"Nickname\";\r\n        public string PasswordLabelText => \"Password\";\r\n\r\n        private IAutorizationService _autorization;\r\n\r\n        private INavigationService _navigationService;\r\n        private ICurrentDeterminatorService _currentDeterminatorService;\r\n        public LoginPageViewModel(IAutorizationService autorization, INavigationService navigationService, ICurrentDeterminatorService currentDeterminatorService)\r\n        {\r\n            _autorization = autorization;\r\n            LoginCommand = new RelayCommand(this.Login);\r\n            RecoverCommand = new RelayCommand(this.RecoverPassword);\r\n            MoveToRegistrationPage = new RelayCommand(this.MoveToRegistration);\r\n            _navigationService = navigationService;\r\n            _currentDeterminatorService = currentDeterminatorService;\r\n        }\r\n        public RelayCommand MoveToStartPage { get; }\r\n        public string CurrentPath { get; set; }\r\n        public RelayCommand MoveToRegistrationPage { get; }\r\n        public RelayCommand LoginCommand { get; }\r\n        public RelayCommand RecoverCommand { get; }\r\n\r\n        private string username;\r\n        public string Username\r\n        {\r\n            get => this.username;\r\n            set\r\n            {\r\n                this.username = value;\r\n                this.OnPropertyChanged();\r\n            }\r\n        }\r\n        private string password;\r\n        public string Password\r\n        {\r\n            get => this.password;\r\n            set\r\n            {\r\n                this.password = value;\r\n                this.OnPropertyChanged();\r\n            }\r\n        }\r\n        private void MoveToRegistration()\r\n        {\r\n            if (this.PageLoaded)\r\n            {\r\n                this.CurrentPath = \"RegistrationPage.xaml\";\r\n                this.OnPropertyChanged(nameof(CurrentPath));\r\n            }\r\n        }\r\n        protected override void OnPageLoaded()\r\n        {\r\n            base.OnPageLoaded();\r\n        }\r\n        private async void Login()\r\n        {\r\n            if (string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(username))\r\n            {\r\n                return;\r\n            }\r\n            var user = new User\r\n            {\r\n                Password = password,\r\n                Login = username\r\n            };\r\n            var result = await _autorization.Autorization(user);\r\n            if (result)\r\n            {\r\n                _currentDeterminatorService.SetCurrentUser(user);\r\n                MessageBox.Show(\"Come home, sweety)\", \"Login\");\r\n                this._navigationService.NavigateTo(PageKeys.MainPage);\r\n                this.Password = string.Empty;\r\n                this.Username = string.Empty;\r\n            }\r\n            else\r\n            {\r\n                var act = MessageBox.Show(\"We can't find such sweety like u( Do u want to become our member?\", \"Login\",\r\n                    MessageBoxButton.YesNo,\r\n                    MessageBoxImage.Question, MessageBoxResult.Yes);\r\n                if (act == MessageBoxResult.Yes)\r\n                {\r\n                    this.Password = string.Empty;\r\n                    this.Username = string.Empty;\r\n                    MoveToRegistrationPage.Execute(this);\r\n                }\r\n                else\r\n                {\r\n                    this._navigationService.NavigateTo(PageKeys.StartPage);\r\n                    this.Password = string.Empty;\r\n                    this.Username = string.Empty;\r\n                }\r\n            }\r\n        }\r\n        private async void RecoverPassword()\r\n        {\r\n            var result =  await _autorization.Recover(this.Username);\r\n            if (result)\r\n            {\r\n                MessageBox.Show(\"Try again, sweety)\", \"Recover\");\r\n                this._navigationService.NavigateTo(PageKeys.LoginPage);\r\n                this.Password = string.Empty;\r\n                this.Username = string.Empty;\r\n            }\r\n            else\r\n            {\r\n                var act = MessageBox.Show(\"We can't find such sweety like u( Do u want to become our member?\", \"Login\",\r\n                    MessageBoxButton.YesNo,\r\n                    MessageBoxImage.Question, MessageBoxResult.Yes);\r\n                if (act == MessageBoxResult.Yes)\r\n                {\r\n                    this.Password = string.Empty;\r\n                    this.Username = string.Empty;\r\n                }\r\n                else\r\n                {\r\n                    this._navigationService.NavigateTo(PageKeys.StartPage);\r\n                    this.Password = string.Empty;\r\n                    this.Username = string.Empty;\r\n                }\r\n            }\r\n        }\r\n\r\n    }\r\n\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/NextGenWPF/ViewModels/LoginPageViewModel.cs b/NextGenWPF/ViewModels/LoginPageViewModel.cs
+--- a/NextGenWPF/ViewModels/LoginPageViewModel.cs	(revision 1c05cc2011c8f759a3d9af35f7b94280c0b12b0c)
++++ b/NextGenWPF/ViewModels/LoginPageViewModel.cs	(date 1643924040000)
+@@ -17,7 +17,8 @@
+ 
+         private INavigationService _navigationService;
+         private ICurrentDeterminatorService _currentDeterminatorService;
+-        public LoginPageViewModel(IAutorizationService autorization, INavigationService navigationService, ICurrentDeterminatorService currentDeterminatorService)
++        private ISwitchNavigationService _switchNavigationService;
++        public LoginPageViewModel(IAutorizationService autorization, INavigationService navigationService, ICurrentDeterminatorService currentDeterminatorService, ISwitchNavigationService switchNavigationService)
+         {
+             _autorization = autorization;
+             LoginCommand = new RelayCommand(this.Login);
+@@ -25,8 +26,8 @@
+             MoveToRegistrationPage = new RelayCommand(this.MoveToRegistration);
+             _navigationService = navigationService;
+             _currentDeterminatorService = currentDeterminatorService;
++            _switchNavigationService = switchNavigationService;
+         }
+-        public RelayCommand MoveToStartPage { get; }
+         public string CurrentPath { get; set; }
+         public RelayCommand MoveToRegistrationPage { get; }
+         public RelayCommand LoginCommand { get; }
+@@ -76,9 +77,9 @@
+                 Login = username
+             };
+             var result = await _autorization.Autorization(user);
+-            if (result)
++            if (result!=null)
+             {
+-                _currentDeterminatorService.SetCurrentUser(user);
++                _currentDeterminatorService.SetCurrentUser(result);
+                 MessageBox.Show("Come home, sweety)", "Login");
+                 this._navigationService.NavigateTo(PageKeys.MainPage);
+                 this.Password = string.Empty;
+@@ -93,7 +94,8 @@
+                 {
+                     this.Password = string.Empty;
+                     this.Username = string.Empty;
+-                    MoveToRegistrationPage.Execute(this);
++                    this.MoveToRegistrationPage.Execute(this);
++                    this._switchNavigationService.NavigateTo(PageKeys.RegistrationPage);
+                 }
+                 else
+                 {
+@@ -109,7 +111,7 @@
+             if (result)
+             {
+                 MessageBox.Show("Try again, sweety)", "Recover");
+-                this._navigationService.NavigateTo(PageKeys.LoginPage);
++                this._switchNavigationService.NavigateTo(PageKeys.LoginPage);
+                 this.Password = string.Empty;
+                 this.Username = string.Empty;
+             }
+@@ -120,6 +122,8 @@
+                     MessageBoxImage.Question, MessageBoxResult.Yes);
+                 if (act == MessageBoxResult.Yes)
+                 {
++                    this.MoveToRegistrationPage.Execute(this);
++                    this._switchNavigationService.NavigateTo(PageKeys.RegistrationPage);
+                     this.Password = string.Empty;
+                     this.Username = string.Empty;
+                 }
+Index: NextGenWPF/Services/NetworkConnection/LoginRequest.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using System.Net.Http;\r\nusing Newtonsoft.Json;\r\n\r\nnamespace NextGenWPF.Services.NetworkConnection\r\n{\r\n    public class LoginRequest : JsonRequest\r\n    {\r\n        public LoginRequest(string loginstring, string password) : base(@\"/auth/login\", HttpMethod.Post)\r\n        {\r\n            this.body = JsonConvert.SerializeObject(new LoginBody()\r\n            {\r\n                LoginString = loginstring,\r\n                Password = password\r\n                \r\n            });\r\n        }\r\n        private class LoginBody\r\n        {\r\n            [JsonProperty (\"login\")]\r\n            public string LoginString { get; set; }\r\n            [JsonProperty (\"password\")]\r\n            public string Password { get; set; }\r\n\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/NextGenWPF/Services/NetworkConnection/LoginRequest.cs b/NextGenWPF/Services/NetworkConnection/LoginRequest.cs
+--- a/NextGenWPF/Services/NetworkConnection/LoginRequest.cs	(revision 1c05cc2011c8f759a3d9af35f7b94280c0b12b0c)
++++ b/NextGenWPF/Services/NetworkConnection/LoginRequest.cs	(date 1643924039995)
+@@ -5,14 +5,14 @@
+ {
+     public class LoginRequest : JsonRequest
+     {
+-        public LoginRequest(string loginstring, string password) : base(@"/auth/login", HttpMethod.Post)
++        public LoginRequest(string loginstring, string password) : base(@"/test/test", HttpMethod.Post)
+         {
+-            this.body = JsonConvert.SerializeObject(new LoginBody()
+-            {
+-                LoginString = loginstring,
+-                Password = password
+-                
+-            });
++            // this.body = JsonConvert.SerializeObject(new LoginBody()
++            // {
++            //     LoginString = loginstring,
++            //     Password = password
++            //     
++            // });
+         }
+         private class LoginBody
+         {
+Index: WebApi/Startup.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using System;\r\nusing System.Collections.Generic;\r\nusing System.Linq;\r\nusing System.Threading.Tasks;\r\nusing BLL.Abstractions.Interfaces;\r\nusing BLL.Services;\r\nusing Core.Models;\r\nusing DAL.Abstractions.Interfaces;\r\nusing DAL.Contexts;\r\nusing DAL.Repository;\r\nusing Microsoft.AspNetCore.Builder;\r\nusing Microsoft.AspNetCore.Hosting;\r\nusing Microsoft.AspNetCore.HttpsPolicy;\r\nusing Microsoft.AspNetCore.Mvc;\r\nusing Microsoft.Extensions.Configuration;\r\nusing Microsoft.Extensions.DependencyInjection;\r\nusing Microsoft.Extensions.Hosting;\r\nusing Microsoft.Extensions.Logging;\r\n\r\nnamespace WebApi\r\n{\r\n    public class Startup\r\n    {\r\n        public Startup(IConfiguration configuration)\r\n        {\r\n            Configuration = configuration;\r\n        }\r\n\r\n        public IConfiguration Configuration { get; }\r\n\r\n        // This method gets called by the runtime. Use this method to add services to the container.\r\n        public void ConfigureServices(IServiceCollection services)\r\n        {\r\n            services.AddScoped<IUserService, UserService>();\r\n            services.AddScoped<IEmailNotificationService, EmailNotificationService>();\r\n            \r\n            services.AddSingleton<MessengerContext>(provider => new MessengerContext(Configuration.GetConnectionString(\"PathToFile\")));\r\n            services.Configure<EmailCredentialsModel>(Configuration.GetSection(\"EmailCredentials\"));\r\n            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));\r\n            \r\n            services.AddControllers();\r\n        }\r\n\r\n        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.\r\n        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)\r\n        {\r\n            if (env.IsDevelopment())\r\n            {\r\n                app.UseDeveloperExceptionPage();\r\n            }\r\n\r\n            app.UseHttpsRedirection();\r\n\r\n            app.UseRouting();\r\n\r\n            app.UseAuthorization();\r\n\r\n            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });\r\n        }\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/WebApi/Startup.cs b/WebApi/Startup.cs
+--- a/WebApi/Startup.cs	(revision 1c05cc2011c8f759a3d9af35f7b94280c0b12b0c)
++++ b/WebApi/Startup.cs	(date 1643923393789)
+@@ -33,9 +33,13 @@
+         {
+             services.AddScoped<IUserService, UserService>();
+             services.AddScoped<IEmailNotificationService, EmailNotificationService>();
++            services.AddScoped<IServerService, ServerService>();
++            services.AddScoped<IMessageService, MessageService>();
++            services.AddScoped<IChatService, ChatService>();
+             
+-            services.AddSingleton<MessengerContext>(provider => new MessengerContext(Configuration.GetConnectionString("PathToFile")));
+             services.Configure<EmailCredentialsModel>(Configuration.GetSection("EmailCredentials"));
++            
++            services.AddSingleton<MessengerContext>(provider => new MessengerContext(Configuration.GetConnectionString("PathToFile")));
+             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+             
+             services.AddControllers();
+Index: NextGenWPF/Services/IAutorizationService.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using Core.Models;\r\nusing System.Threading.Tasks;\r\n\r\nnamespace NextGenWPF.Services\r\n{\r\n    public interface IAutorizationService\r\n    {\r\n        public  Task<bool> Autorization(User user);\r\n        public Task<bool> Recover(string email);\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/NextGenWPF/Services/IAutorizationService.cs b/NextGenWPF/Services/IAutorizationService.cs
+--- a/NextGenWPF/Services/IAutorizationService.cs	(revision 1c05cc2011c8f759a3d9af35f7b94280c0b12b0c)
++++ b/NextGenWPF/Services/IAutorizationService.cs	(date 1643924040004)
+@@ -5,7 +5,7 @@
+ {
+     public interface IAutorizationService
+     {
+-        public  Task<bool> Autorization(User user);
++        public  Task<User> Autorization(User user);
+         public Task<bool> Recover(string email);
+     }
+ }
+Index: BLL.Abstractions/Interfaces/IServerService.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using Core.Models;\r\nusing System;\r\nusing System.Collections.Generic;\r\nusing System.Diagnostics.CodeAnalysis;\r\nusing System.Linq;\r\nusing System.Text;\r\nusing System.Threading.Tasks;\r\nusing Core.Models.ServiceMethodsModels;\r\n\r\nnamespace BLL.Abstractions.Interfaces\r\n{\r\n    public interface IServerService\r\n    {\r\n        Task<bool> CreateServerAsync(string name);\r\n\r\n        Task<bool> DeleteServerAsync(Server server);\r\n\r\n        Task<bool> AddUserAsync(Server server, User user);\r\n\r\n        Task<bool> AddUsersAsync(Server server, IEnumerable<User> user);\r\n\r\n        Task<bool> DeleteUserAsync(Server server, User user);\r\n\r\n        Task<bool> DeleteUsersAsync(Server server, IEnumerable<User> user);\r\n\r\n        Task SendInvitationAsync(Server server, User user);\r\n\r\n        Task<bool> EditServerAsync(Server server, ServerServiceEditServer newServer);\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/BLL.Abstractions/Interfaces/IServerService.cs b/BLL.Abstractions/Interfaces/IServerService.cs
+--- a/BLL.Abstractions/Interfaces/IServerService.cs	(revision 1c05cc2011c8f759a3d9af35f7b94280c0b12b0c)
++++ b/BLL.Abstractions/Interfaces/IServerService.cs	(date 1643975817155)
+@@ -15,6 +15,8 @@
+ 
+         Task<bool> DeleteServerAsync(Server server);
+ 
++        Server GetServerByName(string name);
++
+         Task<bool> AddUserAsync(Server server, User user);
+ 
+         Task<bool> AddUsersAsync(Server server, IEnumerable<User> user);
+@@ -25,6 +27,6 @@
+ 
+         Task SendInvitationAsync(Server server, User user);
+ 
+-        Task<bool> EditServerAsync(Server server, ServerServiceEditServer newServer);
++        Task<bool> EditServerAsync(Server server, User user, ServerServiceEditServer newServer);
+     }
+-}
++}
+\ No newline at end of file
+Index: NextGenWPF/Services/AutorizationService.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using Newtonsoft.Json;\r\nusing Core.Models;\r\nusing NextGenWPF.Services.Navigations;\r\nusing System;\r\nusing System.Collections.Generic;\r\nusing System.IO;\r\nusing System.Net;\r\nusing System.Threading.Tasks;\r\nusing System.Net.Http;\r\nusing NextGenWPF.Services.NetworkConnection;\r\n\r\nnamespace NextGenWPF.Services\r\n{\r\n    public class DesignTime : IAutorizationService, IRegistrationService\r\n    {\r\n        public async Task<bool> Autorization(User user)\r\n        {\r\n            var req = new NetworkService();\r\n            var result = await req.SendRequestAsync(new LoginRequest(user.Login, user.Password));\r\n            if (result.ResponseCode == 200)\r\n            {\r\n                return true;\r\n            }\r\n            return false;\r\n        }\r\n\r\n         public async Task<bool> Registration(User user)\r\n         {\r\n             var req = new NetworkService();\r\n             var result = await req.SendRequestAsync(new RegistrationRequest(user.Login, user.Email, user.Password,\"Sweety\"));\r\n             if (result.ResponseCode == 200)\r\n             {\r\n                return true;\r\n             }\r\n             return false;\r\n         }\r\n        public async Task<bool> Recover(string mail)\r\n        {\r\n            var req = new NetworkService();\r\n            var result = await req.SendRequestAsync(new RecoverRequest(mail));\r\n            if (result.ResponseCode == 200)\r\n            {\r\n                return true;\r\n            }\r\n            return false;\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/NextGenWPF/Services/AutorizationService.cs b/NextGenWPF/Services/AutorizationService.cs
+--- a/NextGenWPF/Services/AutorizationService.cs	(revision 1c05cc2011c8f759a3d9af35f7b94280c0b12b0c)
++++ b/NextGenWPF/Services/AutorizationService.cs	(date 1643924040008)
+@@ -13,15 +13,16 @@
+ {
+     public class DesignTime : IAutorizationService, IRegistrationService
+     {
+-        public async Task<bool> Autorization(User user)
++        public async Task<User> Autorization(User user)
+         {
+             var req = new NetworkService();
+             var result = await req.SendRequestAsync(new LoginRequest(user.Login, user.Password));
+             if (result.ResponseCode == 200)
+             {
+-                return true;
++                
++                return JsonConvert.DeserializeObject<User>( result.ResponseBody);;
+             }
+-            return false;
++            return null;
+         }
+ 
+          public async Task<bool> Registration(User user)
+Index: NextGenWPF/Pages/RegistrationPage.xaml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><pages:BasePage x:Class=\"NextGenWPF.RegistrationWindow\"\r\n        xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\r\n        xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\r\n        xmlns:d=\"http://schemas.microsoft.com/expression/blend/2008\"\r\n        xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\"\r\n        xmlns:local=\"clr-namespace:NextGenWPF\" \r\n        mc:Ignorable=\"d\"\r\n        xmlns:viewmodels=\"clr-namespace:NextGenWPF.ViewModels\"\r\n        xmlns:pages=\"clr-namespace:NextGenWPF.Pages\"\r\n        DataContext=\"{Binding RegistrationPageViewModel, Source={StaticResource Locator}}\"\r\n        Title=\"RegistrationPage\" Height=\"202\" Width=\"157\">\r\n    <Grid>\r\n        <Image HorizontalAlignment=\"Center\" Height=\"203\" VerticalAlignment=\"Center\" Width=\"157\" Source=\"D:\\Project\\NextGen\\NextGenWPF\\Images\\bgcolor.jpg\" Stretch=\"Fill\"/>\r\n        <StackPanel Orientation=\"Vertical\"\r\n                HorizontalAlignment=\"Center\"\r\n                VerticalAlignment=\"Center\" Width=\"106\" Height=\"154\">\r\n            <Label Content=\"Email\" Width=\"106\" Height=\"21\" FontFamily=\"Dosis ExtraLight\" Foreground=\"#FF39385D\"/>\r\n            <TextBox Text=\"{Binding Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}\"/>\r\n            <Label Content=\"Login\" Width=\"106\" Height=\"26\" FontFamily=\"Dosis ExtraLight\" Foreground=\"#FF39385D\"/>\r\n            <TextBox Text=\"{Binding Username, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}\"/>\r\n            <Label Content=\"Password\" Foreground=\"#FF39385D\" FontFamily=\"Dosis ExtraLight\" Height=\"23\"/>\r\n            <TextBox Text=\"{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}\" RenderTransformOrigin=\"0.5,0.5\" Height=\"17\">\r\n            </TextBox>\r\n            <Button Command=\"{Binding RegistrationCommand}\" Content=\"Registration\" Width=\"90\" Height=\"35\" Foreground=\"#FF6BB9B6\">\r\n                <Button.Style>\r\n                    <Style TargetType=\"{x:Type Button}\">\r\n                        <Setter Property=\"TextElement.FontFamily\" Value=\"Dosis ExtraLight\" />\r\n                        <Setter Property=\"Background\" Value=\"#39385D\" />\r\n                        <Setter Property=\"Cursor\" Value=\"Hand\" />\r\n                        <Style.Triggers>\r\n                            <Trigger Property=\"IsMouseOver\" Value=\"True\">\r\n                                <Setter Property=\"Background\" Value=\"#3A3952\" />\r\n                            </Trigger>\r\n                        </Style.Triggers>\r\n                    </Style>\r\n                </Button.Style>\r\n                <Button.Template>\r\n                    <ControlTemplate TargetType=\"{x:Type Button}\">\r\n                        <Border Width=\"100\" Height=\"25\" CornerRadius=\"12\" Background=\"{TemplateBinding Background}\"\r\n                            Margin=\"-40,0,-41,0\">\r\n                            <ContentPresenter HorizontalAlignment=\"Center\" VerticalAlignment=\"Center\" />\r\n                        </Border>\r\n                    </ControlTemplate>\r\n                </Button.Template>\r\n            </Button>\r\n        </StackPanel>\r\n    </Grid>\r\n</pages:BasePage>\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/NextGenWPF/Pages/RegistrationPage.xaml b/NextGenWPF/Pages/RegistrationPage.xaml
+--- a/NextGenWPF/Pages/RegistrationPage.xaml	(revision 1c05cc2011c8f759a3d9af35f7b94280c0b12b0c)
++++ b/NextGenWPF/Pages/RegistrationPage.xaml	(date 1643909667465)
+@@ -9,8 +9,11 @@
+         xmlns:pages="clr-namespace:NextGenWPF.Pages"
+         DataContext="{Binding RegistrationPageViewModel, Source={StaticResource Locator}}"
+         Title="RegistrationPage" Height="202" Width="157">
++    <pages:BasePage.Background>
++    <ImageBrush ImageSource ="D:\Project\NextGen\NextGenWPF\Images\bgcolor.jpg"/>
++    </pages:BasePage.Background>
+     <Grid>
+-        <Image HorizontalAlignment="Center" Height="203" VerticalAlignment="Center" Width="157" Source="D:\Project\NextGen\NextGenWPF\Images\bgcolor.jpg" Stretch="Fill"/>
++        <Frame Source="{Binding CurrentPath}" Panel.ZIndex="3"/>
+         <StackPanel Orientation="Vertical"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Center" Width="106" Height="154">

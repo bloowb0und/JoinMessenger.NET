@@ -4,11 +4,10 @@ using System.Net.Mail;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
+using BLL.Helpers;
 using Core.Models;
 using Core.Models.ServiceMethodsModels;
 using DAL.Abstractions.Interfaces;
-using DAL.Repository;
-using Microsoft.EntityFrameworkCore;
 
 namespace BLL.Services
 {
@@ -49,6 +48,8 @@ namespace BLL.Services
             {
                 return false;
             }
+
+            user.Password = PasswordHelper.HashPassword(user.Password);
             
             using (_unitOfWork.BeginTransactionAsync())
             {
@@ -97,7 +98,7 @@ namespace BLL.Services
             }
 
             if (foundUser == null
-                || foundUser.Password != password)
+                || !PasswordHelper.VerifyHashedPassword(foundUser.Password, password))
             {
                 return null;
             }
@@ -114,9 +115,32 @@ namespace BLL.Services
                 return false;
             }
 
-            if (!await _emailNotificationService.SendForgotPasswordAsync(foundUser))
+            var generatedPassword = PasswordHelper.GetRandomPassword();
+
+            using (_unitOfWork.BeginTransactionAsync())
             {
-                return false;
+                try
+                {
+                    _unitOfWork.UserRepository.FirstOrDefault(u => u.Id == foundUser.Id).Password =
+                        PasswordHelper.HashPassword(generatedPassword);
+                    
+                    _unitOfWork.UserRepository.Update(foundUser);
+                    await _unitOfWork.SaveAsync();
+                }
+                catch 
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                }
+                
+                foundUser.Password = generatedPassword;
+
+                if (!await _emailNotificationService.SendForgotPasswordAsync(foundUser))
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                    return false;
+                }
+                
+                await _unitOfWork.CommitTransactionAsync();
             }
 
             return true;

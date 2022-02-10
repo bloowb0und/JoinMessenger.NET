@@ -17,7 +17,7 @@ namespace DAL.Contexts
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Server=BLOOWB0UND ;Database=JoinChatApp;Trusted_Connection=True;");
+            optionsBuilder.UseSqlServer(@"Server=(localdb)\MSSQLLocalDB;Database=JoinChatApp;Trusted_connection=true");
         }
     }
 
