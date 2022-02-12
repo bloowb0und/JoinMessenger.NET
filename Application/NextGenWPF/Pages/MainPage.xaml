@@ -1,0 +1,168 @@
+﻿<local:BasePage x:Class="NextGenWPF.Pages.MainPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:NextGenWPF.Pages" xmlns:viewmodels="clr-namespace:NextGenWPF.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:MainPageViewModel}"
+                mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="MainPage"
+      Background="#FF58387C"
+                 DataContext="{Binding MainPageViewModel, Source={StaticResource Locator}}">
+
+    <Grid Margin="0,-2,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="64" />
+            <ColumnDefinition Width="195*" />
+            <ColumnDefinition Width="541*"/>
+        </Grid.ColumnDefinitions>
+        <Grid Background="#FF2B103D" Grid.ColumnSpan="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="43*" />
+                <ColumnDefinition Width="73*" />
+                <ColumnDefinition Width="55*" />
+                <ColumnDefinition Width="57*" />
+                <ColumnDefinition Width="57*" />
+                <ColumnDefinition Width="57*" />
+                <ColumnDefinition Width="57*" />
+                <ColumnDefinition Width="57*" />
+                <ColumnDefinition Width="57*" />
+                <ColumnDefinition Width="57*" />
+                <ColumnDefinition Width="57*" />
+                <ColumnDefinition Width="57*" />
+                <ColumnDefinition Width="57*" />
+                <ColumnDefinition Width="57*" />
+            </Grid.ColumnDefinitions>
+            <Button Content="Exit"
+                    Grid.Column="11" Grid.ColumnSpan="2"
+                    Foreground="White"
+                    FontSize="10"
+                    FontWeight="Medium" HorizontalAlignment="Left" VerticalAlignment="Center" Width="50"
+                    IsDefault="True" Margin="54,0,0,0" Cursor="Hand"
+                    Click="Button_Click">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="TextElement.FontFamily" Value="Dosis ExtraLight" />
+                        <Setter Property="Background" Value="#FFD24E4E" />
+                        <Setter Property="Cursor" Value="Hand" />
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#FFB54646" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Width="75" Height="15" CornerRadius="8" Background="{TemplateBinding Background}"
+                                Margin="0,0,-70,0">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </Grid>
+        <Grid Background="#FF2A1343" Grid.Row="1" HorizontalAlignment="Center" Width="64">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition/>
+                <RowDefinition Height="60"/>
+            </Grid.RowDefinitions>
+            <Label Content="Servers"
+                   VerticalAlignment="Top"
+                   FontWeight="Medium"
+                   Foreground="#FFBC55FF" HorizontalAlignment="Center" Margin="0,7,0,0" Width="52"/>
+            <ListView ItemsSource="{Binding Servers}" SelectedItem="{Binding OnServerChanged}"
+                      Name="ServersList"
+                      BorderThickness="0"
+                      ItemContainerStyle="{StaticResource ContactCard}" d:ItemsSource="{d:SampleData ItemCount=5}" Grid.Row="1" HorizontalAlignment="Center" Width="69" Grid.RowSpan="2" Background="Transparent">
+            </ListView>
+        </Grid>
+        <Grid Background="#FF402164" Grid.Column="1" HorizontalAlignment="Center" Width="196" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="31"/>
+                <RowDefinition/>
+                <RowDefinition Height="45"/>
+            </Grid.RowDefinitions>
+            <Label Content="Server Name"
+                   VerticalAlignment="Top"
+                   FontWeight="Medium"
+                   Foreground="#FFBC55FF" HorizontalAlignment="Center" Width="196" Height="26"/>
+            <ListView ItemsSource="{Binding SelectedItem.Chats, ElementName=ServersList}"
+                      SelectedItem="{Binding OnChatChanged}"
+                      Name="ChatsList"
+                      BorderThickness="0"
+                      Background="Transparent"
+                      ItemContainerStyle="{StaticResource ChatCard}" HorizontalAlignment="Center" Width="196" d:ItemsSource="{d:SampleData ItemCount=5}" Grid.Row="1"/>
+            <StackPanel Grid.Row ="2" Orientation="Horizontal" Background="#FF311A4A">
+                <Border CornerRadius="25"
+                        Height="30"
+                        Width="30"
+                        Background="Crimson" Margin="8,0,0,0"/>
+                <StackPanel Height="37">
+                    <Label Content="username" Height="21" FontSize="10" Foreground="#FF9F8ABA" Margin="0,0,0,-7" FontWeight="SemiBold"/>
+                    <Label Content="status" FontSize="10" Foreground="#FF9F8ABA" FontWeight="SemiBold"/>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+        <Grid Grid.Row="2" Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition/>
+                <RowDefinition Height="50"/>
+            </Grid.RowDefinitions>
+            <Border BorderBrush="#FF420E62" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="0,0,0,2">
+                <Grid HorizontalAlignment="Stretch"
+                      Margin="8">
+                    <Label Content="#  selectedchat" Foreground="White"
+                           FontWeight="Bold"
+                           VerticalAlignment="Center" Margin="5,-5,0,0"/>
+                </Grid>
+            </Border>
+            <ListView ItemsSource="{Binding SelectedItem.Messages, ElementName=ChatsList}"
+                      Background="Transparent"
+                      ItemContainerStyle="{StaticResource ChatItem}"
+                      Margin="8,0,0,0"
+                      Grid.Row="1" BorderBrush="{x:Null}"/>
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="40"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="90"/>
+                </Grid.ColumnDefinitions>
+                <Border Background="#FF75587B"
+                        CornerRadius="10" Grid.ColumnSpan="3" Margin="10,10,10,10">
+                    <TextBox Grid.Row="1"
+                             Grid.Column="2"
+                             Background="Transparent" Margin="35,0,50,0"
+                             VerticalAlignment="Stretch"
+                             VerticalContentAlignment="Center"
+                             TextWrapping="Wrap"
+                             BorderThickness="0"
+                             Foreground="White"
+                             CaretBrush="White"
+                             Text="{Binding Message, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                        <TextBox.InputBindings>
+                            <KeyBinding Command="{Binding SendCommand}" Key="Return"/>
+                        </TextBox.InputBindings>
+                    </TextBox>
+                </Border>
+                <Button Grid.Column="0" Margin="20,16,0,16" HorizontalAlignment="Left" Width="15" RenderTransformOrigin="0.5,0.5" BorderBrush="{x:Null}">
+                    <Button.Background>
+                        <ImageBrush ImageSource="D:\Project\JoinMes\Application\NextGenWPF\Images\upload.png"/>
+                    </Button.Background>
+                </Button>
+                <Button Grid.Column="2" Margin="39,15,0,15" HorizontalAlignment="Left" Width="26" RenderTransformOrigin="0.5,0.5" BorderBrush="{x:Null}">
+                    <Button.Background>
+                        <ImageBrush ImageSource="D:\Project\JoinMes\Application\NextGenWPF\Images\giffi.png"/>
+                    </Button.Background>
+                </Button>
+
+            </Grid>
+        </Grid>
+    </Grid>
+</local:BasePage>
