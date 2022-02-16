@@ -1,0 +1,17 @@
+﻿<Application x:Class="NextGenWPF.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:NextGenWPF.Pages" 
+             xmlns:views="clr-namespace:NextGenWPF.Pages"
+             StartupUri="Pages/MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <views:ApplicationLocator x:Key="Locator"/>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Pages/Themes/ContactCard.xaml"/>
+                <ResourceDictionary Source="Pages/Themes/ChatCard.xaml"/>
+                <ResourceDictionary Source="Pages/Themes/ChatItem.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
