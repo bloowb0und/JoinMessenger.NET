@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using Core.Models;
-using DAL.Abstractions.Interfaces;
+using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
@@ -19,7 +19,7 @@ namespace WebApi.Controllers
 
         [HttpPost]
         [Route("login")]
-        public ActionResult<User> SignIn([FromBody] LoginPswd loginPswd)
+        public async Task<ActionResult<User>> SignIn([FromBody] LoginPswd loginPswd)
         {
             if (loginPswd == null
                 || string.IsNullOrWhiteSpace(loginPswd.Login)
@@ -28,11 +28,11 @@ namespace WebApi.Controllers
                 return BadRequest("Invalid value provided");
             }
             
-            var user = _userService.SignInAsync(loginPswd.Login, loginPswd.Password);
+            var user = await _userService.SignInAsync(loginPswd.Login, loginPswd.Password);
 
-            if (user == null)
+            if (user.ValueOrDefault == null)
             {
-                return Conflict("User was not found");
+                return BadRequest("User was not found");
             }
             
             return Ok(user);
@@ -51,12 +51,13 @@ namespace WebApi.Controllers
                 return BadRequest("User values can't be empty");
             }
 
-            if (!await _userService.RegisterAsync(null))
+            Result result = null;
+            if ((result = await _userService.RegisterAsync(user)).IsFailed)
             {
-                return BadRequest();
+                return BadRequest(result.Errors);
             }
             
-            return Ok(user);
+            return Ok(user); // return jwt token
         }
         
         [HttpPost]
@@ -64,14 +65,15 @@ namespace WebApi.Controllers
         public async Task<ActionResult> ForgotPassword([FromBody] EmailHttpModel email)
         {
             if (email == null 
-            || string.IsNullOrWhiteSpace(email.Email))
+                || string.IsNullOrWhiteSpace(email.Email))
             {
                 return BadRequest("Email can't be null or empty");
             }
 
-            if (!await _userService.PasswordRecoveryAsync(email.Email))
+            Result result = null;
+            if ((result = await _userService.PasswordRecoveryAsync(email.Email)).IsFailed)
             {
-                return BadRequest("Email not found");
+                return BadRequest(result.Errors);
             }
 
             return Ok();

@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using BLL.Services;
 using Core.Models;
@@ -10,13 +6,10 @@ using DAL.Contexts;
 using DAL.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace WebApi
 {
@@ -38,6 +31,9 @@ namespace WebApi
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IEmailNotificationService, EmailNotificationService>();
             services.AddScoped<IServerService, ServerService>();
+            services.AddScoped<IChatService, ChatService>();
+            services.AddScoped<IMessageService, MessageService>();
+            
             services.AddScoped(typeof(IDbGenericRepository<>), typeof(DbGenericRepository<>));
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 

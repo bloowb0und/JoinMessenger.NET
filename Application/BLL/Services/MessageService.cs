@@ -1,7 +1,4 @@
 using System;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using Core.Models;
@@ -40,7 +37,7 @@ namespace BLL.Services
                     await _unitOfWork.RollbackTransactionAsync();
                 }
             }
-            
+
             return true;
         }
 
