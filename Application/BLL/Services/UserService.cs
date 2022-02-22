@@ -121,7 +121,7 @@ namespace BLL.Services
                 
                 foundUser.Password = generatedPassword;
 
-                if (!await _emailNotificationService.SendForgotPasswordAsync(foundUser))
+                if (!(await _emailNotificationService.SendForgotPasswordAsync(foundUser)).IsFailed)
                 {
                     await _unitOfWork.RollbackTransactionAsync();
                     return Result.Fail("Error while sending email.");

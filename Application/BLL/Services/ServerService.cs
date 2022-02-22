@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Core.Models.ServiceMethodsModels;
+using FluentResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace BLL.Services
@@ -28,11 +29,11 @@ namespace BLL.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<bool> CreateServerAsync(string name)
+        public async Task<Result> CreateServerAsync(string name)
         {
             if (string.IsNullOrEmpty(name))
             {
-                return false;
+                return Result.Fail("Server name is empty.");
             }
 
             var server = new Server
@@ -42,7 +43,7 @@ namespace BLL.Services
 
             if (await _unitOfWork.ServerRepository.Any(s => s.Name == name))
             {
-                return false;
+                return Result.Fail("Server already exists.");;
             }
 
             server.DateCreated = DateTime.Now;
@@ -75,20 +76,20 @@ namespace BLL.Services
                 }
             }
 
-            return true;
+            return Result.Ok();
         }
 
-        public async Task<bool> DeleteServerAsync(Server server)
+        public async Task<Result> DeleteServerAsync(Server server)
         {
             if (server == null)
             {
-                return false;
+                return Result.Fail("Server is null.");
             }
 
             // checking if such server exists
             if (!await _unitOfWork.ServerRepository.Any(s => s.Id == server.Id))
             {
-                return false;
+                return Result.Fail("Server doesn't exist.");
             }
 
             // checking if you have particular roles to delete the server ...
@@ -110,21 +111,21 @@ namespace BLL.Services
                 }
             }
 
-            return true;
+            return Result.Ok();
         }
 
-        public async Task<bool> AddUserAsync(Server server, User user)
+        public async Task<Result> AddUserAsync(Server server, User user)
         {
             if (server == null || user == null)
             {
-                return false;
+                return Result.Fail("Server or user is null.");
             }
 
             if (Equals(await _unitOfWork.ServerRepository.Get(
                     u => u.UserServers.Any(us => us.User.Id == user.Id && us.Server.Id == server.Id), null,
                     "UserServers"), Enumerable.Empty<Server>()))
             {
-                return false;
+                return Result.Fail("User is already a member of this server.");
             }
 
             using (_unitOfWork.BeginTransactionAsync())
@@ -148,14 +149,14 @@ namespace BLL.Services
                 }
             }
 
-            return true;
+            return Result.Ok();
         }
 
-        public async Task<bool> AddUsersAsync(Server server,IEnumerable<User> users)
+        public async Task<Result> AddUsersAsync(Server server,IEnumerable<User> users)
         {
             if (server == null)
             {
-                return false;
+                return Result.Fail("Server is null");
             }
 
             foreach (var user in users)
@@ -186,21 +187,21 @@ namespace BLL.Services
                 }
             }
 
-            return true;
+            return Result.Ok();
         }
 
-        public async Task<bool> DeleteUserAsync(Server server, User user)
+        public async Task<Result> DeleteUserAsync(Server server, User user)
         {
             if (server == null || user == null)
             {
-                return false;
+                return Result.Fail("Server or user is null.");
             }
 
             // checking if this user is in this server
             if (await _unitOfWork.UserRepository.Any(us =>
                     us.UserServers.Any(u => u.User.Id == user.Id && u.Server.Id == server.Id)))
             {
-                return false;
+                return Result.Fail("User is not a member of this server");
             }
 
             // checking if you have particular roles to delete users from the server ... 
@@ -208,7 +209,7 @@ namespace BLL.Services
                     usr.Role.ServerPermissionRoles.Any(spr =>
                         spr.ServerPermission.Id == 0 && spr.Status)))) // change spr.ServerPermission.Id to particular in ServerPermissions table
             {
-                return false;
+                return Result.Fail("No permission to delete users from server.");
             }
             
             server.UserServers.Remove(
@@ -229,14 +230,14 @@ namespace BLL.Services
                 }
             }
 
-            return true;
+            return Result.Ok();
         }
 
-        public async Task<bool> DeleteUsersAsync(Server server, IEnumerable<User> users)
+        public async Task<Result> DeleteUsersAsync(Server server, IEnumerable<User> users)
         {
             if (server == null)
             {
-                return false;
+                return Result.Fail("Server is null");
             }
 
             var dbServer = _unitOfWork.ServerRepository.FirstOrDefault(s => s.Id == server.Id);
@@ -246,7 +247,7 @@ namespace BLL.Services
                 if (user != null && await _unitOfWork.UserRepository.Any(us =>
                         us.UserServers.Any(u => u.User.Id == user.Id && u.Server.Id == server.Id)))
                 {
-                    _unitOfWork.UserRepository.Any(u =>
+                    await _unitOfWork.UserRepository.Any(u =>
                         u.UserServers.Remove(u.UserServers.FirstOrDefault(us =>
                             us.User.Id == user.Id && us.Server.Id == server.Id)));
                 }
@@ -267,12 +268,12 @@ namespace BLL.Services
                 }
             }
 
-            return true;
+            return Result.Ok();
         }
 
-        public Server GetServerByName(string name)
+        public Result<Server> GetServerByName(string name)
         {
-            return _unitOfWork.ServerRepository.FirstOrDefault(s => s.Name == name);
+            return Result.FailIf(_unitOfWork.ServerRepository.FirstOrDefault(s => s.Name == name) == null, "Server with such name doesn't exist.");
         }
 
         // not done yet
@@ -296,11 +297,11 @@ namespace BLL.Services
             }
         }
 
-        public async Task<bool> EditServerAsync(Server server, ServerServiceEditServer newServer)
+        public async Task<Result> EditServerAsync(Server server, ServerServiceEditServer newServer)
         {
             if (await _unitOfWork.ServerRepository.Any(s => s.Name == newServer.ServerName))
             {
-                return false;
+                return Result.Fail("Server with this name already exists.");
             }
 
             server.Name = newServer.ServerName;
@@ -320,7 +321,7 @@ namespace BLL.Services
                 }
             }
             
-            return true;
+            return Result.Ok();
         }
     }
 }

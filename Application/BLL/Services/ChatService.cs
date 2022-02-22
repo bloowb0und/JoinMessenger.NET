@@ -3,6 +3,7 @@ using BLL.Abstractions.Interfaces;
 using Core.Models;
 using Core.Models.ServiceMethodsModels;
 using DAL.Abstractions.Interfaces;
+using FluentResults;
 
 namespace BLL.Services
 {
@@ -15,16 +16,16 @@ namespace BLL.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<bool> CreateChatAsync(Chat chat)
+        public async Task<Result> CreateChatAsync(Chat chat)
         {
             if (await _unitOfWork.ChatRepository.Any(c => c.Id == chat.Id))
             {
-                return false;
+                return Result.Fail("Chat with this id already exists.");
             }
 
             if (await _unitOfWork.ChatRepository.Any(c => c.Server == chat.Server && c.Name == chat.Name))
             {
-                return false;
+                return Result.Fail("Chat with this name already exists on the server.");
             }
 
             using (_unitOfWork.BeginTransactionAsync())
@@ -42,14 +43,14 @@ namespace BLL.Services
                 }
             }
 
-            return true;
+            return Result.Ok();
         }
 
-        public async Task<bool> DeleteChatAsync(Chat chat)
+        public async Task<Result> DeleteChatAsync(Chat chat)
         {
-            if (!await _unitOfWork.ChatRepository.Any(c => c == chat))
+            if (!await _unitOfWork.ChatRepository.Any(c => c.Id == chat.Id))
             {
-                return false;
+                return Result.Fail("This chat doesn't exist.");
             }
             
             using (_unitOfWork.BeginTransactionAsync())
@@ -67,19 +68,19 @@ namespace BLL.Services
                 }
             }
             
-            return true;
+            return Result.Ok();
         }
 
-        public async Task<bool> EditChatAsync(Chat chat, ChatServiceEditChat newChat)
+        public async Task<Result> EditChatAsync(Chat chat, ChatServiceEditChat newChat)
         {
-            if (await _unitOfWork.ChatRepository.Any(c => c == chat))
+            if (!await _unitOfWork.ChatRepository.Any(c => c.Id == chat.Id))
             {
-                return false;
+                return Result.Fail("This chat doesn't exist.");
             }
             
             if (await _unitOfWork.ChatRepository.Any(c => c.Server == chat.Server && c.Name == newChat.ChatName))
             {
-                return false;
+                return Result.Fail("Chat with this name already exists on the server.");
             }
             
             chat.Name = newChat.ChatName;
@@ -99,7 +100,7 @@ namespace BLL.Services
                 }
             }
             
-            return true;
+            return Result.Ok();
         }
     }
 }

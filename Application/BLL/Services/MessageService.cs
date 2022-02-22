@@ -4,6 +4,7 @@ using BLL.Abstractions.Interfaces;
 using Core.Models;
 using Core.Models.ServiceMethodsModels;
 using DAL.Abstractions.Interfaces;
+using FluentResults;
 
 namespace BLL.Services
 {
@@ -16,11 +17,11 @@ namespace BLL.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<bool> CreateMessageAsync(Message message)
+        public async Task<Result> CreateMessageAsync(Message message)
         {
             if (await _unitOfWork.MessageRepository.Any(m => m.Id == message.Id))
             {
-                return false;
+                return Result.Fail("Message with such id already exists.");
             }
             
             using (_unitOfWork.BeginTransactionAsync())
@@ -38,20 +39,20 @@ namespace BLL.Services
                 }
             }
 
-            return true;
+            return Result.Ok();
         }
 
-        public async Task<bool> EditMessageAsync(User user, Message message, MessageServiceEditMessage newMessage)
+        public async Task<Result> EditMessageAsync(User user, Message message, MessageServiceEditMessage newMessage)
         {
             if (!await _unitOfWork.MessageRepository.Any(m => m.Id == message.Id))
             {
-                return false;
+                return Result.Fail("Such message doesn't exist.");;
             }
             
             // check if user sent this message
             if (message.User != user)
             {
-                return false;
+                return Result.Fail("Can't edit another user's message.");
             }
 
             message.Value = newMessage.MessageValue;
@@ -72,27 +73,27 @@ namespace BLL.Services
                 }
             }
             
-            return true;
+            return Result.Ok();
         }
 
-        public async Task<bool> DeleteMessageAsync(User user, Message message)
+        public async Task<Result> DeleteMessageAsync(User user, Message message)
         {
             if (message.User == null
                 || message.Chat == null
                 || string.IsNullOrWhiteSpace(message.Value))
             {
-                return false;
+                return Result.Fail("Input data is null or the message is empty.");
             }
 
-            if (await _unitOfWork.MessageRepository.Any(m => m.Id == message.Id))
+            if (!await _unitOfWork.MessageRepository.Any(m => m.Id == message.Id))
             {
-                return false;
+                return Result.Fail("Message doesn't exist.");
             }
 
             // check if user sent this message [or has permission]
             if (message.User != user)
             {
-                return false;
+                return Result.Fail("No permission to delete this message.");
             }
             
             using (_unitOfWork.BeginTransactionAsync())
@@ -110,7 +111,7 @@ namespace BLL.Services
                 }
             }
             
-            return true;
+            return Result.Ok();
         }
     }
 }

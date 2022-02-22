@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using BLL.Helpers;
 using Core.Models;
+using FluentResults;
 using Microsoft.Extensions.Options;
 
 namespace BLL.Services
@@ -36,7 +37,7 @@ namespace BLL.Services
             };
         }
 
-        public async Task<bool> SendForgotPasswordAsync(User user)
+        public async Task<Result> SendForgotPasswordAsync(User user)
         {
             using (var mailMessage = new MailMessage(
                        new MailAddress(this._networkCredential.UserName, "Sandra from Join"), 
@@ -49,17 +50,17 @@ namespace BLL.Services
 
                 await _smtpClient.SendMailAsync(mailMessage);
 
-                return true;
+                return Result.Ok();
             }
         }
 
-        public async Task InviteByEmailAsync(Server server, User user)
+        public async Task<Result> InviteByEmailAsync(Server server, User user)
         {
             // checking if this user is already in the server
             if (server.UserServers
                     .FirstOrDefault(us => us.User.Id == user.Id && us.Server.Id == server.Id) != null)
             {
-                return;
+                return Result.Fail("User is already a member of this server.");
             }
 
             using (var mailMessage = new MailMessage(
@@ -76,6 +77,8 @@ namespace BLL.Services
 
                 await _smtpClient.SendMailAsync(mailMessage);
             }
+            
+            return Result.Ok();
         }
     }
 }
