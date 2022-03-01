@@ -46,7 +46,7 @@ namespace BLL.Services
         {
             if (!await _unitOfWork.MessageRepository.Any(m => m.Id == message.Id))
             {
-                return Result.Fail("Such message doesn't exist.");;
+                return Result.Fail("Such message doesn't exist.");
             }
             
             // check if user sent this message

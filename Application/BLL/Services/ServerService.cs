@@ -1,19 +1,12 @@
-﻿
-using BLL.Abstractions;
-using BLL.Abstractions.Interfaces;
+﻿using BLL.Abstractions.Interfaces;
 using Core.Models;
 using DAL.Abstractions.Interfaces;
-using DAL.Contexts;
-using DAL.Repository;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Core.Models.ServiceMethodsModels;
 using FluentResults;
-using Microsoft.EntityFrameworkCore;
 
 namespace BLL.Services
 {
@@ -43,7 +36,7 @@ namespace BLL.Services
 
             if (await _unitOfWork.ServerRepository.Any(s => s.Name == name))
             {
-                return Result.Fail("Server already exists.");;
+                return Result.Fail("Server already exists.");
             }
 
             server.DateCreated = DateTime.Now;
@@ -81,11 +74,6 @@ namespace BLL.Services
 
         public async Task<Result> DeleteServerAsync(Server server)
         {
-            if (server == null)
-            {
-                return Result.Fail("Server is null.");
-            }
-
             // checking if such server exists
             if (!await _unitOfWork.ServerRepository.Any(s => s.Id == server.Id))
             {
@@ -116,14 +104,9 @@ namespace BLL.Services
 
         public async Task<Result> AddUserAsync(Server server, User user)
         {
-            if (server == null || user == null)
-            {
-                return Result.Fail("Server or user is null.");
-            }
-
-            if (Equals(await _unitOfWork.ServerRepository.Get(
+            if ((await _unitOfWork.ServerRepository.Get(
                     u => u.UserServers.Any(us => us.User.Id == user.Id && us.Server.Id == server.Id), null,
-                    "UserServers"), Enumerable.Empty<Server>()))
+                    "UserServers")).Count() != 0)
             {
                 return Result.Fail("User is already a member of this server.");
             }
@@ -154,14 +137,9 @@ namespace BLL.Services
 
         public async Task<Result> AddUsersAsync(Server server,IEnumerable<User> users)
         {
-            if (server == null)
-            {
-                return Result.Fail("Server is null");
-            }
-
             foreach (var user in users)
             {
-                if (user != null && !await _unitOfWork.UserRepository.Any(us =>
+                if (!await _unitOfWork.UserRepository.Any(us =>
                         us.UserServers.Any(u => u.User.Id == user.Id && u.Server.Id == server.Id)))
                 {
                     server.UserServers.Add(new UserServer()
@@ -192,11 +170,6 @@ namespace BLL.Services
 
         public async Task<Result> DeleteUserAsync(Server server, User user)
         {
-            if (server == null || user == null)
-            {
-                return Result.Fail("Server or user is null.");
-            }
-
             // checking if this user is in this server
             if (await _unitOfWork.UserRepository.Any(us =>
                     us.UserServers.Any(u => u.User.Id == user.Id && u.Server.Id == server.Id)))
@@ -235,16 +208,9 @@ namespace BLL.Services
 
         public async Task<Result> DeleteUsersAsync(Server server, IEnumerable<User> users)
         {
-            if (server == null)
-            {
-                return Result.Fail("Server is null");
-            }
-
-            var dbServer = _unitOfWork.ServerRepository.FirstOrDefault(s => s.Id == server.Id);
-
             foreach (var user in users)
             {
-                if (user != null && await _unitOfWork.UserRepository.Any(us =>
+                if (await _unitOfWork.UserRepository.Any(us =>
                         us.UserServers.Any(u => u.User.Id == user.Id && u.Server.Id == server.Id)))
                 {
                     await _unitOfWork.UserRepository.Any(u =>
@@ -273,7 +239,9 @@ namespace BLL.Services
 
         public Result<Server> GetServerByName(string name)
         {
-            return Result.FailIf(_unitOfWork.ServerRepository.FirstOrDefault(s => s.Name == name) == null, "Server with such name doesn't exist.");
+            var foundServer = _unitOfWork.ServerRepository.FirstOrDefault(s => s.Name == name);
+
+            return foundServer == null ? Result.Fail("Server with such name doesn't exist.") : Result.Ok(foundServer);
         }
 
         // not done yet
