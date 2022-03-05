@@ -1,0 +1,26 @@
+<div class="row">
+    <div class="col-6 m-auto">
+        <div class="card m-auto">
+            <div class="card-header">
+                Log in
+            </div>
+            <div class="card-body">
+                <form #loginForm="ngForm" (ngSubmit)="onLogin(loginForm)">
+                    <div class="form-group col-12">
+                        <label for="name" class="form-label">Login</label>
+                        <input type="text" class="form-control" required ngModel name="login">
+                    </div>
+                    <div class="form-group col-12">
+                        <label for="name" class="form-label">Password</label>
+                        <input type="password" class="form-control" required ngModel name="password">
+                    </div>
+                    <div class="form-group col-12">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="reset" class="btn btn-secondary m-2">Cancel</button>
+                        <a routerLink="/signup">Don't have an account? Sign up!</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

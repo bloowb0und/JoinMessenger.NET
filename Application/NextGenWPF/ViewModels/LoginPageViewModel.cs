@@ -137,5 +137,4 @@ namespace NextGenWPF.ViewModels
         }
 
     }
-
 }
