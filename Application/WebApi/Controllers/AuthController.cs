@@ -2,6 +2,8 @@ using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using Core.Models;
 using FluentResults;
+using DAL.Abstractions.Interfaces;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
@@ -37,7 +39,7 @@ namespace WebApi.Controllers
             
             return Ok(user);
         }
-        
+
         [HttpPost]
         [Route("register")]
         public async Task<ActionResult<User>> Register([FromBody] User user)

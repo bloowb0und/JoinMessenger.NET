@@ -1,0 +1,27 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style TargetType="ListViewItem" x:Key="ChatCard">
+        <Style.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="#FF2F0649"/> 
+            </Trigger>
+        </Style.Triggers>
+
+        <Setter Property="Background" Value="#FF3C2B50"/>
+        <Setter Property="Template" >
+            <Setter.Value >
+                <ControlTemplate TargetType="ListViewItem">
+                    <Border Background="{TemplateBinding Background}"
+                            Height="30"
+                            CornerRadius="10"
+                            Margin="8,2,8,2"
+                            Width="160" HorizontalAlignment="Left" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Width="190">
+                            <Label Content="{Binding Name}" Foreground="#FF9F8ABA" FontSize="16" Margin="0,-4,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>
