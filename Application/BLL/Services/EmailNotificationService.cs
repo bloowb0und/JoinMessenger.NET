@@ -1,10 +1,10 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using Core.Models;
+using FluentResults;
 using Microsoft.Extensions.Options;
 
 namespace BLL.Services
@@ -35,7 +35,7 @@ namespace BLL.Services
             };
         }
 
-        public async Task<bool> SendForgotPasswordAsync(User user)
+        public async Task<Result> SendForgotPasswordAsync(User user)
         {
             using (var mailMessage = new MailMessage(
                        new MailAddress(this._networkCredential.UserName, "Sandra from Join"), 
@@ -43,22 +43,22 @@ namespace BLL.Services
             {
                 mailMessage.Subject = "Password recovery for Join";
                 mailMessage.Body =
-                    $"<h2>Forgot password</h2>Hello, <b>{user.Name}</b><br><br>We recently received a request about a forgot password on:<br><b>{user.Email}</b><br><br>Password for your account is:<br><b>{user.Password}</b><br><br>If it wasn't you, please ignore this message.";
+                    $"<h2>Forgot password</h2>Hello, <b>{user.Name}</b><br><br>We recently received a request about a forgot password on:<br><b>{user.Email}</b><br><br>The new password for your account is:<br><b>{user.Password}</b><br><br>If it wasn't you, please ignore this message.";
                 mailMessage.IsBodyHtml = true;
 
                 await _smtpClient.SendMailAsync(mailMessage);
 
-                return true;
+                return Result.Ok();
             }
         }
 
-        public async Task InviteByEmailAsync(Server server, User user)
+        public async Task<Result> InviteByEmailAsync(Server server, User user)
         {
             // checking if this user is already in the server
             if (server.UserServers
                     .FirstOrDefault(us => us.User.Id == user.Id && us.Server.Id == server.Id) != null)
             {
-                return;
+                return Result.Fail("User is already a member of this server.");
             }
 
             using (var mailMessage = new MailMessage(
@@ -75,6 +75,8 @@ namespace BLL.Services
 
                 await _smtpClient.SendMailAsync(mailMessage);
             }
+            
+            return Result.Ok();
         }
     }
 }

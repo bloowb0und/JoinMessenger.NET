@@ -19,7 +19,6 @@ namespace Core.Models
         public string Login { get; set; }
 
         [Required]
-        [MaxLength(30)]
         public string Password { get; set; }
         
         public ICollection<UserServer> UserServers { get; set; }
