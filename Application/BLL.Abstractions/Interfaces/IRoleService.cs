@@ -8,7 +8,7 @@ namespace BLL.Abstractions.Interfaces
 {
     public interface IRoleService
     {
-        Task<Result> CreateRoleAsync(RoleServiceEditRole role);
+        Task<Result<Role>> CreateRoleAsync(RoleServiceEditRole role);
         
         Task<Result> DeleteRoleAsync(Role role);
         
