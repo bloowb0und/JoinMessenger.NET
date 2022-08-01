@@ -1,0 +1,96 @@
+<div class="row">
+    <div class="col-6 m-auto">
+        <div class="card m-auto">
+            <div class="card-header">Sign Up</div>
+            <div class="card-body">
+                <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()">
+                    <div class="form-group col-12">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control" formControlName="name" />
+                        <span *ngIf="!name.valid && (name.touched || userSubmitted)" class="error-block">
+              <span *ngIf="name.errors?.['required']"> Name is required </span>
+                        <span *ngIf="name.errors?.['minlength']">
+                Name must be at least 5 symbols
+              </span>
+                        </span>
+                    </div>
+
+                    <div class="form-group col-12">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="text" class="form-control" formControlName="email" />
+                        <span *ngIf="!email.valid && (email.touched || userSubmitted)" class="error-block">
+              <span *ngIf="email.errors?.['required']">
+                Email is required
+              </span>
+                        <span *ngIf="email.errors?.['email']"> Email is not valid </span>
+                        </span>
+                    </div>
+
+                    <div class="form-group col-12">
+                        <label for="login" class="form-label">Login</label>
+                        <input type="text" class="form-control" formControlName="login" />
+                        <span *ngIf="!login.valid && (login.touched || userSubmitted)" class="error-block">
+              <span *ngIf="login.errors?.['required']">
+                Login is required
+              </span>
+                        <span *ngIf="login.errors?.['minlength']">
+                Login must be at least 4 symbols long
+              </span>
+                        <span *ngIf="login.errors?.['maxlength']">
+                Login is too long
+              </span>
+                        </span>
+                    </div>
+
+                    <div class="form-group col-12">
+                        <label for="passwrod" class="form-label">Password</label>
+                        <input type="password" class="form-control" formControlName="password" />
+                        <span *ngIf="!password.valid && (password.touched || userSubmitted)" class="error-block">
+              <span *ngIf="password.errors?.['required']">
+                Password is required
+              </span>
+                        <span *ngIf="password.errors?.['minlength']">
+                Password must be at least 8 symbols long
+              </span>
+                        <span *ngIf="signUpForm.hasError('notstrong')">
+                Password is not strong enough
+              </span>
+                        </span>
+                    </div>
+
+                    <div class="form-group col-12">
+                        <label for="cpassword" class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" formControlName="confirmPassword" />
+                        <span *ngIf="
+                !confirmPassword.valid &&
+                (confirmPassword.touched || userSubmitted)
+              " class="error-block">
+              <span *ngIf="confirmPassword.errors?.['required']">
+                Password confirmation is required
+              </span>
+                        </span>
+                        <span *ngIf="signUpForm.hasError('notmatched') && confirmPassword.valid" class="error-block">
+              Passwords don't match
+            </span>
+                    </div>
+
+                    <div class="form-group col-12">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="reset" class="btn btn-secondary m-2">Cancel</button>
+                        <a routerLink="/login">Already have an account? Log in here</a>
+                    </div>
+                    <!-- <div class="form-group col-12"></div>
+          Form values : {{ signUpForm.value | json }} Form status:
+          {{ signUpForm.status }}
+          <div>
+            <ul>
+              <li *ngFor="let s of data">
+                {{ s.name }}
+              </li>
+            </ul>
+          </div> -->
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-using System.Net.Mail;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
@@ -8,6 +5,7 @@ using BLL.Helpers;
 using Core.Models;
 using Core.Models.ServiceMethodsModels;
 using DAL.Abstractions.Interfaces;
+using FluentResults;
 
 namespace BLL.Services
 {
@@ -22,35 +20,44 @@ namespace BLL.Services
             _emailNotificationService = emailNotificationService;
         }
 
-        public async Task<bool> RegisterAsync(User user)
+        private Result ValidateUser(User user)
         {
-            try
+            var result = Result.Ok();
+            if (!UserHelper.IsValidEmail(user.Email))
             {
-                var checkedEmail = new MailAddress(user.Email).Address; // check if email string is in a email format
+                result = Result.Fail("Wrong email format"); // check if email string is in a email format
             }
-            catch (FormatException e)
-            {
-                return false;
-            }
-
+            
             // Password must contain numbers, lowercase or uppercase letters, include special symbols, at least 8 characters, at most 24 characters.
             var passwordRegex = new Regex(@"(?=.*[0-9])(?=.*[a-zA-Z])(?=([\x21-\x7e]+)[^a-zA-Z0-9]).{8,24}",
                 RegexOptions.Multiline | RegexOptions.IgnorePatternWhitespace);
-
+            
             if (!passwordRegex.IsMatch(user.Password)) // check if password is strong
             {
-                return false;
+                result.WithError("Wrong password format");
+            }
+            
+            return result;
+        }
+
+        public async Task<Result> RegisterAsync(User user)
+        {
+            Result methodResult = null;
+            
+            if ((methodResult = this.ValidateUser(user)).IsFailed)
+            {
+                return methodResult.WithErrors(methodResult.Errors);
             }
 
             if (await _unitOfWork.UserRepository
-                .Any(u => u.Email == user.Email 
-                          || u.Login == user.Login)) // check if email and login is unique
+                    .Any(u => u.Email == user.Email 
+                              || u.Login == user.Login)) // check if email and login is unique
             {
-                return false;
+                return Result.Fail("User already exists.");
             }
 
             user.Password = PasswordHelper.HashPassword(user.Password);
-            
+
             using (_unitOfWork.BeginTransactionAsync())
             {
                 try
@@ -66,53 +73,33 @@ namespace BLL.Services
                 }
             }
 
-            return true;
+            return Result.Ok();
         }
 
-        public async Task<User> SignInAsync(string username, string password)
+        public async Task<Result<User>> SignInAsync(string username, string password)
         {
-            var isLogin = false;
+            var isLogin = UserHelper.IsValidEmail(username);
 
-            try
-            {
-                var checkedEmail = new MailAddress(username).Address; // check if email string is in a email format
-            }
-            catch (FormatException e)
-            {
-                isLogin = true;
-            }
-
-            if (!await _unitOfWork.UserRepository.Any())
-            {
-                return null;
-            }
-
-            User foundUser = null;
-            if (isLogin)
-            {
-                foundUser = _unitOfWork.UserRepository.FirstOrDefault(u => u.Login == username);
-            }
-            else
-            {
-                foundUser = _unitOfWork.UserRepository.FirstOrDefault(u => u.Email == username);
-            }
+            var foundUser = isLogin
+                ? _unitOfWork.UserRepository.FirstOrDefault(u => u.Login == username)
+                : _unitOfWork.UserRepository.FirstOrDefault(u => u.Email == username);
 
             if (foundUser == null
                 || !PasswordHelper.VerifyHashedPassword(foundUser.Password, password))
             {
-                return null;
+                return Result.Fail("User was not found.");
             }
 
-            return foundUser;
+            return Result.Ok(foundUser);
         }
 
-        public async Task<bool> PasswordRecoveryAsync(string email)
+        public async Task<Result> PasswordRecoveryAsync(string email)
         {
             var foundUser = _unitOfWork.UserRepository.FirstOrDefault(u => u.Email == email);
 
             if (foundUser == null)
             {
-                return false;
+                return Result.Fail("User was not found.");
             }
 
             var generatedPassword = PasswordHelper.GetRandomPassword();
@@ -134,23 +121,23 @@ namespace BLL.Services
                 
                 foundUser.Password = generatedPassword;
 
-                if (!await _emailNotificationService.SendForgotPasswordAsync(foundUser))
+                if (!(await _emailNotificationService.SendForgotPasswordAsync(foundUser)).IsFailed)
                 {
                     await _unitOfWork.RollbackTransactionAsync();
-                    return false;
+                    return Result.Fail("Error while sending email.");
                 }
                 
                 await _unitOfWork.CommitTransactionAsync();
             }
 
-            return true;
+            return Result.Ok();
         }
 
-        public async Task<bool> ChangeUserDataAsync(User user, UserServiceChangeUserData newUserData)
+        public async Task<Result> ChangeUserDataAsync(User user, UserServiceChangeUserData newUserData)
         {
             if (_unitOfWork.UserRepository.FirstOrDefault(u => u.Id == user.Id) == null)
             {
-                return false;
+                return Result.Fail("User was not found.");
             }
 
             user.Name = string.IsNullOrWhiteSpace(newUserData.Name) ? user.Name : newUserData.Name;
@@ -177,7 +164,7 @@ namespace BLL.Services
                 }
             }
             
-            return true;
+            return Result.Ok();
         }
     }
 }

@@ -1,6 +1,9 @@
-﻿using System.Threading.Tasks;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using Core.Models;
+using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
@@ -45,23 +48,82 @@ namespace WebApi.Controllers
                 Password = "eRt@12qweRt",
             };
 
-            await _userService.RegisterAsync(user);
-            await _userService.RegisterAsync(user);
-            await _userService.RegisterAsync(user2);
+            Result res;
+            // if ((res = await _userService.RegisterAsync(user)).IsFailed)
+            // {
+            //     return BadRequest(res.Errors.Select(e => e.Message));
+            // }
+            if ((res = await _userService.RegisterAsync(user)).IsFailed)
+            {
+                Console.WriteLine(res.Errors.Select(e => e.Message));
+            }
+            
+            if ((res = await _userService.RegisterAsync(user2)).IsFailed)
+            {
+                Console.WriteLine(res.Errors.Select(e => e.Message));
+            }
 
-            await _serverService.CreateServerAsync("Server1");
-            await _serverService.CreateServerAsync("Server2");
-            
-            var server1 = _serverService.GetServerByName("Server1");
-            var server2 = _serverService.GetServerByName("Server2");
-            
-            await _serverService.AddUserAsync(server1, user);
-            await _serverService.AddUserAsync(server1, user2);
-            
-            await _serverService.AddUserAsync(server2, user);
-            await _serverService.AddUserAsync(server2, user2);
+            if ((res = await _serverService.CreateServerAsync("Server1")).IsFailed)
+            {
+                Console.WriteLine(res.Errors.Select(e => e.Message));
+            }
+            if ((res = await _serverService.CreateServerAsync("Server2")).IsFailed)
+            {
+                Console.WriteLine(res.Errors.Select(e => e.Message));
+            }
 
+            if ((res = await _serverService.CreateServerAsync("Server2")).IsFailed)
+            {
+                Console.WriteLine(res.Errors.Select(e => e.Message));
+            }
             
+            if ((res = await _serverService.CreateServerAsync("Server2")).IsFailed) // error
+            {
+                Console.WriteLine(res.Errors.Select(e => e.Message));
+            }
+
+            Result<Server> serverResult;
+            
+            if ((serverResult = _serverService.GetServerByName("Server1")).IsFailed)
+            {
+                Console.WriteLine(serverResult.Errors.Select(e => e.Message));
+            }
+            var server1 = serverResult.Value;
+            
+            if ((serverResult = _serverService.GetServerByName("Server2")).IsFailed)
+            {
+                Console.WriteLine(serverResult.Errors.Select(e => e.Message));
+            }
+            var server2 = serverResult.Value;
+            
+            if ((serverResult = _serverService.GetServerByName("Server56")).IsFailed) // error
+            {
+                Console.WriteLine(serverResult.Errors.Select(e => e.Message));
+            }
+
+            if ((res = await _serverService.AddUserAsync(server1, user)).IsFailed)
+            {
+                Console.WriteLine(res.Errors.Select(e => e.Message));
+            }
+            if((res = await _serverService.AddUserAsync(server1, user2)).IsFailed) 
+            {
+                Console.WriteLine(res.Errors.Select(e => e.Message));
+            }
+            
+            if((res = _serverService.AddUserAsync(server1, user2).Result).IsFailed) // error
+            {
+                Console.WriteLine(res.Errors.Select(e => e.Message));
+            }
+
+            if ((res = await _serverService.AddUserAsync(server2, user)).IsFailed)
+            {
+                Console.WriteLine(res.Errors.Select(e => e.Message));
+            }
+            if ((res = await _serverService.AddUserAsync(server2, user2)).IsFailed)
+            {
+                Console.WriteLine(res.Errors.Select(e => e.Message));
+            }
+
             var chat1 = new Chat
             {
                 Name = "server1_chat1",
@@ -76,8 +138,14 @@ namespace WebApi.Controllers
                 Value = "value1_msg1"
             };
 
-            await _chatService.CreateChatAsync(chat1);
-            await _messageService.CreateMessageAsync(msg1Chat1);
+            if ((res = await _chatService.CreateChatAsync(chat1)).IsFailed)
+            {
+                Console.WriteLine(res.Errors.Select(e => e.Message));
+            }
+            if ((res = await _messageService.CreateMessageAsync(msg1Chat1)).IsFailed)
+            {
+                Console.WriteLine(res.Errors.Select(e => e.Message));
+            }
 
             var msg2Chat1 = new Message
             {
@@ -85,8 +153,11 @@ namespace WebApi.Controllers
                 Chat = chat1,
                 Value = "value2_msg1"
             };
-            
-            await _messageService.CreateMessageAsync(msg2Chat1);
+
+            if ((res = await _messageService.CreateMessageAsync(msg2Chat1)).IsFailed)
+            {
+                Console.WriteLine(res.Errors.Select(e => e.Message));
+            }
 
             var msg3Chat1 = new Message
             {
@@ -95,7 +166,10 @@ namespace WebApi.Controllers
                 Value = "value3_msg1"
             };
             
-            await _messageService.CreateMessageAsync(msg3Chat1);
+            if ((res = await _messageService.CreateMessageAsync(msg3Chat1)).IsFailed)
+            {
+                Console.WriteLine(res.Errors.Select(e => e.Message));
+            }
 
             // -----------------------------------------
 
@@ -106,7 +180,10 @@ namespace WebApi.Controllers
                 Server = server1
             };
             
-            await _chatService.CreateChatAsync(chat2);
+            if ((res = await _chatService.CreateChatAsync(chat2)).IsFailed)
+            {
+                Console.WriteLine(res.Errors.Select(e => e.Message));
+            }
             
             var msg1Chat2 = new Message
             {
@@ -115,7 +192,10 @@ namespace WebApi.Controllers
                 Value = "value1_msg1_chat2"
             };
             
-            await _messageService.CreateMessageAsync(msg1Chat2);
+            if ((res = await _messageService.CreateMessageAsync(msg1Chat2)).IsFailed)
+            {
+                Console.WriteLine(res.Errors.Select(e => e.Message));
+            }
 
             var msg2Chat2 = new Message
             {
@@ -124,7 +204,10 @@ namespace WebApi.Controllers
                 Value = "value2_msg1_chat2"
             };
             
-            await _messageService.CreateMessageAsync(msg2Chat2);
+            if ((res = await _messageService.CreateMessageAsync(msg2Chat2)).IsFailed)
+            {
+                Console.WriteLine(res.Errors.Select(e => e.Message));
+            }
 
             var msg3Chat2 = new Message
             {
@@ -133,7 +216,10 @@ namespace WebApi.Controllers
                 Value = "value3_msg1_chat2"
             };
             
-            await _messageService.CreateMessageAsync(msg3Chat2);
+            if ((res = await _messageService.CreateMessageAsync(msg3Chat2)).IsFailed)
+            {
+                Console.WriteLine(res.Errors.Select(e => e.Message));
+            }
 
             // ------------------------------------
             // ------------------------------------
@@ -145,7 +231,10 @@ namespace WebApi.Controllers
                 Server = server2
             };
             
-            await _chatService.CreateChatAsync(chat1_1);
+            if ((res = await _chatService.CreateChatAsync(chat1_1)).IsFailed)
+            {
+                Console.WriteLine(res.Errors.Select(e => e.Message));
+            }
             
             var msg1Chat1_1 = new Message
             {
@@ -154,7 +243,10 @@ namespace WebApi.Controllers
                 Value = "value1_msg1_1"
             };
             
-            await _messageService.CreateMessageAsync(msg1Chat1_1);
+            if ((res = await _messageService.CreateMessageAsync(msg1Chat1_1)).IsFailed)
+            {
+                Console.WriteLine(res.Errors.Select(e => e.Message));
+            }
 
             var msg2Chat1_1 = new Message
             {
@@ -163,7 +255,10 @@ namespace WebApi.Controllers
                 Value = "value2_msg1_2"
             };
             
-            await _messageService.CreateMessageAsync(msg2Chat1_1);
+            if ((res = await _messageService.CreateMessageAsync(msg2Chat1_1)).IsFailed)
+            {
+                Console.WriteLine(res.Errors.Select(e => e.Message));
+            }
 
             var msg3Chat1_1 = new Message
             {
@@ -172,7 +267,10 @@ namespace WebApi.Controllers
                 Value = "value3_msg1_1"
             };
             
-            await _messageService.CreateMessageAsync(msg3Chat1_1);
+            if ((res = await _messageService.CreateMessageAsync(msg3Chat1_1)).IsFailed)
+            {
+                Console.WriteLine(res.Errors.Select(e => e.Message));
+            }
 
             // -----------------------------------------
             
@@ -183,7 +281,10 @@ namespace WebApi.Controllers
                 Server = server2
             };
             
-            await _chatService.CreateChatAsync(chat2_2);
+            if ((res = await _chatService.CreateChatAsync(chat2_2)).IsFailed)
+            {
+                Console.WriteLine(res.Errors.Select(e => e.Message));
+            }
             
             var msg1Chat2_2 = new Message
             {
@@ -192,7 +293,10 @@ namespace WebApi.Controllers
                 Value = "value1_msg1_chat2"
             };
             
-            await _messageService.CreateMessageAsync(msg1Chat2_2);
+            if ((res = await _messageService.CreateMessageAsync(msg1Chat2_2)).IsFailed)
+            {
+                Console.WriteLine(res.Errors.Select(e => e.Message));
+            }
 
             var msg2Chat2_2 = new Message
             {
@@ -201,7 +305,10 @@ namespace WebApi.Controllers
                 Value = "value2_msg1_chat2"
             };
             
-            await _messageService.CreateMessageAsync(msg2Chat2_2);
+            if ((res = await _messageService.CreateMessageAsync(msg2Chat2_2)).IsFailed)
+            {
+                Console.WriteLine(res.Errors.Select(e => e.Message));
+            }
 
             var msg3Chat2_2 = new Message
             {
@@ -210,7 +317,10 @@ namespace WebApi.Controllers
                 Value = "value3_msg1_chat2"
             };
             
-            await _messageService.CreateMessageAsync(msg3Chat2_2);
+            if ((res = await _messageService.CreateMessageAsync(msg3Chat2_2)).IsFailed)
+            {
+                Console.WriteLine(res.Errors.Select(e => e.Message));
+            }
 
             return Ok(user);
         }

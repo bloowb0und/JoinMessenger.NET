@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BLL.Abstractions", "BLL.Abs
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresentationLayer", "PresentationLayer\PresentationLayer.csproj", "{95C1740C-A4B2-4D5C-91ED-99A1BDED198A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NextGenWPF", "NextGenWPF\NextGenWPF.csproj", "{1F60C862-87A6-4C14-A32D-A0E04E656D6B}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi", "WebApi\WebApi.csproj", "{DF34F1E9-2B9A-4701-AE37-44E965D26F6B}"
 EndProject
 Global
@@ -51,6 +53,10 @@ Global
 		{DF34F1E9-2B9A-4701-AE37-44E965D26F6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF34F1E9-2B9A-4701-AE37-44E965D26F6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF34F1E9-2B9A-4701-AE37-44E965D26F6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F60C862-87A6-4C14-A32D-A0E04E656D6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F60C862-87A6-4C14-A32D-A0E04E656D6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F60C862-87A6-4C14-A32D-A0E04E656D6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F60C862-87A6-4C14-A32D-A0E04E656D6B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

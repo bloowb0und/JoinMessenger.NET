@@ -66,7 +66,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ChatPermission");
+                    b.ToTable("ChatPermissions");
                 });
 
             modelBuilder.Entity("Core.Models.ChatPermissionRole", b =>
@@ -194,7 +194,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ServerPermission");
+                    b.ToTable("ServerPermissions");
                 });
 
             modelBuilder.Entity("Core.Models.ServerPermissionRole", b =>
@@ -251,8 +251,7 @@ namespace DAL.Migrations
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
