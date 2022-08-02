@@ -1,15 +1,20 @@
 using System;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using Core.Models;
 using FluentResults;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.Helpers;
 
 namespace WebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class TestController : Controller
     {
         private readonly IUserService _userService;
@@ -30,6 +35,7 @@ namespace WebApi.Controllers
 
         [HttpPost]
         [Route("test")]
+        // [AllowAnonymous]
         public async Task<ActionResult<User>> TestMethod()
         {
             var user = new User
@@ -323,6 +329,31 @@ namespace WebApi.Controllers
             }
 
             return Ok(user);
+        }
+        
+        [HttpPost]
+        [Route("test2")]
+        public async Task<ActionResult<User>> TestMethod2()
+        {
+            var userId = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier).Value;
+            var curUserById = _userService.GetUserById(Convert.ToInt32(userId));
+
+            if (curUserById.IsFailed)
+            {
+                return BadRequest(ErrorStringHelper.AppendErrors(curUserById.Errors));
+            }
+            
+            return Ok(curUserById.Value);
+            /*
+            var userLogin = User.Identity.Name;
+            var curUserByLogin = _userService.GetUserByLogin(userLogin);
+            if (curUserByLogin.IsFailed)
+            {
+                return BadRequest(ErrorStringHelper.AppendErrors(curUserByLogin.Errors));
+            }
+            
+            return Ok(curUserByLogin.Value);
+            */
         }
     }
 }

@@ -19,7 +19,7 @@ namespace BLL.Services
         public EmailNotificationService(IOptions<EmailCredentialsModel> appSettings)
         {
             _appSettings = appSettings;
-            
+
             _networkCredential = new NetworkCredential()
             {
                 UserName = _appSettings.Value.EmailCredentialsUsername,

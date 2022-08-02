@@ -1,3 +1,5 @@
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using Core.Models;
@@ -5,6 +7,8 @@ using FluentResults;
 using DAL.Abstractions.Interfaces;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using WebAPI.Helpers;
 
 namespace WebApi.Controllers
 {
@@ -13,15 +17,17 @@ namespace WebApi.Controllers
     public class AuthController  : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IOptions<JwtModel> _appSettingsJwt;
 
-        public AuthController(IUserService userService)
+        public AuthController(IUserService userService, IOptions<JwtModel> appSettingsJwt)
         {
             _userService = userService;
+            _appSettingsJwt = appSettingsJwt;
         }
 
         [HttpPost]
         [Route("login")]
-        public async Task<ActionResult<User>> SignIn([FromBody] LoginPswd loginPswd)
+        public async Task<ActionResult<string>> SignIn([FromBody] LoginPswd loginPswd)
         {
             if (loginPswd == null
                 || string.IsNullOrWhiteSpace(loginPswd.Login)
@@ -34,10 +40,15 @@ namespace WebApi.Controllers
 
             if (user.ValueOrDefault == null)
             {
-                return BadRequest("User was not found");
+                return BadRequest(user.Errors.Aggregate(
+                        new StringBuilder(),
+                        (current, next) => current.Append(current.Length == 0 ? "" : ";").Append(next.Message))
+                    .ToString());
             }
             
-            return Ok(user);
+            var token = JwtHelper.CreateToken(user.Value, _appSettingsJwt.Value.Token);
+            
+            return Ok(token);
         }
 
         [HttpPost]

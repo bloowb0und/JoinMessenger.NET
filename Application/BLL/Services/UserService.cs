@@ -6,6 +6,7 @@ using Core.Models;
 using Core.Models.ServiceMethodsModels;
 using DAL.Abstractions.Interfaces;
 using FluentResults;
+using Microsoft.Extensions.Options;
 
 namespace BLL.Services
 {
@@ -78,11 +79,11 @@ namespace BLL.Services
 
         public async Task<Result<User>> SignInAsync(string username, string password)
         {
-            var isLogin = UserHelper.IsValidEmail(username);
+            var isEmail = UserHelper.IsValidEmail(username);
 
-            var foundUser = isLogin
-                ? _unitOfWork.UserRepository.FirstOrDefault(u => u.Login == username)
-                : _unitOfWork.UserRepository.FirstOrDefault(u => u.Email == username);
+            var foundUser = isEmail
+                ? _unitOfWork.UserRepository.FirstOrDefault(u => u.Email == username)
+                : _unitOfWork.UserRepository.FirstOrDefault(u => u.Login == username);
 
             if (foundUser == null
                 || !PasswordHelper.VerifyHashedPassword(foundUser.Password, password))
@@ -165,6 +166,20 @@ namespace BLL.Services
             }
             
             return Result.Ok();
+        }
+
+        public Result<User> GetUserById(int id)
+        {
+            var foundUser = _unitOfWork.UserRepository.FirstOrDefault(u => u.Id == id);
+
+            return foundUser == null ? Result.Fail("User with given Id doesn't exist.") : Result.Ok(foundUser);
+        }
+
+        public Result<User> GetUserByLogin(string login)
+        {
+            var foundUser = _unitOfWork.UserRepository.FirstOrDefault(u => u.Login == login);
+
+            return foundUser == null ? Result.Fail("User with given Login doesn't exist.") : Result.Ok(foundUser);
         }
     }
 }
