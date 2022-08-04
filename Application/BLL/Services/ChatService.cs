@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using Core.Models;
@@ -16,14 +17,9 @@ namespace BLL.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Result> CreateChatAsync(Chat chat)
+        public async Task<Result<Chat>> CreateChatAsync(string name, ChatType type, Server server)
         {
-            if (await _unitOfWork.ChatRepository.Any(c => c.Id == chat.Id))
-            {
-                return Result.Fail("Chat with this id already exists.");
-            }
-
-            if (await _unitOfWork.ChatRepository.Any(c => c.Server == chat.Server && c.Name == chat.Name))
+            if (await _unitOfWork.ChatRepository.Any(c => c.Server == server && c.Name == name))
             {
                 return Result.Fail("Chat with this name already exists on the server.");
             }
@@ -32,7 +28,12 @@ namespace BLL.Services
             {
                 try
                 {
-                    await _unitOfWork.ChatRepository.CreateAsync(chat);
+                    await _unitOfWork.ChatRepository.CreateAsync(new Chat()
+                    {
+                        Name = name,
+                        Type = type,
+                        Server = server
+                    });
                     await _unitOfWork.SaveAsync();
 
                     await _unitOfWork.CommitTransactionAsync();
@@ -101,6 +102,32 @@ namespace BLL.Services
             }
             
             return Result.Ok();
+        }
+
+        public async Task<Result<IEnumerable<Chat>>> GetChatsByServerAsync(int serverId)
+        {
+            var foundServer = _unitOfWork.ServerRepository.FirstOrDefault(s => s.Id == serverId);
+            
+            if (foundServer == null)
+            {
+                return Result.Fail("Server with such id doesn't exist.");
+            }
+            
+            var chats = await _unitOfWork.ChatRepository.Get(c => c.Server.Id == serverId);
+            
+            return Result.Ok(chats);
+        }
+
+        public Result<Chat> GetChatById(int chatId)
+        {
+            var foundChat = _unitOfWork.ChatRepository.FirstOrDefault(c => c.Id == chatId);
+
+            if (foundChat == null)
+            {
+                return Result.Fail("Chat with such id wasn't found");
+            }
+            
+            return Result.Ok(foundChat);
         }
     }
 }

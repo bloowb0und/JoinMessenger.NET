@@ -1,4 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Core.Models;
 using Core.Models.ServiceMethodsModels;
@@ -8,8 +8,10 @@ namespace BLL.Abstractions.Interfaces
 {
     public interface IMessageService
     {
-        Task<Result> CreateMessageAsync(Message message);
-        Task<Result> EditMessageAsync(User user, Message message, MessageServiceEditMessage newMessage);
-        Task<Result> DeleteMessageAsync(User user, Message message);
+        Task<Result<Message>> CreateMessageAsync(int userId, int chatId, string value);
+        Task<Result> EditMessageAsync(User user, int messageId, EditMessageModel newEditMessage);
+        Task<Result> DeleteMessageAsync(User user, int messageId);
+        Result<Message> GetMessageById(int messageId);
+        Task<Result<IEnumerable<Message>>> GetAllMessagesFromChatAsync(int chatId);
     }
 }
