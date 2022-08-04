@@ -1,6 +1,8 @@
+using System;
 using BLL.Abstractions.Interfaces;
 using BLL.Services;
 using Core.Models;
+using Core.Models.API;
 using DAL.Abstractions.Interfaces;
 using DAL.Contexts;
 using DAL.Repository;
@@ -38,6 +40,7 @@ namespace WebApi
             services.AddScoped<IServerService, ServerService>();
             services.AddScoped<IChatService, ChatService>();
             services.AddScoped<IMessageService, MessageService>();
+            services.AddScoped<IRoleService, RoleService>();
             
             services.AddScoped(typeof(IDbGenericRepository<>), typeof(DbGenericRepository<>));
             services.AddScoped<IUnitOfWork, UnitOfWork>();

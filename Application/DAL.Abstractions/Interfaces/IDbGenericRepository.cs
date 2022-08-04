@@ -10,8 +10,8 @@ namespace DAL.Abstractions.Interfaces
     public interface IDbGenericRepository<TEntity> where TEntity : class
     {
         Task<IEnumerable<TEntity>> Get(Expression<Func<TEntity, bool>> filter,
-            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy,
-            string includeProperties);
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+            string includeProperties = "");
 
         Task<TEntity> GetById(object id);
 
