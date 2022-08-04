@@ -3,9 +3,8 @@ using System.Text;
 using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using Core.Models;
+using Core.Models.API;
 using FluentResults;
-using DAL.Abstractions.Interfaces;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using WebAPI.Helpers;
@@ -70,7 +69,7 @@ namespace WebApi.Controllers
                 return BadRequest(result.Errors);
             }
             
-            return Ok(user); // return jwt token
+            return Ok(user);
         }
         
         [HttpPost]

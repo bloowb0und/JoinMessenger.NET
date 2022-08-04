@@ -69,21 +69,21 @@ namespace WebApi.Controllers
                 Console.WriteLine(res.Errors.Select(e => e.Message));
             }
 
-            if ((res = await _serverService.CreateServerAsync("Server1")).IsFailed)
+            if (await _serverService.CreateServerAsync("Server1", user) == null)
             {
                 Console.WriteLine(res.Errors.Select(e => e.Message));
             }
-            if ((res = await _serverService.CreateServerAsync("Server2")).IsFailed)
+            if (await _serverService.CreateServerAsync("Server2", user) == null)
             {
                 Console.WriteLine(res.Errors.Select(e => e.Message));
             }
 
-            if ((res = await _serverService.CreateServerAsync("Server2")).IsFailed)
+            if (await _serverService.CreateServerAsync("Server2", user2) == null)
             {
                 Console.WriteLine(res.Errors.Select(e => e.Message));
             }
             
-            if ((res = await _serverService.CreateServerAsync("Server2")).IsFailed) // error
+            if (await _serverService.CreateServerAsync("Server2", user2) == null) // error
             {
                 Console.WriteLine(res.Errors.Select(e => e.Message));
             }
