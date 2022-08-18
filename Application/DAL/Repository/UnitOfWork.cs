@@ -25,11 +25,15 @@ namespace DAL.Repository
 
         public IDbGenericRepository<Server> ServerRepository => new DbGenericRepository<Server>(_context);
         public IDbGenericRepository<User> UserRepository => new DbGenericRepository<User>(_context);
+        public IDbGenericRepository<UserServer> UserServerRepository  => new DbGenericRepository<UserServer>(_context);
         public IDbGenericRepository<Chat> ChatRepository => new DbGenericRepository<Chat>(_context);
         public IDbGenericRepository<Role> RoleRepository => new DbGenericRepository<Role>(_context);
+        public IDbGenericRepository<UserServerRole> UserServerRoleRepository => new DbGenericRepository<UserServerRole>(_context);
         public IDbGenericRepository<Message> MessageRepository => new DbGenericRepository<Message>(_context);
         public IDbGenericRepository<ChatPermission> ChatPermissionRepository => new DbGenericRepository<ChatPermission>(_context);
+        public IDbGenericRepository<ChatPermissionRole> ChatPermissionRoleRepository => new DbGenericRepository<ChatPermissionRole>(_context);
         public IDbGenericRepository<ServerPermission> ServerPermissionRepository => new DbGenericRepository<ServerPermission>(_context);
+        public IDbGenericRepository<ServerPermissionRole> ServerPermissionRoleRepository => new DbGenericRepository<ServerPermissionRole>(_context);
 
         public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
         {

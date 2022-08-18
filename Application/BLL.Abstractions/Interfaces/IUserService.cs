@@ -10,6 +10,8 @@ namespace BLL.Abstractions.Interfaces
         Task<Result> RegisterAsync(User user);
         Task<Result<User>> SignInAsync(string username, string password);
         Task<Result> PasswordRecoveryAsync(string email);
-        Task<Result>  ChangeUserDataAsync(User user, UserServiceChangeUserData newUserData);
+        Task<Result> ChangeUserDataAsync(User user, UserServiceChangeUserData newUserData);
+        Result<User> GetUserById(int id);
+        Result<User> GetUserByLogin(string login);
     }
 }
